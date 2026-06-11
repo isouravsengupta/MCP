@@ -1,6 +1,7 @@
 import { loadSnowflakeConfig } from "./config.js";
 import {
   loadColumnDictionary,
+  loadDashboardDatasetRegistry,
   loadDashboardLensCatalog,
   loadContextAssetIndex,
   loadContextRegistry,
@@ -12,7 +13,7 @@ import { buildAdaptiveQuery } from "./analysisPlanner.js";
 import { buildSql } from "./sqlBuilder.js";
 import { SnowflakeClient } from "./snowflake.js";
 import { buildVisualizationPayload } from "./visualization.js";
-import type { MetricScenarioCatalog } from "./types.js";
+import type { DashboardDatasetRegistry, MetricScenarioCatalog } from "./types.js";
 
 interface JsonRpcRequest {
   jsonrpc: "2.0";
@@ -30,6 +31,7 @@ interface JsonRpcResponse {
 
 const snowflake = new SnowflakeClient(loadSnowflakeConfig());
 const IDENTIFIER = /^[A-Z_][A-Z0-9_]*$/;
+const CONTROL_DATASETS = new Set(["FiscalYearFix", "FixMonth", "INTL_USRSET_SS"]);
 
 export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpcResponse> {
   try {
@@ -153,6 +155,36 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
               name: "dashboard_usecase_coverage",
               description: "List CRMA dashboard lens coverage and highlight unsupported lens use cases.",
               inputSchema: { type: "object", properties: {} }
+            },
+            {
+              name: "list_dashboard_datasets",
+              description: "List CRMA datasets with mapped Snowflake table candidates.",
+              inputSchema: { type: "object", properties: {} }
+            },
+            {
+              name: "describe_dashboard_dataset",
+              description: "Describe available dimensions/measures for a dashboard dataset.",
+              inputSchema: {
+                type: "object",
+                properties: { dataset: { type: "string" } },
+                required: ["dataset"]
+              }
+            },
+            {
+              name: "query_dashboard_dataset",
+              description: "Generic metric query for any mapped dashboard dataset with clarification safeguards.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  dataset: { type: "string" },
+                  measure: { type: "string" },
+                  aggregation: { type: "string", enum: ["sum", "count", "avg", "max", "min"] },
+                  group_by: { type: "array", items: { type: "string" } },
+                  filters: { type: "object", additionalProperties: true },
+                  limit: { type: "number" }
+                },
+                required: ["dataset", "measure"]
+              }
             }
           ]
         });
@@ -194,6 +226,11 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
             {
               uri: "spi://resources/dashboard-lens-catalog",
               name: "Catalog of CRMA dashboard lens steps and datasets",
+              mimeType: "application/json"
+            },
+            {
+              uri: "spi://resources/dashboard-dataset-registry",
+              name: "Dataset-to-table mapping for dashboard execution",
               mimeType: "application/json"
             }
           ]
@@ -337,20 +374,30 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
 
   if (toolName === "dashboard_usecase_coverage") {
     const lensCatalog = await loadDashboardLensCatalog();
-    const metricIds = new Set(catalog.metrics.map((m) => m.id));
+    const registry = await loadDashboardDatasetRegistry();
+    const uniqueDatasets = [...new Set(lensCatalog.lenses.flatMap((l) => l.datasets))];
+    const registrySet = new Set(registry.datasets.map((d) => d.dataset));
+    const datasetResolution = new Map<string, { covered: boolean; table: string | null; mode: string }>();
+    for (const dataset of uniqueDatasets) {
+      if (CONTROL_DATASETS.has(dataset)) {
+        datasetResolution.set(dataset, { covered: true, table: null, mode: "control-dataset" });
+        continue;
+      }
+      const hasRegistryMapping = registrySet.has(dataset);
+      datasetResolution.set(dataset, {
+        covered: hasRegistryMapping,
+        table: hasRegistryMapping ? "registry-mapped" : null,
+        mode: hasRegistryMapping ? "registry" : "unmapped"
+      });
+    }
     const datasetCoverage = lensCatalog.lenses.map((lens) => {
-      const lensIdLike = lens.step_name.toLowerCase();
-      const matchedMetricIds = [...metricIds].filter(
-        (metricId) =>
-          lensIdLike.includes(metricId.toLowerCase()) ||
-          lens.datasets.some((d) => metricId.toLowerCase().includes(d.toLowerCase().replace(/[^a-z0-9]+/g, "_")))
-      );
+      const unresolved = lens.datasets.filter((d) => !(datasetResolution.get(d)?.covered ?? false));
       return {
         step_name: lens.step_name,
         datasets: lens.datasets,
         widgets: lens.widgets,
-        covered: matchedMetricIds.length > 0,
-        matched_metric_ids: matchedMetricIds
+        covered: unresolved.length === 0,
+        unresolved_datasets: unresolved
       };
     });
     const unsupported = datasetCoverage.filter((x) => !x.covered);
@@ -363,7 +410,257 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
               total_lenses: lensCatalog.lenses.length,
               covered_lenses: datasetCoverage.length - unsupported.length,
               unsupported_lenses: unsupported.length,
+              dataset_resolution: Object.fromEntries(
+                [...datasetResolution.entries()].map(([k, v]) => [
+                  k,
+                  { covered: v.covered, table: v.table, mode: v.mode }
+                ])
+              ),
               unsupported_examples: unsupported.slice(0, 25)
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
+  if (toolName === "list_dashboard_datasets") {
+    const registry = await loadDashboardDatasetRegistry();
+    const lensCatalog = await loadDashboardLensCatalog();
+    const datasets = [...new Set(lensCatalog.lenses.flatMap((l) => l.datasets))].sort();
+    const rows: Array<Record<string, unknown>> = [];
+    for (const dataset of datasets) {
+      const table = CONTROL_DATASETS.has(dataset) ? null : await resolveDatasetTable(dataset, registry);
+      rows.push({
+        dataset,
+        control_dataset: CONTROL_DATASETS.has(dataset),
+        resolved_table: table,
+        covered: CONTROL_DATASETS.has(dataset) || table !== null
+      });
+    }
+    return {
+      content: [{ type: "text", text: JSON.stringify({ datasets: rows }, null, 2) }]
+    };
+  }
+
+  if (toolName === "describe_dashboard_dataset") {
+    const registry = await loadDashboardDatasetRegistry();
+    const dataset = String(args.dataset ?? "").trim();
+    if (CONTROL_DATASETS.has(dataset)) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                dataset,
+                control_dataset: true,
+                message: "This dataset is a dashboard control/facet step, not a physical Snowflake dataset."
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+    const def = registry.datasets.find((d) => d.dataset === dataset);
+    const table = await resolveDatasetTable(dataset, registry);
+    if (!table) {
+      throw new Error(`Could not resolve table for dataset: ${dataset}`);
+    }
+    const sampleRows = await snowflake.execute(`SELECT * FROM ${table} LIMIT 1`);
+    const columns = Object.keys((sampleRows[0] ?? {}) as Record<string, unknown>);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              dataset,
+              resolved_table: table,
+              columns,
+              preferred_dimensions: def?.preferred_dimensions ?? [],
+              preferred_measures: def?.preferred_measures ?? []
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
+  if (toolName === "query_dashboard_dataset") {
+    const registry = await loadDashboardDatasetRegistry();
+    const dataset = String(args.dataset ?? "").trim();
+    const measure = String(args.measure ?? "").trim().toUpperCase();
+    const aggregation = String(args.aggregation ?? "sum").toLowerCase();
+    const filters = (args.filters ?? {}) as Record<string, string | number>;
+    const groupBy = Array.isArray(args.group_by) ? args.group_by.map((v) => String(v).toUpperCase()) : [];
+    const limit = typeof args.limit === "number" ? Math.max(1, Math.min(200, args.limit)) : 50;
+
+    if (CONTROL_DATASETS.has(dataset)) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: `Dataset '${dataset}' is a control/facet dataset. Please choose a physical dashboard dataset.`
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+    const def = registry.datasets.find((d) => d.dataset === dataset);
+    const table = await resolveDatasetTable(dataset, registry);
+    if (!table) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: `Could not resolve a Snowflake table for dataset '${dataset}'.`,
+                suggestions: registry.datasets.map((d) => d.dataset)
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+    const sampleRows = await snowflake.execute(`SELECT * FROM ${table} LIMIT 1`);
+    const available = new Set(Object.keys((sampleRows[0] ?? {}) as Record<string, unknown>).map((c) => c.toUpperCase()));
+
+    if (!available.has(measure)) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: `Unknown measure '${measure}' for dataset '${dataset}'.`,
+                suggestions: [...available].filter((c) => def?.preferred_measures?.includes(c) ?? false).slice(0, 20)
+                  .concat([...available].slice(0, 10))
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
+    const badGroupBy = groupBy.filter((g) => !available.has(g));
+    if (badGroupBy.length > 0) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: "One or more group_by fields do not exist in dataset.",
+                invalid_group_by: badGroupBy,
+                suggestions: def?.preferred_dimensions ?? [...available].slice(0, 20)
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
+    const where: string[] = [];
+    const binds: Array<string | number> = [];
+    for (const [k, v] of Object.entries(filters)) {
+      const col = String(k).toUpperCase();
+      if (!available.has(col)) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  clarification_needed: true,
+                  message: `Unknown filter field '${k}'.`,
+                  suggestions: def?.preferred_dimensions ?? [...available].slice(0, 20)
+                },
+                null,
+                2
+              )
+            }
+          ]
+        };
+      }
+      where.push(`${col} = ?`);
+      binds.push(v);
+    }
+
+    const aggExpr =
+      aggregation === "count"
+        ? `COUNT(${measure})`
+        : aggregation === "avg"
+          ? `AVG(${measure})`
+          : aggregation === "max"
+            ? `MAX(${measure})`
+            : aggregation === "min"
+              ? `MIN(${measure})`
+              : `SUM(${measure})`;
+    const selectGroup = groupBy.length > 0 ? `${groupBy.join(", ")}, ` : "";
+    const whereSql = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
+    const groupSql = groupBy.length > 0 ? `GROUP BY ${groupBy.join(", ")}` : "";
+    const orderSql = "ORDER BY VALUE DESC";
+    const sqlText = `SELECT ${selectGroup}COALESCE(${aggExpr}, 0) AS VALUE FROM ${table} ${whereSql} ${groupSql} ${orderSql} LIMIT ${limit}`;
+    const rows = await snowflake.execute(sqlText, binds);
+    const quality = assessResultQuality(rows);
+    if (quality.clarificationNeeded) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: "Result is low-signal. Please refine filters or fiscal scope.",
+                diagnostics: quality,
+                suggestions: {
+                  dimensions: def?.preferred_dimensions ?? [...available].slice(0, 20),
+                  measures: def?.preferred_measures ?? [...available].slice(0, 20)
+                }
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              dataset,
+              resolved_table: table,
+              sqlText,
+              binds,
+              rowCount: rows.length,
+              rows,
+              visualization: buildVisualizationPayload(rows, `${dataset} ${measure} by ${groupBy.join(", ") || "all"}`)
             },
             null,
             2
@@ -695,6 +992,24 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   throw new Error(`Tool not found: ${toolName}`);
 }
 
+async function resolveDatasetTable(dataset: string, registry: DashboardDatasetRegistry): Promise<string | null> {
+  const entry = registry.datasets.find((d) => d.dataset === dataset);
+  const candidates = new Set<string>(entry?.table_candidates ?? []);
+  const normalized = dataset.replace(/^dev_/i, "");
+  const upper = normalized.toUpperCase();
+  candidates.add(`SSE_DM_GDSO_PRD.AIO.${upper}`);
+  candidates.add(`SSE_DM_GDSO_PRD.AIO.${upper}_PERM`);
+  candidates.add(`SSE_DM_GDSO_PRD.AIO.${upper}_VW`);
+  if (!upper.startsWith("GSP_")) {
+    candidates.add(`SSE_DM_GDSO_PRD.AIO.GSP_${upper}`);
+  }
+  try {
+    return await resolveWorkingTable([...candidates]);
+  } catch {
+    return null;
+  }
+}
+
 async function handleResourceRead(params: Record<string, unknown>): Promise<unknown> {
   const uri = String(params.uri ?? "");
   if (uri === "spi://resources/metric-mappings") {
@@ -723,6 +1038,10 @@ async function handleResourceRead(params: Record<string, unknown>): Promise<unkn
   }
   if (uri === "spi://resources/dashboard-lens-catalog") {
     const data = await loadDashboardLensCatalog();
+    return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
+  }
+  if (uri === "spi://resources/dashboard-dataset-registry") {
+    const data = await loadDashboardDatasetRegistry();
     return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
   }
   throw new Error(`Resource not found: ${uri}`);
@@ -821,6 +1140,18 @@ async function resolveWorkingColumnOptional(tableName: string, candidates: strin
     }
   }
   return null;
+}
+
+async function resolveWorkingTable(candidates: string[]): Promise<string> {
+  for (const candidate of candidates) {
+    try {
+      await snowflake.execute(`SELECT 1 FROM ${candidate} LIMIT 1`);
+      return candidate;
+    } catch {
+      // try next table
+    }
+  }
+  throw new Error(`Could not resolve a valid table from candidates: ${candidates.join(", ")}`);
 }
 
 async function validateFilters(input: {

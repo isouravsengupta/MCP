@@ -1,0 +1,62 @@
+{
+  "datasets": [
+    {
+      "dataset": "gsp_spm_pg",
+      "table_candidates": [
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN_PERM"
+      ],
+      "default_time_column": "STG_2_FLG_DT_YEAR_FISCAL",
+      "preferred_dimensions": ["PROGRAM_NAME", "SALES_PLAY_NAME", "SPM_HIER_LVL_4", "PROGRAM_TYPE", "SELLER_TYPE"],
+      "preferred_measures": ["CLOUD_AMT"]
+    },
+    {
+      "dataset": "gsp_spm_acv",
+      "table_candidates": [
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV_PERM"
+      ],
+      "default_time_column": "CLSD_DT_Year_Fiscal",
+      "preferred_dimensions": ["PROGRAM_NAME", "SALES_PLAY_NAME", "SPM_HIER_LVL_4", "PROGRAM_TYPE", "SELLER_TYPE"],
+      "preferred_measures": ["CLOUD_AMT"]
+    },
+    {
+      "dataset": "gsp_spm_forecast",
+      "table_candidates": ["SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST"],
+      "default_time_column": "FISCAL_CMPGN_STRT_YEAR",
+      "preferred_dimensions": ["PROGRAM_NAME", "PROGRAM_TYPE", "PROGRAM_TEAM"],
+      "preferred_measures": ["FORECAST_AMT"]
+    },
+    {
+      "dataset": "gsp_spm_progression",
+      "table_candidates": ["SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION"],
+      "default_time_column": "START_DT_Year_Fiscal",
+      "preferred_dimensions": ["PROGRAM_NAME", "SALES_PLAY_NAME", "SPM_HIER_LVL_4", "OPTY_STG_NM", "SNAP_STATUS"],
+      "preferred_measures": ["CLOUD_AMT"]
+    },
+    {
+      "dataset": "gsp_spm_program",
+      "table_candidates": [
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+        "SSE_DM_GDSO_PRD.AIO.AIO_SPM_PROGRAMS"
+      ],
+      "default_time_column": "FISCALYEAR__C",
+      "preferred_dimensions": ["NAME", "PROGRAM_TYPE", "PROGRAM_STATUS", "PROGRAM_OWNER_NAME", "SPM_HIER_LVL_4", "SALES_PLAY_NAME"],
+      "preferred_measures": ["FORECAST__C", "ACV_FORECAST__C"]
+    },
+    {
+      "dataset": "gsp_spm_trgt_acct",
+      "table_candidates": ["SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS"],
+      "default_time_column": "FISCAL_START_YEAR",
+      "preferred_dimensions": ["PROGRAM_NAME", "SPM_HIER_LVL_4", "SALES_PLAY_NAME", "PROGRAM_TYPE", "REGION"],
+      "preferred_measures": ["ACCT_ID", "PROGRAM_ID"]
+    },
+    {
+      "dataset": "spm_performance_metrics",
+      "table_candidates": ["SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS"],
+      "default_time_column": "FISCAL_YEAR",
+      "preferred_dimensions": ["PROGRAM_NAME", "PROGRAM_TYPE", "SELLER_TYPE", "PROGRAM_STATUS"],
+      "preferred_measures": ["PIPEGEN", "CLOSED_ACV", "OPEN_PIPE", "CLOSED_RATE", "CC_CONVERSION", "PROGRESSION_RATE"]
+    }
+  ]
+}

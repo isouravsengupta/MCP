@@ -107,3 +107,13 @@ export interface DashboardLensCatalog {
     widgets: string[];
   }>;
 }
+
+export interface DashboardDatasetRegistry {
+  datasets: Array<{
+    dataset: string;
+    table_candidates: string[];
+    default_time_column?: string;
+    preferred_dimensions: string[];
+    preferred_measures: string[];
+  }>;
+}
