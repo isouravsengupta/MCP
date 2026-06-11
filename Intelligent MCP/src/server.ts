@@ -11,6 +11,7 @@ import { buildAdaptiveQuery } from "./analysisPlanner.js";
 import { buildSql } from "./sqlBuilder.js";
 import { SnowflakeClient } from "./snowflake.js";
 import { buildVisualizationPayload } from "./visualization.js";
+import type { MetricScenarioCatalog } from "./types.js";
 
 interface JsonRpcRequest {
   jsonrpc: "2.0";
@@ -27,6 +28,7 @@ interface JsonRpcResponse {
 }
 
 const snowflake = new SnowflakeClient(loadSnowflakeConfig());
+const IDENTIFIER = /^[A-Z_][A-Z0-9_]*$/;
 
 export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpcResponse> {
   try {
@@ -105,7 +107,7 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
             },
             {
               name: "run_adaptive_metric_query",
-              description: "Run grouped/trend/YoY analysis using scenario definitions for a metric.",
+              description: "Run grouped/trend/YoY analysis with filter validation and clarification hints.",
               inputSchema: {
                 type: "object",
                 properties: {
@@ -114,7 +116,8 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
                   filters: { type: "object", additionalProperties: true },
                   include_yoy: { type: "boolean" },
                   fiscal_year: { type: "string" },
-                  top_n: { type: "number" }
+                  top_n: { type: "number" },
+                  require_disambiguation: { type: "boolean" }
                 },
                 required: ["metric_id"]
               }
@@ -327,6 +330,27 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
 
   if (toolName === "run_metric_query") {
     const rows = await snowflake.execute(sqlText, binds);
+    const qualityGate = assessResultQuality(rows);
+    if (qualityGate.clarificationNeeded) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message:
+                  "Query returned low-signal output (empty/all-null). Please confirm scope to avoid misleading results.",
+                clarifying_questions: defaultClarifyingQuestions(metric.snowflakeColumns),
+                diagnostics: qualityGate
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
     const includeVisualization = args.include_visualization !== false;
     const visualization = includeVisualization ? buildVisualizationPayload(rows, metric.name) : null;
     return {
@@ -354,11 +378,42 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
 
   if (toolName === "run_adaptive_metric_query") {
     const scenarioCatalog = await loadMetricScenarioCatalog();
+    const scenario = scenarioCatalog.scenarios.find((s) => s.metric_id === metric.id);
+    if (!scenario) {
+      throw new Error(`No scenario definition found for metric: ${metric.id}`);
+    }
     const groupBy = Array.isArray(args.group_by) ? args.group_by.map(String) : [];
     const filters = (args.filters ?? {}) as Record<string, string | number>;
     const includeYoy = args.include_yoy === true;
     const fiscalYear = typeof args.fiscal_year === "string" ? args.fiscal_year : undefined;
     const topN = typeof args.top_n === "number" ? args.top_n : undefined;
+    const requireDisambiguation = args.require_disambiguation !== false;
+    const filterValidation = await validateFilters({
+      sourceTable: metric.sourceTable,
+      scenarioCatalog,
+      metricId: metric.id,
+      filters
+    });
+    if (requireDisambiguation && filterValidation.clarificationNeeded) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message:
+                  "One or more filter values did not match table data. Please pick one of the suggested values.",
+                filter_issues: filterValidation.issues
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
     const adaptive = buildAdaptiveQuery({
       metricId: metric.id,
       scenarioCatalog,
@@ -369,7 +424,65 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       fiscalYear,
       topN
     });
-    const rows = await snowflake.execute(adaptive.sqlText, adaptive.binds);
+    let rows = await snowflake.execute(adaptive.sqlText, adaptive.binds);
+    let fallbackApplied = false;
+    let fallbackReason: string | null = null;
+
+    // If the selected slice returns empty, retry once without fixed fiscal-year filter.
+    if (
+      rows.length === 0 &&
+      args.auto_period_fallback !== false &&
+      Object.keys(scenario.fixed_filters ?? {}).some((k) => k.toUpperCase().includes("FISCAL_YEAR"))
+    ) {
+      const fallbackCatalog = withFiscalYearFixedFiltersRemoved(scenarioCatalog, metric.id);
+      const fallbackQuery = buildAdaptiveQuery({
+        metricId: metric.id,
+        scenarioCatalog: fallbackCatalog,
+        sourceTable: metric.sourceTable,
+        groupBy,
+        filters,
+        includeYoy,
+        fiscalYear,
+        topN
+      });
+      const fallbackRows = await snowflake.execute(fallbackQuery.sqlText, fallbackQuery.binds);
+      if (fallbackRows.length > 0) {
+        rows = fallbackRows;
+        fallbackApplied = true;
+        fallbackReason = "No rows for requested fixed fiscal year; retried using broader period.";
+      }
+    }
+    const qualityGate = assessResultQuality(rows);
+    if (qualityGate.clarificationNeeded) {
+      const allowedFilters = Object.keys(scenario.groupable_dimensions);
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message:
+                  "Result set is empty or low-signal. Please refine filters before final output.",
+                clarifying_questions: [
+                  "Which fiscal period should I use (FY/quarter/month)?",
+                  "Which program scope should I apply (program_type, program_status, seller_type)?",
+                  "Should I include only non-null performance records?"
+                ],
+                suggested_filter_keys: allowedFilters,
+                diagnostics: {
+                  qualityGate,
+                  fallbackApplied,
+                  fallbackReason
+                }
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
     const visualization = buildVisualizationPayload(rows, `${metric.name} adaptive analysis`);
     return {
       content: [
@@ -382,7 +495,12 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
               binds: adaptive.binds,
               rowCount: rows.length,
               rows,
-              visualization
+              visualization,
+              diagnostics: {
+                fallbackApplied,
+                fallbackReason,
+                filterValidation
+              }
             },
             null,
             2
@@ -430,4 +548,126 @@ function ok(id: string | number | null, result: unknown): JsonRpcResponse {
 
 function fail(id: string | number | null, code: number, message: string): JsonRpcResponse {
   return { jsonrpc: "2.0", id, error: { code, message } };
+}
+
+function safeIdentifier(value: string): string {
+  const upper = value.toUpperCase();
+  if (!IDENTIFIER.test(upper)) {
+    throw new Error(`Unsafe identifier: ${value}`);
+  }
+  return upper;
+}
+
+function withFiscalYearFixedFiltersRemoved(
+  scenarioCatalog: MetricScenarioCatalog,
+  metricId: string
+): MetricScenarioCatalog {
+  return {
+    scenarios: scenarioCatalog.scenarios.map((scenario) => {
+      if (scenario.metric_id !== metricId || !scenario.fixed_filters) {
+        return scenario;
+      }
+      const filtered = Object.fromEntries(
+        Object.entries(scenario.fixed_filters).filter(([k]) => !k.toUpperCase().includes("FISCAL_YEAR"))
+      );
+      return { ...scenario, fixed_filters: filtered };
+    })
+  };
+}
+
+function assessResultQuality(rows: unknown[]): {
+  clarificationNeeded: boolean;
+  reason: string | null;
+  rowCount: number;
+} {
+  if (rows.length === 0) {
+    return { clarificationNeeded: true, reason: "no rows", rowCount: 0 };
+  }
+  const objectRows = rows.filter((r): r is Record<string, unknown> => typeof r === "object" && r !== null);
+  if (objectRows.length === 0) {
+    return { clarificationNeeded: true, reason: "non-tabular rows", rowCount: rows.length };
+  }
+  const numericKeys = Object.keys(objectRows[0]).filter((k) =>
+    objectRows.some((row) => typeof row[k] === "number" || row[k] === null)
+  );
+  if (numericKeys.length === 0) {
+    return { clarificationNeeded: false, reason: null, rowCount: rows.length };
+  }
+  const allNullOrZero = numericKeys.every((key) =>
+    objectRows.every((row) => row[key] === null || row[key] === 0)
+  );
+  if (allNullOrZero) {
+    return { clarificationNeeded: true, reason: "all numeric measures are null/zero", rowCount: rows.length };
+  }
+  return { clarificationNeeded: false, reason: null, rowCount: rows.length };
+}
+
+function defaultClarifyingQuestions(availableFilterMap: Record<string, string>): string[] {
+  const keys = Object.keys(availableFilterMap);
+  return [
+    "Which fiscal period should I use (FY/quarter/month)?",
+    "Do you want a specific region/segment/program scope?",
+    keys.length > 0
+      ? `Please choose filters from: ${keys.slice(0, 8).join(", ")}${keys.length > 8 ? ", ..." : ""}`
+      : "Do you want me to broaden the filters to include non-empty records?"
+  ];
+}
+
+async function validateFilters(input: {
+  sourceTable: string;
+  scenarioCatalog: MetricScenarioCatalog;
+  metricId: string;
+  filters: Record<string, string | number>;
+}): Promise<{
+  clarificationNeeded: boolean;
+  issues: Array<{ filterKey: string; filterValue: string | number; column: string; suggestions: string[]; reason?: string }>;
+}> {
+  const scenario = input.scenarioCatalog.scenarios.find((s) => s.metric_id === input.metricId);
+  if (!scenario) {
+    return { clarificationNeeded: false, issues: [] };
+  }
+
+  const issues: Array<{
+    filterKey: string;
+    filterValue: string | number;
+    column: string;
+    suggestions: string[];
+    reason?: string;
+  }> = [];
+
+  for (const [filterKey, filterValue] of Object.entries(input.filters)) {
+    const mapped = scenario.groupable_dimensions[filterKey];
+    if (!mapped) {
+      issues.push({
+        filterKey,
+        filterValue,
+        column: "",
+        suggestions: Object.keys(scenario.groupable_dimensions),
+        reason: "unknown filter key"
+      });
+      continue;
+    }
+    if (typeof filterValue !== "string") {
+      continue;
+    }
+    const column = safeIdentifier(mapped);
+    const exactRows = await snowflake.execute(
+      `SELECT COUNT(1) AS CNT FROM ${input.sourceTable} WHERE ${column} = ?`,
+      [filterValue]
+    );
+    const exactCount = Number((exactRows[0] as Record<string, unknown> | undefined)?.CNT ?? 0);
+    if (exactCount > 0) {
+      continue;
+    }
+    const suggestionRows = await snowflake.execute(
+      `SELECT DISTINCT ${column} AS VALUE FROM ${input.sourceTable} WHERE ${column} ILIKE ? ORDER BY 1 LIMIT 8`,
+      [`%${filterValue}%`]
+    );
+    const suggestions = suggestionRows
+      .map((row) => String((row as Record<string, unknown>).VALUE ?? ""))
+      .filter((v) => v.length > 0);
+    issues.push({ filterKey, filterValue, column, suggestions });
+  }
+
+  return { clarificationNeeded: issues.length > 0, issues };
 }

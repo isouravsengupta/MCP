@@ -72,6 +72,60 @@
           "dags/gsp_analytics/GSP_SPM_Planning_Extract.py"
         ]
       }
+    },
+    {
+      "id": "spm_performance_top_programs_fy27",
+      "name": "SPM Performance Top Programs FY27",
+      "description": "Top programs ranked by pipegen with performance details from SPM_PERFORMANCE_METRICS.",
+      "dashboard_metric": "Top Programs",
+      "crma_dataset": "gsp_spm_performance",
+      "saql": [
+        "q = load \"gsp_spm_performance\";",
+        "q = filter q by 'FISCAL_YEAR' == \"FY27\";",
+        "q = order q by 'PIPEGEN' desc;",
+        "q = limit q 20;"
+      ],
+      "snowflake_sql": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, PIPEGEN, CLOSED_ACV, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY PIPEGEN DESC LIMIT 20",
+      "provenance": {
+        "etl_repo": "business_logic",
+        "etl_paths": [
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_load.sql",
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_insert.sql",
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_update.sql"
+        ],
+        "dag_repo": "airflow-dags-uip-gdso",
+        "dag_paths": [
+          "dags/gsp_analytics/GSP_SPM_Performance_Metrics.py",
+          "dags/gsp_analytics/GSP_SPM_Planning_Load.py"
+        ]
+      }
+    },
+    {
+      "id": "spm_performance_top_performing_programs_fy27",
+      "name": "SPM Performance Top Performing Programs FY27",
+      "description": "Top performing programs by closed ACV and conversion quality for FY27.",
+      "dashboard_metric": "Top Performing Programs",
+      "crma_dataset": "gsp_spm_performance",
+      "saql": [
+        "q = load \"gsp_spm_performance\";",
+        "q = filter q by 'FISCAL_YEAR' == \"FY27\";",
+        "q = order q by 'CLOSED_ACV' desc;",
+        "q = limit q 20;"
+      ],
+      "snowflake_sql": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, CLOSED_ACV, PIPEGEN, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY CLOSED_ACV DESC, CLOSED_RATE DESC LIMIT 20",
+      "provenance": {
+        "etl_repo": "business_logic",
+        "etl_paths": [
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_load.sql",
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_insert.sql",
+          "gsp_analytics/SPM_Planning/spm_performance_metrics_update.sql"
+        ],
+        "dag_repo": "airflow-dags-uip-gdso",
+        "dag_paths": [
+          "dags/gsp_analytics/GSP_SPM_Performance_Metrics.py",
+          "dags/gsp_analytics/GSP_SPM_Planning_Load.py"
+        ]
+      }
     }
   ],
   "metrics": [
@@ -96,6 +150,40 @@
       "sqlTemplate": "WITH base AS ( SELECT GDSO_ID, SNAP_YEAR_STATUS, REGEXP_SUBSTR(FISCAL_FLIP_YEAR, '[0-9]{4}') AS STG_2_FLG_DT_YEAR_FISCAL, MAX(CLOUD_AMT) AS CLOUD_AMT FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN WHERE PRODUCT_MATCH='Product Match' AND PROGRAM_TEAM='Sales Program' AND FISCAL_FLIP_QTR='FQ 1' GROUP BY GDSO_ID, SNAP_YEAR_STATUS, REGEXP_SUBSTR(FISCAL_FLIP_YEAR, '[0-9]{4}') ), CY AS ( SELECT * FROM base WHERE SNAP_YEAR_STATUS='CY' AND STG_2_FLG_DT_YEAR_FISCAL='2027' ), PY AS ( SELECT * FROM base WHERE SNAP_YEAR_STATUS='PY' AND STG_2_FLG_DT_YEAR_FISCAL='2026' ) SELECT COALESCE((SELECT SUM(CLOUD_AMT) FROM CY),0) AS CLOUD_AMT, CASE WHEN COALESCE((SELECT SUM(CLOUD_AMT) FROM PY),0)=0 THEN NULL ELSE COALESCE((SELECT SUM(CLOUD_AMT) FROM CY),0)/COALESCE((SELECT SUM(CLOUD_AMT) FROM PY),0) END AS \"Y/Y\", COALESCE((SELECT SUM(CLOUD_AMT) FROM PY),0) AS PY_CLOUD_AMT",
       "crmaFields": {},
       "snowflakeColumns": {}
+    },
+    {
+      "id": "spm_performance_top_programs_fy27",
+      "name": "SPM Performance Top Programs FY27",
+      "description": "Top programs by pipegen from SPM performance metrics.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
+      "grain": "quarter",
+      "dimensions": ["program_name", "seller_type", "program_type", "program_status", "fiscal_year"],
+      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, PIPEGEN, CLOSED_ACV, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY PIPEGEN DESC",
+      "crmaFields": {},
+      "snowflakeColumns": {
+        "fiscal_year": "FISCAL_YEAR",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS",
+        "program_name": "PROGRAM_NAME"
+      }
+    },
+    {
+      "id": "spm_performance_top_performing_programs_fy27",
+      "name": "SPM Performance Top Performing Programs FY27",
+      "description": "Top performing programs by closed ACV and conversion health.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
+      "grain": "quarter",
+      "dimensions": ["program_name", "seller_type", "program_type", "program_status", "fiscal_year"],
+      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, CLOSED_ACV, PIPEGEN, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY CLOSED_ACV DESC, CLOSED_RATE DESC",
+      "crmaFields": {},
+      "snowflakeColumns": {
+        "fiscal_year": "FISCAL_YEAR",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS",
+        "program_name": "PROGRAM_NAME"
+      }
     }
   ]
 }

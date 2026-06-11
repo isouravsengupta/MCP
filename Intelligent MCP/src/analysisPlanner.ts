@@ -89,7 +89,7 @@ LIMIT ${boundedTopN}`,
   const selectGroup = groupCols.length > 0 ? `${groupCols.join(", ")}, ` : "";
   const groupByClause = groupCols.length > 0 ? `GROUP BY ${groupCols.join(", ")}` : "";
   return {
-    sqlText: `SELECT ${selectGroup}SUM(${valueCol}) AS VALUE
+    sqlText: `SELECT ${selectGroup}COALESCE(SUM(${valueCol}), 0) AS VALUE
 FROM ${input.sourceTable}
 ${whereClause}
 ${groupByClause}

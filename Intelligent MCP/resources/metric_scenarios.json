@@ -34,6 +34,36 @@
         "fiscal_year": "FISCAL_CMPGN_STRT_YEAR",
         "region": "GEO_REGION"
       }
+    },
+    {
+      "metric_id": "spm_performance_top_programs_fy27",
+      "value_column": "PIPEGEN",
+      "year_column": "FISCAL_YEAR",
+      "fixed_filters": {
+        "FISCAL_YEAR": "FY27"
+      },
+      "groupable_dimensions": {
+        "fiscal_year": "FISCAL_YEAR",
+        "program_name": "PROGRAM_NAME",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS"
+      }
+    },
+    {
+      "metric_id": "spm_performance_top_performing_programs_fy27",
+      "value_column": "CLOSED_ACV",
+      "year_column": "FISCAL_YEAR",
+      "fixed_filters": {
+        "FISCAL_YEAR": "FY27"
+      },
+      "groupable_dimensions": {
+        "fiscal_year": "FISCAL_YEAR",
+        "program_name": "PROGRAM_NAME",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS"
+      }
     }
   ]
 }
