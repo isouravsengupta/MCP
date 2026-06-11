@@ -1,8 +1,8 @@
 # SPI Sales Data Skill
 
-**Purpose:** Give Markus and the GSI leadership team instant, natural-language access to
-sales performance data from Snowflake — without needing a dashboard. Results match the
-CRMA dashboard calculations exactly.
+**Purpose:** Give business users and leadership teams instant, natural-language access to
+sales performance data from Snowflake without needing a dashboard, while keeping results
+aligned to CRMA dashboard calculations.
 
 ---
 
