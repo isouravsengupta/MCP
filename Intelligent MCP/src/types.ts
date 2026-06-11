@@ -74,3 +74,23 @@ export interface MetricRegressionSpec {
     numeric_ranges: Record<string, { min?: number; max?: number }>;
   }>;
 }
+
+export interface MetricScenarioCatalog {
+  scenarios: Array<{
+    metric_id: string;
+    value_column: string;
+    year_column?: string;
+    fixed_filters?: Record<string, string | number>;
+    groupable_dimensions: Record<string, string>;
+  }>;
+}
+
+export interface ContextAssetIndex {
+  generated_at_utc: string;
+  assets: Array<{
+    category: "etl_sql" | "airflow_dag" | "crma_dashboard";
+    repo: string;
+    path: string;
+    tags: string[];
+  }>;
+}

@@ -1,0 +1,53 @@
+{
+  "generated_at_utc": "2026-06-11T17:45:00Z",
+  "assets": [
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_load.sql",
+      "tags": ["spm", "pipegen", "cloud", "sales-program"]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_Tableau.sql",
+      "tags": ["spm", "pipegen", "tableau", "metric"]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_forecast_load.sql",
+      "tags": ["spm", "forecast", "sales-program"]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_forecast_Tableau.sql",
+      "tags": ["spm", "forecast", "tableau", "metric"]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_metrics_Tableau_vw.sql",
+      "tags": ["spm", "program-metrics", "semantic-layer"]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Planning_Load.py",
+      "tags": ["spm", "planning", "load", "dag"]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Planning_Extract.py",
+      "tags": ["spm", "planning", "extract", "dag"]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Performance_Metrics.py",
+      "tags": ["spm", "performance", "metrics", "dag"]
+    }
+  ]
+}

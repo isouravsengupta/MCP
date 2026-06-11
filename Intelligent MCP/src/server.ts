@@ -1,5 +1,13 @@
 import { loadSnowflakeConfig } from "./config.js";
-import { loadColumnDictionary, loadContextRegistry, loadMetricCatalog, loadMetricRegressionSpec } from "./resources.js";
+import {
+  loadColumnDictionary,
+  loadContextAssetIndex,
+  loadContextRegistry,
+  loadMetricCatalog,
+  loadMetricRegressionSpec,
+  loadMetricScenarioCatalog
+} from "./resources.js";
+import { buildAdaptiveQuery } from "./analysisPlanner.js";
 import { buildSql } from "./sqlBuilder.js";
 import { SnowflakeClient } from "./snowflake.js";
 import { buildVisualizationPayload } from "./visualization.js";
@@ -94,6 +102,34 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
                   metric_ids: { type: "array", items: { type: "string" } }
                 }
               }
+            },
+            {
+              name: "run_adaptive_metric_query",
+              description: "Run grouped/trend/YoY analysis using scenario definitions for a metric.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  metric_id: { type: "string" },
+                  group_by: { type: "array", items: { type: "string" } },
+                  filters: { type: "object", additionalProperties: true },
+                  include_yoy: { type: "boolean" },
+                  fiscal_year: { type: "string" },
+                  top_n: { type: "number" }
+                },
+                required: ["metric_id"]
+              }
+            },
+            {
+              name: "search_context_assets",
+              description: "Search ETL/DAG/CRMA context assets by keyword tags.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  query: { type: "string" },
+                  limit: { type: "number" }
+                },
+                required: ["query"]
+              }
             }
           ]
         });
@@ -120,6 +156,16 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
             {
               uri: "spi://resources/metric-regression-checks",
               name: "Golden checks for key dashboard metrics",
+              mimeType: "application/json"
+            },
+            {
+              uri: "spi://resources/metric-scenarios",
+              name: "Scenario definitions for grouped, trend, and YoY analysis",
+              mimeType: "application/json"
+            },
+            {
+              uri: "spi://resources/context-assets-index",
+              name: "Indexed ETL/DAG/CRMA context assets for lineage-aware planning",
               mimeType: "application/json"
             }
           ]
@@ -241,6 +287,26 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     };
   }
 
+  if (toolName === "search_context_assets") {
+    const index = await loadContextAssetIndex();
+    const query = String(args.query ?? "").toLowerCase();
+    const limit = typeof args.limit === "number" ? Math.max(1, Math.min(50, args.limit)) : 10;
+    const terms = query.split(/\s+/).filter(Boolean);
+    const matches = index.assets
+      .map((asset) => {
+        const haystack = `${asset.repo} ${asset.path} ${asset.tags.join(" ")}`.toLowerCase();
+        const score = terms.reduce((acc, term) => (haystack.includes(term) ? acc + 1 : acc), 0);
+        return { asset, score };
+      })
+      .filter((row) => row.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map((row) => row.asset);
+    return {
+      content: [{ type: "text", text: JSON.stringify({ query, matchCount: matches.length, matches }, null, 2) }]
+    };
+  }
+
   const metricId = String(args.metric_id ?? "");
   const metric = catalog.metrics.find((m) => m.id === metricId);
   if (!metric) {
@@ -286,6 +352,46 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     };
   }
 
+  if (toolName === "run_adaptive_metric_query") {
+    const scenarioCatalog = await loadMetricScenarioCatalog();
+    const groupBy = Array.isArray(args.group_by) ? args.group_by.map(String) : [];
+    const filters = (args.filters ?? {}) as Record<string, string | number>;
+    const includeYoy = args.include_yoy === true;
+    const fiscalYear = typeof args.fiscal_year === "string" ? args.fiscal_year : undefined;
+    const topN = typeof args.top_n === "number" ? args.top_n : undefined;
+    const adaptive = buildAdaptiveQuery({
+      metricId: metric.id,
+      scenarioCatalog,
+      sourceTable: metric.sourceTable,
+      groupBy,
+      filters,
+      includeYoy,
+      fiscalYear,
+      topN
+    });
+    const rows = await snowflake.execute(adaptive.sqlText, adaptive.binds);
+    const visualization = buildVisualizationPayload(rows, `${metric.name} adaptive analysis`);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              metric_id: metric.id,
+              sqlText: adaptive.sqlText,
+              binds: adaptive.binds,
+              rowCount: rows.length,
+              rows,
+              visualization
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
   throw new Error(`Tool not found: ${toolName}`);
 }
 
@@ -305,6 +411,14 @@ async function handleResourceRead(params: Record<string, unknown>): Promise<unkn
   }
   if (uri === "spi://resources/metric-regression-checks") {
     const data = await loadMetricRegressionSpec();
+    return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
+  }
+  if (uri === "spi://resources/metric-scenarios") {
+    const data = await loadMetricScenarioCatalog();
+    return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
+  }
+  if (uri === "spi://resources/context-assets-index") {
+    const data = await loadContextAssetIndex();
     return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
   }
   throw new Error(`Resource not found: ${uri}`);

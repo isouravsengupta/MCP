@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { MetricCatalog, MetricContextRegistry, MetricRegressionSpec } from "./types.js";
+import type {
+  ContextAssetIndex,
+  MetricCatalog,
+  MetricContextRegistry,
+  MetricRegressionSpec,
+  MetricScenarioCatalog
+} from "./types.js";
 
 const metricsPrimaryPath = resolve(process.cwd(), "resources/metric_mappings.json");
 const metricsFallbackPath = resolve(process.cwd(), "resources/metric_mappings.example.json");
@@ -8,6 +14,8 @@ const columnsPrimaryPath = resolve(process.cwd(), "resources/column_dictionary.j
 const columnsFallbackPath = resolve(process.cwd(), "resources/column_dictionary.example.json");
 const contextRegistryPath = resolve(process.cwd(), "resources/context_registry.json");
 const regressionSpecPath = resolve(process.cwd(), "resources/metric_regression_checks.json");
+const scenarioCatalogPath = resolve(process.cwd(), "resources/metric_scenarios.json");
+const contextAssetIndexPath = resolve(process.cwd(), "resources/context_assets_index.json");
 
 export async function loadMetricCatalog(): Promise<MetricCatalog> {
   const raw = await readWithFallback(metricsPrimaryPath, metricsFallbackPath);
@@ -43,6 +51,16 @@ export async function loadContextRegistry(): Promise<MetricContextRegistry> {
 export async function loadMetricRegressionSpec(): Promise<MetricRegressionSpec> {
   const raw = await readFile(regressionSpecPath, "utf8");
   return JSON.parse(raw) as MetricRegressionSpec;
+}
+
+export async function loadMetricScenarioCatalog(): Promise<MetricScenarioCatalog> {
+  const raw = await readFile(scenarioCatalogPath, "utf8");
+  return JSON.parse(raw) as MetricScenarioCatalog;
+}
+
+export async function loadContextAssetIndex(): Promise<ContextAssetIndex> {
+  const raw = await readFile(contextAssetIndexPath, "utf8");
+  return JSON.parse(raw) as ContextAssetIndex;
 }
 
 async function readWithFallback(primaryPath: string, fallbackPath: string): Promise<string> {

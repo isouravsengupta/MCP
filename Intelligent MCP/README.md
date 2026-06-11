@@ -22,11 +22,15 @@ It is designed to:
   - `list_crma_metrics`
   - `generate_sql_from_metric`
   - `run_metric_query` (returns `visualization` + `presentation_hints` for Slack component rendering)
+  - `run_adaptive_metric_query` (grouping, top-N, and YoY scenarios from metric scenario definitions)
+  - `search_context_assets` (find ETL/DAG/CRMA lineage files by topic keywords)
 - Resources:
   - `spi://resources/metric-mappings`
   - `spi://resources/column-dictionary`
   - `spi://resources/context-registry`
   - `spi://resources/metric-regression-checks`
+  - `spi://resources/metric-scenarios`
+  - `spi://resources/context-assets-index`
 - Snowflake execution support with two auth modes:
  - Snowflake execution support with auth modes:
   - `password` (service user)
