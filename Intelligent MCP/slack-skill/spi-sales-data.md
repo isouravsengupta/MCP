@@ -32,6 +32,15 @@ Identify:
 
 If the dataset or metric is unclear, ask one clarifying question before proceeding.
 
+### Step 1.5 — Semantic route lock (mandatory)
+
+Before choosing any metric tool, call:
+
+`run_semantic_query(query, fiscal_year?, fiscal_quarter?, opportunity_id?)`
+
+Use the routed tool/result from this call whenever it returns a deterministic route.
+Only fall back to manual tool selection when this call returns `clarification_needed: true`.
+
 ### Step 2 — Read the CRMA metadata resource
 
 Call `read_resource("crma://metadata/<dataset>")` to load the column mapping and
@@ -53,6 +62,17 @@ query_crma_metric(
 
 Use `execute_query` only for ad-hoc questions that don't map to a named metric.
 In that case, use the column names from Step 2 to build the SQL.
+
+**Forecast Attainment special rule (must follow):**
+- If the user asks "forecast attainment" (or attainment %) always call:
+  - `run_forecast_attainment(fiscal_year, fiscal_quarter, months?)`
+- Do **not** answer forecast attainment using `spm_performance_metrics` rollups or generic forecast YoY metrics.
+- If fiscal year or quarter is missing, ask a clarification question first.
+
+**Opportunity lookup rule (must follow):**
+- If the user asks for a specific opportunity amount by ID, call:
+  - `lookup_opportunity_amount(opportunity_id)`
+- Do **not** route these questions to Salesforce connection checks.
 
 ### Step 4 — Format and respond
 

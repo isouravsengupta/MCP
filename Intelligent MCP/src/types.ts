@@ -117,3 +117,28 @@ export interface DashboardDatasetRegistry {
     preferred_measures: string[];
   }>;
 }
+
+export interface SemanticCatalog {
+  version: string;
+  generated_at_utc: string;
+  intents: Array<{
+    id: string;
+    description: string;
+    match_phrases: string[];
+    route_tool: string;
+    required_context?: string[];
+    default_arguments?: Record<string, unknown>;
+  }>;
+  graph: {
+    metrics: Array<{
+      metric_id: string;
+      dataset?: string;
+      source_table?: string;
+      route_tool: string;
+    }>;
+    datasets: Array<{
+      dataset: string;
+      table_candidates: string[];
+    }>;
+  };
+}

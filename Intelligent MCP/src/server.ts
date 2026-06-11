@@ -3,6 +3,8 @@ import {
   loadColumnDictionary,
   loadDashboardDatasetRegistry,
   loadDashboardLensCatalog,
+  loadFormulaMetrics,
+  loadSemanticCatalog,
   loadContextAssetIndex,
   loadContextRegistry,
   loadMetricCatalog,
@@ -185,6 +187,74 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
                 },
                 required: ["dataset", "measure"]
               }
+            },
+            {
+              name: "run_formula_metric",
+              description: "Run exact CRMA-formula metric (SAQL-equivalent SQL) with fiscal filters.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  metric_id: { type: "string" },
+                  fiscal_year: { type: "string" },
+                  fiscal_quarter: { type: "string" },
+                  months: { type: "array", items: { type: "string" } }
+                },
+                required: ["metric_id", "fiscal_year", "fiscal_quarter"]
+              }
+            },
+            {
+              name: "run_forecast_attainment",
+              description:
+                "Preferred path for 'forecast attainment' questions. Runs CRMA-equivalent formula metric (not SPM performance rollups).",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  fiscal_year: { type: "string" },
+                  fiscal_quarter: { type: "string" },
+                  months: { type: "array", items: { type: "string" } }
+                },
+                required: ["fiscal_year", "fiscal_quarter"]
+              }
+            },
+            {
+              name: "lookup_opportunity_amount",
+              description:
+                "Look up an opportunity by ID directly in SPI Snowflake datasets and return available amount fields.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  opportunity_id: { type: "string" }
+                },
+                required: ["opportunity_id"]
+              }
+            },
+            {
+              name: "route_semantic_query",
+              description: "Resolve a natural-language query into the deterministic SPI tool route.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  query: { type: "string" },
+                  fiscal_year: { type: "string" },
+                  fiscal_quarter: { type: "string" },
+                  opportunity_id: { type: "string" }
+                },
+                required: ["query"]
+              }
+            },
+            {
+              name: "run_semantic_query",
+              description: "Route and execute a natural-language query through deterministic SPI tooling.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  query: { type: "string" },
+                  fiscal_year: { type: "string" },
+                  fiscal_quarter: { type: "string" },
+                  opportunity_id: { type: "string" }
+                },
+                required: ["query"]
+              }
             }
           ]
         });
@@ -232,6 +302,11 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
               uri: "spi://resources/dashboard-dataset-registry",
               name: "Dataset-to-table mapping for dashboard execution",
               mimeType: "application/json"
+            },
+            {
+              uri: "spi://resources/semantic-catalog",
+              name: "Canonical semantic intent catalog and graph mapping",
+              mimeType: "application/json"
             }
           ]
         });
@@ -273,8 +348,68 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   const catalog = await loadMetricCatalog();
 
   if (toolName === "list_crma_metrics") {
+    const formulas = await loadFormulaMetrics();
+    const formulaMetrics = formulas.metrics.map((m) => ({
+      id: m.id,
+      name: m.name,
+      description: m.description ?? "",
+      query_path: "run_formula_metric"
+    }));
     return {
-      content: [{ type: "text", text: JSON.stringify(catalog.metrics, null, 2) }]
+      content: [{ type: "text", text: JSON.stringify([...catalog.metrics, ...formulaMetrics], null, 2) }]
+    };
+  }
+
+  if (toolName === "route_semantic_query") {
+    const semanticCatalog = await loadSemanticCatalog();
+    const route = buildSemanticRoute(
+      {
+        query: String(args.query ?? ""),
+        fiscalYear: typeof args.fiscal_year === "string" ? args.fiscal_year : undefined,
+        fiscalQuarter: typeof args.fiscal_quarter === "string" ? args.fiscal_quarter : undefined,
+        opportunityId: typeof args.opportunity_id === "string" ? args.opportunity_id : undefined
+      },
+      semanticCatalog
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(route, null, 2) }]
+    };
+  }
+
+  if (toolName === "run_semantic_query") {
+    const semanticCatalog = await loadSemanticCatalog();
+    const route = buildSemanticRoute(
+      {
+        query: String(args.query ?? ""),
+        fiscalYear: typeof args.fiscal_year === "string" ? args.fiscal_year : undefined,
+        fiscalQuarter: typeof args.fiscal_quarter === "string" ? args.fiscal_quarter : undefined,
+        opportunityId: typeof args.opportunity_id === "string" ? args.opportunity_id : undefined
+      },
+      semanticCatalog
+    );
+    if (route.clarification_needed) {
+      return {
+        content: [{ type: "text", text: JSON.stringify(route, null, 2) }]
+      };
+    }
+    const result = await handleToolCall({
+      name: route.route_tool,
+      arguments: route.arguments
+    });
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              route,
+              result
+            },
+            null,
+            2
+          )
+        }
+      ]
     };
   }
 
@@ -670,6 +805,217 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     };
   }
 
+  if (toolName === "run_forecast_attainment") {
+    return handleToolCall({
+      name: "run_formula_metric",
+      arguments: {
+        metric_id: "spm_forecast_attainment",
+        fiscal_year: args.fiscal_year,
+        fiscal_quarter: args.fiscal_quarter,
+        months: args.months
+      }
+    });
+  }
+
+  if (toolName === "lookup_opportunity_amount") {
+    const opportunityId = String(args.opportunity_id ?? "").trim();
+    if (!opportunityId) {
+      throw new Error("opportunity_id is required.");
+    }
+    const opp15 = opportunityId.slice(0, 15);
+    const tableCandidates = [
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST"
+    ];
+    const nearbyMatches: Array<Record<string, unknown>> = [];
+
+    for (const table of tableCandidates) {
+      let resolvedTable = "";
+      try {
+        resolvedTable = await resolveWorkingTable([table]);
+      } catch {
+        continue;
+      }
+      const idCol = await resolveWorkingColumnOptional(resolvedTable, ["OPTY_ID_18", "OPTY_ID", "OPPORTUNITY_ID", "ID"]);
+      if (!idCol) {
+        continue;
+      }
+      const rows = await snowflake.execute(
+        `SELECT * FROM ${resolvedTable}
+         WHERE ${idCol} = ? OR LEFT(${idCol}, 15) = ?
+         LIMIT 1`,
+        [opportunityId, opp15]
+      );
+      if (rows.length === 0) {
+        const candidates = await snowflake.execute(
+          `SELECT DISTINCT ${idCol} AS OPP_ID
+           FROM ${resolvedTable}
+           WHERE ${idCol} ILIKE ?
+           ORDER BY 1
+           LIMIT 5`,
+          [`${opp15.slice(0, 8)}%`]
+        );
+        for (const c of candidates) {
+          nearbyMatches.push({
+            table: resolvedTable,
+            id_column: idCol,
+            opportunity_id: (c as Record<string, unknown>).OPP_ID
+          });
+        }
+        continue;
+      }
+      const row = (rows[0] ?? {}) as Record<string, unknown>;
+      const numericAmountFields = Object.fromEntries(
+        Object.entries(row).filter(([k, v]) => /(?:^|_)(AMT|AMOUNT|ACV|CLOUD)(?:_|$)/i.test(k) && typeof v === "number")
+      );
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                opportunity_id: opportunityId,
+                resolved_table: resolvedTable,
+                id_column: idCol,
+                amount_fields: numericAmountFields,
+                raw_row: row
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              clarification_needed: true,
+              message: "Opportunity ID not found in SPI mapped Snowflake datasets.",
+              opportunity_id: opportunityId,
+              nearby_matches: nearbyMatches.slice(0, 10)
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
+  if (toolName === "run_formula_metric") {
+    const metricId = String(args.metric_id ?? "");
+    const fiscalYear = normalizeFiscalYear(String(args.fiscal_year ?? ""));
+    const fiscalQuarter = normalizeFiscalQuarter(String(args.fiscal_quarter ?? ""));
+    const explicitMonthsProvided = Array.isArray(args.months) && args.months.length > 0;
+    const months = explicitMonthsProvided ? (args.months as unknown[]).map((m) => String(m)) : [];
+    if (!metricId || !fiscalYear || !fiscalQuarter) {
+      throw new Error("metric_id, fiscal_year, and fiscal_quarter are required.");
+    }
+    const formulas = await loadFormulaMetrics();
+    const formula = formulas.metrics.find((m) => m.id === metricId);
+    if (!formula) {
+      throw new Error(`Unknown formula metric: ${metricId}`);
+    }
+    let sqlText = "";
+    let binds: Array<string | number> = [];
+    if (metricId === "spm_forecast_attainment") {
+      const pipegenTable = await resolveWorkingTable([
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PG"
+      ]);
+      const forecastTable = await resolveWorkingTable([
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FRCST"
+      ]);
+      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
+      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      const pgMonthCol = await resolveWorkingColumn(pipegenTable, [
+        "FISCAL_FLIP_MON_NUM_LABEL",
+        "STG_2_FLG_DT_MONTH",
+        "STG_2_FLG_DT_MONTH_FISCAL",
+        "STG_2_FLG_DT_MONTH_NUM",
+        "FISCAL_FLIP_MONTH"
+      ]);
+      const frcstYearCol = await resolveWorkingColumn(forecastTable, [
+        "FISCAL_CMPGN_STRT_YEAR",
+        "START_DT_YEAR_FISCAL",
+        "FISCAL_YEAR"
+      ]);
+      const frcstQuarterCol = await resolveWorkingColumn(forecastTable, [
+        "FISCAL_CMPGN_STRT_QTR",
+        "FISCAL_QUARTER_FORECAST",
+        "FISCAL_QUARTER"
+      ]);
+      const monthBindPlaceholders = months.map(() => "?").join(", ");
+      const yearDigits = fiscalYear.replace(/[^0-9]/g, "");
+      const year2 = yearDigits.length >= 2 ? yearDigits.slice(-2) : yearDigits;
+      const year4 = yearDigits.length === 2 ? `20${yearDigits}` : yearDigits;
+      const quarterDigit = fiscalQuarter.replace(/[^0-9]/g, "");
+      const monthDigits = months.map((m) => Number(m));
+      const monthPredicate = explicitMonthsProvided
+        ? `AND TRY_TO_NUMBER(REGEXP_SUBSTR(TO_VARCHAR(${pgMonthCol}), '[0-9]{1,2}')) IN (${monthBindPlaceholders})`
+        : "";
+
+      sqlText = `WITH SPM_PG AS (
+        SELECT GDSO_ID, MAX(CLOUD_AMT) AS CLOUD_AMT
+        FROM ${pipegenTable}
+        WHERE SNAP_YEAR_STATUS='CY'
+          AND REGEXP_SUBSTR(TO_VARCHAR(${pgYearCol}), '[0-9]{2,4}') IN (?, ?)
+          AND REGEXP_SUBSTR(TO_VARCHAR(${pgQuarterCol}), '[1-4]') = ?
+          ${monthPredicate}
+        GROUP BY GDSO_ID
+      ),
+      SPM_FRCST AS (
+        SELECT FORECAST_AMT
+        FROM ${forecastTable}
+        WHERE PROGRAM_TYPE <> 'Pipe Progression'
+          AND FORECAST_TYPE = 'Pipe'
+          AND REGEXP_SUBSTR(TO_VARCHAR(${frcstYearCol}), '[0-9]{2,4}') IN (?, ?)
+          AND REGEXP_SUBSTR(TO_VARCHAR(${frcstQuarterCol}), '[1-4]') = ?
+      )
+      SELECT
+        CASE WHEN COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0)=0 THEN NULL
+             ELSE COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0)/COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0)
+        END AS ATTAINMENT,
+        COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0) AS PIPEGEN_CLOUD_AMT,
+        COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0) AS FORECAST_AMT`;
+      binds = explicitMonthsProvided
+        ? [year2, year4, quarterDigit, ...monthDigits, year2, year4, quarterDigit]
+        : [year2, year4, quarterDigit, year2, year4, quarterDigit];
+    } else {
+      const monthBindPlaceholders = months.map(() => "?").join(", ");
+      sqlText = formula.sql_template.replace("{{MONTH_BINDS}}", monthBindPlaceholders);
+      binds = [fiscalYear, fiscalQuarter, ...months, fiscalYear, fiscalQuarter];
+    }
+    const rows = await snowflake.execute(sqlText, binds);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              metric_id: metricId,
+              fiscal_year: fiscalYear,
+              fiscal_quarter: fiscalQuarter,
+              months,
+              sqlText,
+              rowCount: rows.length,
+              rows
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
   if (toolName === "resolve_sales_play_for_hierarchy") {
     const personName = String(args.person_name ?? "").trim();
     const hierarchyLevel = String(args.hierarchy_level ?? "SPM_HIER_LVL_4").toUpperCase();
@@ -792,6 +1138,11 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   const metricId = String(args.metric_id ?? "");
   const metric = catalog.metrics.find((m) => m.id === metricId);
   if (!metric) {
+    if (metricId.toLowerCase().includes("forecast_attainment")) {
+      throw new Error(
+        "Forecast attainment is a formula metric. Use run_forecast_attainment or run_formula_metric(metric_id='spm_forecast_attainment', fiscal_year, fiscal_quarter)."
+      );
+    }
     throw new Error(`Metric not found: ${metricId}`);
   }
 
@@ -1010,6 +1361,40 @@ async function resolveDatasetTable(dataset: string, registry: DashboardDatasetRe
   }
 }
 
+function normalizeFiscalYear(input: string): string {
+  const s = input.trim().toUpperCase();
+  if (!s) return "";
+  if (s.startsWith("FY ")) return s;
+  if (s.startsWith("FY")) {
+    const year = s.replace("FY", "").trim();
+    return `FY ${year}`;
+  }
+  if (/^\d{4}$/.test(s)) return `FY ${s}`;
+  return s;
+}
+
+function normalizeFiscalQuarter(input: string): string {
+  const s = input.trim().toUpperCase();
+  if (!s) return "";
+  if (s.startsWith("FQ ")) return s;
+  if (s.startsWith("FQ")) {
+    const q = s.replace("FQ", "").trim();
+    return `FQ ${q}`;
+  }
+  if (/^[1-4]$/.test(s)) return `FQ ${s}`;
+  if (/^Q[1-4]$/.test(s)) return `FQ ${s.slice(1)}`;
+  return s;
+}
+
+function defaultMonthsForQuarter(fiscalQuarter: string): string[] {
+  const q = fiscalQuarter.replace(/[^0-9]/g, "").trim();
+  if (q === "1") return ["02", "03", "04"];
+  if (q === "2") return ["05", "06", "07"];
+  if (q === "3") return ["08", "09", "10"];
+  if (q === "4") return ["11", "12", "01"];
+  return ["02", "03", "04"];
+}
+
 async function handleResourceRead(params: Record<string, unknown>): Promise<unknown> {
   const uri = String(params.uri ?? "");
   if (uri === "spi://resources/metric-mappings") {
@@ -1044,7 +1429,115 @@ async function handleResourceRead(params: Record<string, unknown>): Promise<unkn
     const data = await loadDashboardDatasetRegistry();
     return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
   }
+  if (uri === "spi://resources/semantic-catalog") {
+    const data = await loadSemanticCatalog();
+    return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
+  }
   throw new Error(`Resource not found: ${uri}`);
+}
+
+function buildSemanticRoute(
+  input: { query: string; fiscalYear?: string; fiscalQuarter?: string; opportunityId?: string },
+  semanticCatalog: {
+    intents: Array<{
+      id: string;
+      match_phrases: string[];
+      route_tool: string;
+      default_arguments?: Record<string, unknown>;
+    }>;
+  }
+): {
+  intent_id: string;
+  route_tool: string;
+  arguments: Record<string, unknown>;
+  clarification_needed: boolean;
+  message?: string;
+} {
+  const query = input.query.trim();
+  const q = query.toLowerCase();
+  const inferredScope = extractFiscalScope(query);
+  const fiscalYear = input.fiscalYear ?? inferredScope.fiscalYear;
+  const fiscalQuarter = input.fiscalQuarter ?? inferredScope.fiscalQuarter;
+  const financialIntent =
+    q.includes("contribution") ||
+    q.includes("attainment") ||
+    q.includes("forecast") ||
+    q.includes("pipegen") ||
+    q.includes("acv") ||
+    q.includes("closed rate");
+  const oppMatch = input.opportunityId ?? query.match(/\b006[a-z0-9]{12,15}\b/i)?.[0];
+  if (oppMatch) {
+    return {
+      intent_id: "opportunity_amount_lookup",
+      route_tool: "lookup_opportunity_amount",
+      arguments: { opportunity_id: oppMatch },
+      clarification_needed: false
+    };
+  }
+  if (q.includes("forecast attainment") || (q.includes("attainment") && q.includes("forecast"))) {
+    if (!fiscalYear || !fiscalQuarter) {
+      return {
+        intent_id: "forecast_attainment",
+        route_tool: "run_forecast_attainment",
+        arguments: {},
+        clarification_needed: true,
+        message: "Please provide fiscal_year and fiscal_quarter for forecast attainment."
+      };
+    }
+    return {
+      intent_id: "forecast_attainment",
+      route_tool: "run_forecast_attainment",
+      arguments: {
+        fiscal_year: fiscalYear,
+        fiscal_quarter: fiscalQuarter
+      },
+      clarification_needed: false
+    };
+  }
+
+  if (financialIntent && (!fiscalYear || !fiscalQuarter)) {
+    return {
+      intent_id: "financial_scope_required",
+      route_tool: "route_semantic_query",
+      arguments: {},
+      clarification_needed: true,
+      message:
+        "Please confirm fiscal scope before I run this financial metric. Share fiscal_year (for example FY27) and fiscal_quarter (for example Q1/Q2)."
+    };
+  }
+
+  const intent = semanticCatalog.intents.find((i) => i.match_phrases.some((phrase) => q.includes(phrase.toLowerCase())));
+  if (intent) {
+    return {
+      intent_id: intent.id,
+      route_tool: intent.route_tool,
+      arguments: {
+        ...(intent.default_arguments ?? {})
+      },
+      clarification_needed: false
+    };
+  }
+
+  return {
+    intent_id: "fallback",
+    route_tool: "query_dashboard_dataset",
+    arguments: {},
+    clarification_needed: true,
+    message:
+      "Could not deterministically route this query yet. Please provide metric name or dataset/measure to avoid wrong answers."
+  };
+}
+
+function extractFiscalScope(query: string): { fiscalYear?: string; fiscalQuarter?: string } {
+  const yearMatch = query.match(/\b(?:fy\s*)?(\d{2}|\d{4})\b/i);
+  const quarterMatch = query.match(/\b(?:f?q(?:uarter)?\s*)([1-4])\b/i);
+  const fiscalYear = yearMatch
+    ? yearMatch[1].length === 2
+      ? `FY${yearMatch[1]}`
+      : `FY${yearMatch[1].slice(-2)}`
+    : undefined;
+  const fiscalQuarter = quarterMatch ? `Q${quarterMatch[1]}` : undefined;
+  return { fiscalYear, fiscalQuarter };
 }
 
 function ok(id: string | number | null, result: unknown): JsonRpcResponse {

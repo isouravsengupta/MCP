@@ -130,20 +130,55 @@
   ],
   "metrics": [
     {
-      "id": "spm_pipegen_forecast_fy27_q1",
-      "name": "SPM Pipegen Forecast FY27 Q1",
-      "description": "Dashboard-aligned FY27 Q1 pipegen forecast amount + YoY.",
-      "sourceTable": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "id": "spm_performance_top_performing_programs_fy27",
+      "name": "SPM Performance Top Performing Programs FY27",
+      "description": "Top performing programs by closed ACV and conversion quality for FY27.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
       "grain": "quarter",
-      "dimensions": [],
-      "sqlTemplate": "WITH q AS ( SELECT * FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST WHERE PROGRAM_TEAM='Sales Program' AND PROGRAM_TYPE <> 'Pipe Progression' AND FORECAST_TYPE='Pipe' AND FISCAL_QUARTER='1' ), CY AS ( SELECT * FROM q WHERE REGEXP_SUBSTR(FISCAL_CMPGN_STRT_YEAR, '[0-9]{4}')='2027' ), PY AS ( SELECT * FROM q WHERE REGEXP_SUBSTR(FISCAL_CMPGN_STRT_YEAR, '[0-9]{4}')='2026' ) SELECT COALESCE((SELECT SUM(FORECAST_AMT) FROM CY),0) AS FORECAST_AMT, CASE WHEN COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0)=0 THEN NULL ELSE COALESCE((SELECT SUM(FORECAST_AMT) FROM CY),0)/COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0)-1 END AS \"Y/Y\", COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0) AS PY_FORECAST_AMT",
+      "dimensions": [
+        "program_name",
+        "seller_type",
+        "program_type",
+        "program_status",
+        "fiscal_year"
+      ],
+      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, CLOSED_ACV, PIPEGEN, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY CLOSED_ACV DESC, CLOSED_RATE DESC LIMIT 20",
       "crmaFields": {},
-      "snowflakeColumns": {}
+      "snowflakeColumns": {
+        "fiscal_year": "FISCAL_YEAR",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS",
+        "program_name": "PROGRAM_NAME"
+      }
+    },
+    {
+      "id": "spm_performance_top_programs_fy27",
+      "name": "SPM Performance Top Programs FY27",
+      "description": "Top programs ranked by pipegen with performance details from SPM_PERFORMANCE_METRICS.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
+      "grain": "quarter",
+      "dimensions": [
+        "program_name",
+        "seller_type",
+        "program_type",
+        "program_status",
+        "fiscal_year"
+      ],
+      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, PIPEGEN, CLOSED_ACV, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY PIPEGEN DESC LIMIT 20",
+      "crmaFields": {},
+      "snowflakeColumns": {
+        "fiscal_year": "FISCAL_YEAR",
+        "seller_type": "SELLER_TYPE",
+        "program_type": "PROGRAM_TYPE",
+        "program_status": "PROGRAM_STATUS",
+        "program_name": "PROGRAM_NAME"
+      }
     },
     {
       "id": "spm_pipegen_cloud_fy27_q1",
       "name": "SPM Pipegen Cloud FY27 Q1",
-      "description": "CRMA-style FY27 Q1 cloud pipegen amount + YoY.",
+      "description": "CRMA-style SPM pipegen cloud amount + YoY for FY27 Q1.",
       "sourceTable": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
       "grain": "quarter",
       "dimensions": [],
@@ -152,38 +187,15 @@
       "snowflakeColumns": {}
     },
     {
-      "id": "spm_performance_top_programs_fy27",
-      "name": "SPM Performance Top Programs FY27",
-      "description": "Top programs by pipegen from SPM performance metrics.",
-      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
+      "id": "spm_pipegen_forecast_fy27_q1",
+      "name": "SPM Pipegen Forecast FY27 Q1",
+      "description": "Total SPM pipegen forecast amount for FY27 Q1 with YoY, aligned to CRMA SAQL logic for forecast tile.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
       "grain": "quarter",
-      "dimensions": ["program_name", "seller_type", "program_type", "program_status", "fiscal_year"],
-      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, PIPEGEN, CLOSED_ACV, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY PIPEGEN DESC",
+      "dimensions": [],
+      "sqlTemplate": "WITH q AS ( SELECT * FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST WHERE PROGRAM_TEAM='Sales Program' AND PROGRAM_TYPE <> 'Pipe Progression' AND FORECAST_TYPE='Pipe' AND FISCAL_QUARTER='1' ), CY AS ( SELECT * FROM q WHERE REGEXP_SUBSTR(FISCAL_CMPGN_STRT_YEAR, '[0-9]{4}')='2027' ), PY AS ( SELECT * FROM q WHERE REGEXP_SUBSTR(FISCAL_CMPGN_STRT_YEAR, '[0-9]{4}')='2026' ) SELECT COALESCE((SELECT SUM(FORECAST_AMT) FROM CY),0) AS FORECAST_AMT, CASE WHEN COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0)=0 THEN NULL ELSE COALESCE((SELECT SUM(FORECAST_AMT) FROM CY),0)/COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0)-1 END AS \"Y/Y\", COALESCE((SELECT SUM(FORECAST_AMT) FROM PY),0) AS PY_FORECAST_AMT",
       "crmaFields": {},
-      "snowflakeColumns": {
-        "fiscal_year": "FISCAL_YEAR",
-        "seller_type": "SELLER_TYPE",
-        "program_type": "PROGRAM_TYPE",
-        "program_status": "PROGRAM_STATUS",
-        "program_name": "PROGRAM_NAME"
-      }
-    },
-    {
-      "id": "spm_performance_top_performing_programs_fy27",
-      "name": "SPM Performance Top Performing Programs FY27",
-      "description": "Top performing programs by closed ACV and conversion health.",
-      "sourceTable": "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS",
-      "grain": "quarter",
-      "dimensions": ["program_name", "seller_type", "program_type", "program_status", "fiscal_year"],
-      "sqlTemplate": "SELECT PROGRAM_NAME, FISCAL_YEAR, SELLER_TYPE, PROGRAM_TYPE, PROGRAM_STATUS, CLOSED_ACV, PIPEGEN, OPEN_PIPE, CLOSED_RATE, CC_CONVERSION, PROGRESSION_RATE FROM SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS WHERE FISCAL_YEAR = 'FY27' ORDER BY CLOSED_ACV DESC, CLOSED_RATE DESC",
-      "crmaFields": {},
-      "snowflakeColumns": {
-        "fiscal_year": "FISCAL_YEAR",
-        "seller_type": "SELLER_TYPE",
-        "program_type": "PROGRAM_TYPE",
-        "program_status": "PROGRAM_STATUS",
-        "program_name": "PROGRAM_NAME"
-      }
+      "snowflakeColumns": {}
     }
   ]
 }

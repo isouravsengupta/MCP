@@ -5,6 +5,7 @@ import type {
   DashboardDatasetRegistry,
   ContextAssetIndex,
   MetricCatalog,
+  SemanticCatalog,
   MetricContextRegistry,
   MetricRegressionSpec,
   MetricScenarioCatalog
@@ -20,6 +21,8 @@ const scenarioCatalogPath = resolve(process.cwd(), "resources/metric_scenarios.j
 const contextAssetIndexPath = resolve(process.cwd(), "resources/context_assets_index.json");
 const dashboardLensCatalogPath = resolve(process.cwd(), "resources/dashboard_lens_catalog.json");
 const dashboardDatasetRegistryPath = resolve(process.cwd(), "resources/dashboard_dataset_registry.json");
+const formulaMetricsPath = resolve(process.cwd(), "resources/formula_metrics.json");
+const semanticCatalogPath = resolve(process.cwd(), "resources/semantic_catalog.json");
 
 export async function loadMetricCatalog(): Promise<MetricCatalog> {
   const raw = await readWithFallback(metricsPrimaryPath, metricsFallbackPath);
@@ -75,6 +78,20 @@ export async function loadDashboardLensCatalog(): Promise<DashboardLensCatalog> 
 export async function loadDashboardDatasetRegistry(): Promise<DashboardDatasetRegistry> {
   const raw = await readFile(dashboardDatasetRegistryPath, "utf8");
   return JSON.parse(raw) as DashboardDatasetRegistry;
+}
+
+export async function loadFormulaMetrics(): Promise<{
+  metrics: Array<{ id: string; name: string; description?: string; sql_template: string }>;
+}> {
+  const raw = await readFile(formulaMetricsPath, "utf8");
+  return JSON.parse(raw) as {
+    metrics: Array<{ id: string; name: string; description?: string; sql_template: string }>;
+  };
+}
+
+export async function loadSemanticCatalog(): Promise<SemanticCatalog> {
+  const raw = await readFile(semanticCatalogPath, "utf8");
+  return JSON.parse(raw) as SemanticCatalog;
 }
 
 async function readWithFallback(primaryPath: string, fallbackPath: string): Promise<string> {

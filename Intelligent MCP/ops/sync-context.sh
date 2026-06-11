@@ -31,6 +31,16 @@ if [[ -f "${SPI_MCP_DIR}/ops/generate-context-index.mjs" ]]; then
   node "${SPI_MCP_DIR}/ops/generate-context-index.mjs"
 fi
 
+if [[ -f "${SPI_MCP_DIR}/ops/generate-dashboard-catalog.mjs" ]]; then
+  echo "Rebuilding dashboard lens catalog..."
+  node "${SPI_MCP_DIR}/ops/generate-dashboard-catalog.mjs"
+fi
+
+if [[ -f "${SPI_MCP_DIR}/ops/refresh-metric-artifacts.mjs" ]]; then
+  echo "Refreshing metric artifacts..."
+  node "${SPI_MCP_DIR}/ops/refresh-metric-artifacts.mjs"
+fi
+
 mkdir -p "$(dirname "${STATUS_FILE}")"
 printf '{\n  "synced_at_utc": "%s",\n  "business_logic": "%s",\n  "airflow_dags": "%s"\n}\n' \
   "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \

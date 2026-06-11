@@ -39,4 +39,7 @@ echo ""
 echo "5) validate_metric_regressions"
 call_mcp '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"validate_metric_regressions","arguments":{}}}'
 echo ""
+echo "6) route_semantic_query (forecast attainment)"
+call_mcp '{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"route_semantic_query","arguments":{"query":"what is forecast attainment","fiscal_year":"FY27","fiscal_quarter":"Q2"}}}'
+echo ""
 echo "Smoke check complete."

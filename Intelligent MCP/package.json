@@ -10,7 +10,11 @@
     "dev": "tsx src/lambda.ts",
     "start": "node dist/lambda.js",
     "check": "tsc --noEmit",
-    "test": "tsx --test tests/**/*.test.ts"
+    "test": "tsx --test tests/**/*.test.ts",
+    "ops:generate-context-index": "node ops/generate-context-index.mjs",
+    "ops:generate-dashboard-catalog": "node ops/generate-dashboard-catalog.mjs",
+    "ops:refresh-metric-artifacts": "node ops/refresh-metric-artifacts.mjs",
+    "ops:refresh-all": "npm run ops:generate-context-index && npm run ops:generate-dashboard-catalog && npm run ops:refresh-metric-artifacts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.1",

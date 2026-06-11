@@ -24,6 +24,7 @@ It is designed to:
   - `run_metric_query` (returns `visualization` + `presentation_hints` for Slack component rendering)
   - `run_adaptive_metric_query` (grouping, top-N, and YoY scenarios from metric scenario definitions)
   - `search_context_assets` (find ETL/DAG/CRMA lineage files by topic keywords)
+  - `route_semantic_query` and `run_semantic_query` (deterministic intent routing and execution)
 - Resources:
   - `spi://resources/metric-mappings`
   - `spi://resources/column-dictionary`
@@ -31,6 +32,7 @@ It is designed to:
   - `spi://resources/metric-regression-checks`
   - `spi://resources/metric-scenarios`
   - `spi://resources/context-assets-index`
+  - `spi://resources/semantic-catalog`
 - Snowflake execution support with two auth modes:
  - Snowflake execution support with auth modes:
   - `password` (service user)
@@ -105,9 +107,32 @@ For Lambda workloads, keep `password` mode unless non-interactive SSO/OAuth is a
 ## Operations and recoverability
 
 - Daily context sync script: `ops/sync-context.sh`
+- Metric artifact refresh script: `ops/refresh-metric-artifacts.mjs`
 - Rebuild/deployment runbook: `ops/REBUILD_AND_RECOVER.md`
 - Snapshot backup script: `ops/backup-mcp.sh`
 - Deployment smoke check: `ops/smoke-check.sh`
+
+### Auto-refresh metric metadata from CRMA/dashboard
+
+Use one command to refresh context + dashboard catalog + metric artifacts:
+
+```bash
+npm run ops:refresh-all
+```
+
+This flow now automatically:
+- syncs new CRMA datasets into `resources/dashboard_dataset_registry.json` (with `needs_mapping` placeholders),
+- keeps `metrics` in `resources/metric_mappings.json` synchronized from canonical `metric_definitions`,
+- generates `resources/metric_intake_queue.json` with:
+  - new dashboard lens candidates requiring explicit metric definitions,
+  - missing adaptive scenario stubs requiring review,
+- generates `resources/semantic_catalog.json` with intent->tool routing and metric/dataset graph mapping.
+
+For daily automation, run `ops/sync-context.sh` (cron/launchd). It now executes:
+1. repo sync (`business_logic`, `airflow-dags-uip-gdso`)
+2. context index refresh
+3. dashboard lens catalog refresh
+4. metric artifact refresh
 
 ## How to adapt for your CRMA dashboard
 

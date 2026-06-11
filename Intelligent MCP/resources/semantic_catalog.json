@@ -1,0 +1,291 @@
+{
+  "version": "1.0.0",
+  "generated_at_utc": "2026-06-11T20:00:52.776Z",
+  "intents": [
+    {
+      "id": "forecast_attainment",
+      "description": "Forecast attainment questions must use formula metric routing.",
+      "match_phrases": [
+        "forecast attainment",
+        "attainment percentage",
+        "attainment %"
+      ],
+      "route_tool": "run_forecast_attainment",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ]
+    },
+    {
+      "id": "opportunity_amount_lookup",
+      "description": "Opportunity-level amount lookup by opportunity id.",
+      "match_phrases": [
+        "opportunity",
+        "opty",
+        "end amount",
+        "amount for opportunity"
+      ],
+      "route_tool": "lookup_opportunity_amount",
+      "required_context": [
+        "opportunity_id"
+      ]
+    },
+    {
+      "id": "spm_pipegen_forecast",
+      "description": "SPM pipegen forecast metric query route.",
+      "match_phrases": [
+        "spm pipegen forecast",
+        "pipegen forecast amount"
+      ],
+      "route_tool": "run_metric_query",
+      "default_arguments": {
+        "metric_id": "spm_pipegen_forecast_fy27_q1"
+      }
+    },
+    {
+      "id": "spm_top_programs",
+      "description": "Top programs performance route.",
+      "match_phrases": [
+        "top programs",
+        "top performing programs",
+        "spm performance metrics"
+      ],
+      "route_tool": "run_adaptive_metric_query",
+      "default_arguments": {
+        "metric_id": "spm_performance_top_programs_fy27"
+      }
+    }
+  ],
+  "graph": {
+    "metrics": [
+      {
+        "metric_id": "spm_pipegen_forecast_fy27_q1",
+        "dataset": "gsp_spm_forecast",
+        "source_table": null,
+        "route_tool": "run_metric_query"
+      },
+      {
+        "metric_id": "spm_pipegen_cloud_fy27_q1",
+        "dataset": "gsp_spm_pg",
+        "source_table": null,
+        "route_tool": "run_metric_query"
+      },
+      {
+        "metric_id": "spm_performance_top_programs_fy27",
+        "dataset": "gsp_spm_performance",
+        "source_table": null,
+        "route_tool": "run_metric_query"
+      },
+      {
+        "metric_id": "spm_performance_top_performing_programs_fy27",
+        "dataset": "gsp_spm_performance",
+        "source_table": null,
+        "route_tool": "run_metric_query"
+      },
+      {
+        "metric_id": "spm_forecast_attainment",
+        "dataset": null,
+        "source_table": null,
+        "route_tool": "run_formula_metric"
+      }
+    ],
+    "datasets": [
+      {
+        "dataset": "ae_participation_apm_details",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.AE_PARTICIPATION_APM_DETAILS"
+        ]
+      },
+      {
+        "dataset": "dev_gsp_spm_acv",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.DEV_GSP_SPM_ACV",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV"
+        ]
+      },
+      {
+        "dataset": "dev_gsp_spm_close_rates",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.DEV_GSP_SPM_CLOSE_RATES",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CLOSE_RATES"
+        ]
+      },
+      {
+        "dataset": "dev_gsp_spm_pg",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.DEV_GSP_SPM_PG",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN"
+        ]
+      },
+      {
+        "dataset": "FiscalYearFix",
+        "table_candidates": []
+      },
+      {
+        "dataset": "FixMonth",
+        "table_candidates": []
+      },
+      {
+        "dataset": "gdso_all_users",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_ALL_USERS"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_acv",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_d1op_targets",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_D1OP_TARGETS"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_openpipe",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_OPENPIPE"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_pipegen",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_pipegen_targets",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN_TARGETS"
+        ]
+      },
+      {
+        "dataset": "gdso_crt_plays",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PLAYS"
+        ]
+      },
+      {
+        "dataset": "gsp_planning_product_assignees",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_PLANNING_PRODUCT_ASSIGNEES"
+        ]
+      },
+      {
+        "dataset": "gsp_planning_product_programs",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_PLANNING_PRODUCT_PROGRAMS"
+        ]
+      },
+      {
+        "dataset": "gsp_sales_plays",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SALES_PLAYS"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_activity",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACTIVITY_PERM",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACTIVITY"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_acv",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV_PERM"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_close_rates",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CLOSE_RATES"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_css",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_forecast",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_forecast_by_product_directs",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST_BY_PRODUCT_DIRECTS"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_nnaov",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_pg",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN_PERM"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_program",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+          "SSE_DM_GDSO_PRD.AIO.AIO_SPM_PROGRAMS"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_program_attendance",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM_ATTENDANCE_PERM",
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM_ATTENDANCE"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_program_resource",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM_RESOURCE"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_progression",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_seller_type_automation",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_SELLER_TYPE_AUTOMATION_VW"
+        ]
+      },
+      {
+        "dataset": "gsp_spm_trgt_acct",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS"
+        ]
+      },
+      {
+        "dataset": "INTL_USRSET_SS",
+        "table_candidates": []
+      },
+      {
+        "dataset": "spm_performance_metrics",
+        "table_candidates": [
+          "SSE_DM_GDSO_PRD.AIO.SPM_PERFORMANCE_METRICS"
+        ]
+      }
+    ]
+  }
+}
