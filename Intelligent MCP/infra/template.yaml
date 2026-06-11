@@ -1,0 +1,198 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SPI MCP Server — TypeScript MCP server on AWS Lambda + API Gateway (HTTP API).
+  Exposes Snowflake sales data to the Slack agent via JSON-RPC over HTTP.
+
+# ── Parameters ────────────────────────────────────────────────────────────────
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+
+  SnowflakeAccount:
+    Type: String
+    Description: "Snowflake account identifier, e.g. myorg-myaccount"
+
+  SnowflakeUsername:
+    Type: String
+    Description: "Service account username in Snowflake (e.g. SVC_SPI_MCP)"
+
+  SnowflakeWarehouse:
+    Type: String
+    Description: "Snowflake virtual warehouse name"
+
+  SnowflakeDatabase:
+    Type: String
+    Description: "Snowflake database name"
+
+  SnowflakeSchema:
+    Type: String
+    Default: "SALES_PLANNING"
+    Description: "Snowflake schema name"
+
+  SnowflakeRole:
+    Type: String
+    Default: ""
+    Description: "Snowflake role to assume (optional, e.g. SPI_MCP_ROLE)"
+
+  SnowflakeAuthMode:
+    Type: String
+    Default: "password"
+    AllowedValues: [password, keypair, sso]
+    Description: "Snowflake auth mode. Keep password for current service-account flow."
+
+  SnowflakeAuthenticator:
+    Type: String
+    Default: ""
+    Description: >
+      Snowflake authenticator (required for sso mode), e.g. externalbrowser or
+      https://<okta-account>.okta.com
+
+  SnowflakePasswordSecretArn:
+    Type: String
+    Description: >
+      ARN of the AWS Secrets Manager secret containing Snowflake password JSON.
+      Secret JSON format:
+        { "password": "..." }
+
+  McpAuthToken:
+    Type: String
+    NoEcho: true
+    Description: >
+      Shared Bearer token that Slack must send in the Authorization header.
+      Generate with: openssl rand -hex 32
+
+  ExistingVpcId:
+    Type: String
+    Default: "vpc-09b280218d84d22db"
+    Description: "Existing VPC ID where fixed NAT egress is configured."
+
+  ExistingPrivateSubnetIds:
+    Type: CommaDelimitedList
+    Default: "subnet-00eacecd448dd2347"
+    Description: "Private subnet IDs that route 0.0.0.0/0 to NAT 54.190.1.212."
+
+# ── Globals ───────────────────────────────────────────────────────────────────
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures: [arm64]
+    Environment:
+      Variables:
+        SNOWFLAKE_ACCOUNT: !Ref SnowflakeAccount
+        SNOWFLAKE_USERNAME: !Ref SnowflakeUsername
+        SNOWFLAKE_WAREHOUSE: !Ref SnowflakeWarehouse
+        SNOWFLAKE_DATABASE: !Ref SnowflakeDatabase
+        SNOWFLAKE_SCHEMA: !Ref SnowflakeSchema
+        SNOWFLAKE_ROLE: !Ref SnowflakeRole
+        SPI_SNOWFLAKE_AUTH_MODE: !Ref SnowflakeAuthMode
+        SNOWFLAKE_AUTHENTICATOR: !Ref SnowflakeAuthenticator
+        SNOWFLAKE_PASSWORD: !Sub "{{resolve:secretsmanager:${SnowflakePasswordSecretArn}:SecretString:password}}"
+        MCP_AUTH_TOKEN: !Ref McpAuthToken
+        SPI_DISABLE_AUTH: "true"
+        NODE_ENV: production
+
+# ── Resources ─────────────────────────────────────────────────────────────────
+Resources:
+
+  SpiMcpFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "spi-mcp-lambda-role-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: SecretsManagerReadSnowflakeKey
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref SnowflakePasswordSecretArn
+
+  SpiMcpFunctionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for SPI MCP Lambda egress"
+      VpcId: !Ref ExistingVpcId
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  SpiMcpFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "spi-mcp-${Environment}"
+      Description: "SPI MCP Server — Snowflake sales intelligence via JSON-RPC"
+      # Build artefact: `npm run build` outputs to dist/; package dist + resources + node_modules
+      CodeUri: ../
+      Handler: dist/lambda.handler
+      Role: !GetAtt SpiMcpFunctionRole.Arn
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SpiMcpFunctionSecurityGroup
+        SubnetIds: !Ref ExistingPrivateSubnetIds
+      Events:
+        McpApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpHttpApi
+            Path: /{proxy+}
+            Method: ANY
+        McpApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpHttpApi
+            Path: /
+            Method: ANY
+
+  SpiMcpHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub "spi-mcp-api-${Environment}"
+      Description: "SPI MCP HTTP API"
+      StageName: !Ref Environment
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://slack.com"
+          - "https://app.slack.com"
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - POST
+          - OPTIONS
+        MaxAge: 300
+
+  SpiMcpLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/spi-mcp-${Environment}"
+      RetentionInDays: 90
+
+# ── Outputs ───────────────────────────────────────────────────────────────────
+Outputs:
+  McpEndpointUrl:
+    Description: >
+      MCP endpoint URL to configure in Slack Admin → Integrations → MCP Servers.
+    Value: !Sub "https://${SpiMcpHttpApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Export:
+      Name: !Sub "spi-mcp-endpoint-${Environment}"
+
+  LambdaFunctionArn:
+    Value: !GetAtt SpiMcpFunction.Arn
+    Export:
+      Name: !Sub "spi-mcp-lambda-arn-${Environment}"
