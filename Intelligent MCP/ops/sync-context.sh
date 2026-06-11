@@ -26,6 +26,11 @@ sync_repo() {
 sync_repo "${BUSINESS_LOGIC_DIR}" "business_logic"
 sync_repo "${AIRFLOW_DIR}" "airflow-dags-uip-gdso"
 
+if [[ -f "${SPI_MCP_DIR}/ops/generate-context-index.mjs" ]]; then
+  echo "Rebuilding context asset index..."
+  node "${SPI_MCP_DIR}/ops/generate-context-index.mjs"
+fi
+
 mkdir -p "$(dirname "${STATUS_FILE}")"
 printf '{\n  "synced_at_utc": "%s",\n  "business_logic": "%s",\n  "airflow_dags": "%s"\n}\n' \
   "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \

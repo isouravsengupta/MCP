@@ -1,53 +1,1116 @@
 {
-  "generated_at_utc": "2026-06-11T17:45:00Z",
+  "generated_at_utc": "2026-06-11T17:44:49.831Z",
   "assets": [
     {
       "category": "etl_sql",
       "repo": "business_logic",
-      "path": "gsp_analytics/SPM_Planning/spm_pg_load.sql",
-      "tags": ["spm", "pipegen", "cloud", "sales-program"]
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_ACTIVE_PRODUCTS.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
     },
     {
       "category": "etl_sql",
       "repo": "business_logic",
-      "path": "gsp_analytics/SPM_Planning/spm_pg_Tableau.sql",
-      "tags": ["spm", "pipegen", "tableau", "metric"]
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_ACTIVE_PRODUCTS_L1.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
     },
     {
       "category": "etl_sql",
       "repo": "business_logic",
-      "path": "gsp_analytics/SPM_Planning/spm_forecast_load.sql",
-      "tags": ["spm", "forecast", "sales-program"]
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_ACTIVE_PRODUCTS_L2.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_ACTIVE_PRODUCTS_L3.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_ACTIVE_PRODUCTS_L4.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_ACTIONS_L1.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_ACTIONS_L2.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_ACTIONS_L3.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_ACTIONS_L4.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_INSERT_L1.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_INSERT_L2.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_INSERT_L3.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_INSERT_L4.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_UPDATE_L1.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_UPDATE_L2.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_UPDATE_L3.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/GSP_SPM_PRODUCT_UPDATE_L4.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/Test.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/SPM_Product/extract_spm_product.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/acv_refresh_test_spm.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_edh_tables.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_ds_value.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_parent_program.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "program"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_performance_metrics.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "performance",
+        "metrics"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_product.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_program.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "program"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_program_forecast.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "program",
+        "forecast"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_program_product.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "program"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/extract_spm_program_resources.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "extract",
+        "program"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/field_automation/spm_product_actions_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/field_automation/spm_product_insert.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/field_automation/spm_product_update.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/pipegen_refresh_test_spm.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "pipegen"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/planning_product_assignees_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/planning_product_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/planning_product_programs_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_CSS_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_CSS_tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_activity_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_activity_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_acv_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_acv_inv_opty_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_acv_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_close_rates_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_close_rates_Tableau_test.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_close_rates_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_close_rates_load_test.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
     },
     {
       "category": "etl_sql",
       "repo": "business_logic",
       "path": "gsp_analytics/SPM_Planning/spm_forecast_Tableau.sql",
-      "tags": ["spm", "forecast", "tableau", "metric"]
+      "tags": [
+        "spm",
+        "planning",
+        "forecast",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_forecast_by_product_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "forecast",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_forecast_by_product_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "forecast",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_forecast_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "forecast",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_nnaov_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_nnaov_accuracy_hub_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_nnaov_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_metrics_insert.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "metrics"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_metrics_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "metrics",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_metrics_update.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "metrics"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_qa_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_qa_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_performance_qa_test_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "performance",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_inv_opty_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_snap_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_pg_snap_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_planning_product_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_product_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_product_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_attendance_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "load"
+      ]
     },
     {
       "category": "etl_sql",
       "repo": "business_logic",
       "path": "gsp_analytics/SPM_Planning/spm_program_metrics_Tableau_vw.sql",
-      "tags": ["spm", "program-metrics", "semantic-layer"]
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "metrics",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_metrics_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "metrics",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_resource_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_program_resource_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "program",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_progression_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_progression_inv_opty_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_progression_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_seller_type_automation_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_seller_type_automation_vw.sql",
+      "tags": [
+        "spm",
+        "planning"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_trgt_acct_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_trgt_acct_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_trgt_list_automation_acct_Tableau.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "tableau"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/spm_trgt_list_automation_acct_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "etl_sql",
+      "repo": "business_logic",
+      "path": "gsp_analytics/SPM_Planning/test_load.sql",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/CSS/gsp_spm_css.xmd.json",
+      "tags": [
+        "crma",
+        "spm"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/Global SPM Data Accuracy Hub.json",
+      "tags": [
+        "crma",
+        "global",
+        "spm"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/Global SPM Performance Dashboard.json",
+      "tags": [
+        "crma",
+        "global",
+        "spm",
+        "performance",
+        "dashboard"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/Invalid AOV/gsp_spm_nnaov_accuracy_hub.xmd.json",
+      "tags": [
+        "crma",
+        "spm"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/WIP-Global SPM Data Accuracy Hub.json",
+      "tags": [
+        "crma",
+        "global",
+        "spm"
+      ]
+    },
+    {
+      "category": "crma_dashboard",
+      "repo": "business_logic",
+      "path": "gsp_analytics/gsp analytics CRMA/WIP-Global SPM Performance Dashboard.json",
+      "tags": [
+        "crma",
+        "global",
+        "spm",
+        "performance",
+        "dashboard"
+      ]
     },
     {
       "category": "airflow_dag",
       "repo": "airflow-dags-uip-gdso",
-      "path": "dags/gsp_analytics/GSP_SPM_Planning_Load.py",
-      "tags": ["spm", "planning", "load", "dag"]
+      "path": "dags/gsp_analytics/FY26_Freeze_GSP_SPM_Planning_Load.py",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
     },
     {
       "category": "airflow_dag",
       "repo": "airflow-dags-uip-gdso",
-      "path": "dags/gsp_analytics/GSP_SPM_Planning_Extract.py",
-      "tags": ["spm", "planning", "extract", "dag"]
+      "path": "dags/gsp_analytics/GSP_Account_Planning.py",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Account_Planning_weekly.py",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Activity_Hub.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Clicks.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Coaching.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Coaching_App.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Common.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Completion.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Events.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Programs_Planning.py",
+      "tags": [
+        "planning"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_QAP.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_QAP_Extract.py",
+      "tags": [
+        "extract"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_QAP_Quality_Score.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_QAP_Quality_Score_Procedure.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Agent_Refresh.py",
+      "tags": [
+        "spm"
+      ]
     },
     {
       "category": "airflow_dag",
       "repo": "airflow-dags-uip-gdso",
       "path": "dags/gsp_analytics/GSP_SPM_Performance_Metrics.py",
-      "tags": ["spm", "performance", "metrics", "dag"]
+      "tags": [
+        "spm",
+        "performance",
+        "metrics"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Planning_Extract.py",
+      "tags": [
+        "spm",
+        "planning",
+        "extract"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Planning_Load.py",
+      "tags": [
+        "spm",
+        "planning",
+        "load"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_SPM_Product.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_Team_Gus.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/GSP_common_weekly.py",
+      "tags": [
+        "spm"
+      ]
+    },
+    {
+      "category": "airflow_dag",
+      "repo": "airflow-dags-uip-gdso",
+      "path": "dags/gsp_analytics/gsp_spm_forecast_by_product.py",
+      "tags": [
+        "spm",
+        "forecast"
+      ]
     }
   ]
 }
