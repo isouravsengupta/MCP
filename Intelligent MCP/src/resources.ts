@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type {
+  DashboardLensCatalog,
   ContextAssetIndex,
   MetricCatalog,
   MetricContextRegistry,
@@ -16,6 +17,7 @@ const contextRegistryPath = resolve(process.cwd(), "resources/context_registry.j
 const regressionSpecPath = resolve(process.cwd(), "resources/metric_regression_checks.json");
 const scenarioCatalogPath = resolve(process.cwd(), "resources/metric_scenarios.json");
 const contextAssetIndexPath = resolve(process.cwd(), "resources/context_assets_index.json");
+const dashboardLensCatalogPath = resolve(process.cwd(), "resources/dashboard_lens_catalog.json");
 
 export async function loadMetricCatalog(): Promise<MetricCatalog> {
   const raw = await readWithFallback(metricsPrimaryPath, metricsFallbackPath);
@@ -61,6 +63,11 @@ export async function loadMetricScenarioCatalog(): Promise<MetricScenarioCatalog
 export async function loadContextAssetIndex(): Promise<ContextAssetIndex> {
   const raw = await readFile(contextAssetIndexPath, "utf8");
   return JSON.parse(raw) as ContextAssetIndex;
+}
+
+export async function loadDashboardLensCatalog(): Promise<DashboardLensCatalog> {
+  const raw = await readFile(dashboardLensCatalogPath, "utf8");
+  return JSON.parse(raw) as DashboardLensCatalog;
 }
 
 async function readWithFallback(primaryPath: string, fallbackPath: string): Promise<string> {

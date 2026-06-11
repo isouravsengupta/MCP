@@ -1,6 +1,7 @@
 import { loadSnowflakeConfig } from "./config.js";
 import {
   loadColumnDictionary,
+  loadDashboardLensCatalog,
   loadContextAssetIndex,
   loadContextRegistry,
   loadMetricCatalog,
@@ -133,6 +134,25 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
                 },
                 required: ["query"]
               }
+            },
+            {
+              name: "resolve_sales_play_for_hierarchy",
+              description:
+                "Find top sales play by program count for an SPM hierarchy member (for example L4 person).",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  person_name: { type: "string" },
+                  hierarchy_level: { type: "string", enum: ["SPM_HIER_LVL_2", "SPM_HIER_LVL_3", "SPM_HIER_LVL_4"] },
+                  fiscal_year: { type: "string" }
+                },
+                required: ["person_name"]
+              }
+            },
+            {
+              name: "dashboard_usecase_coverage",
+              description: "List CRMA dashboard lens coverage and highlight unsupported lens use cases.",
+              inputSchema: { type: "object", properties: {} }
             }
           ]
         });
@@ -169,6 +189,11 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
             {
               uri: "spi://resources/context-assets-index",
               name: "Indexed ETL/DAG/CRMA context assets for lineage-aware planning",
+              mimeType: "application/json"
+            },
+            {
+              uri: "spi://resources/dashboard-lens-catalog",
+              name: "Catalog of CRMA dashboard lens steps and datasets",
               mimeType: "application/json"
             }
           ]
@@ -307,6 +332,163 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       .map((row) => row.asset);
     return {
       content: [{ type: "text", text: JSON.stringify({ query, matchCount: matches.length, matches }, null, 2) }]
+    };
+  }
+
+  if (toolName === "dashboard_usecase_coverage") {
+    const lensCatalog = await loadDashboardLensCatalog();
+    const metricIds = new Set(catalog.metrics.map((m) => m.id));
+    const datasetCoverage = lensCatalog.lenses.map((lens) => {
+      const lensIdLike = lens.step_name.toLowerCase();
+      const matchedMetricIds = [...metricIds].filter(
+        (metricId) =>
+          lensIdLike.includes(metricId.toLowerCase()) ||
+          lens.datasets.some((d) => metricId.toLowerCase().includes(d.toLowerCase().replace(/[^a-z0-9]+/g, "_")))
+      );
+      return {
+        step_name: lens.step_name,
+        datasets: lens.datasets,
+        widgets: lens.widgets,
+        covered: matchedMetricIds.length > 0,
+        matched_metric_ids: matchedMetricIds
+      };
+    });
+    const unsupported = datasetCoverage.filter((x) => !x.covered);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              total_lenses: lensCatalog.lenses.length,
+              covered_lenses: datasetCoverage.length - unsupported.length,
+              unsupported_lenses: unsupported.length,
+              unsupported_examples: unsupported.slice(0, 25)
+            },
+            null,
+            2
+          )
+        }
+      ]
+    };
+  }
+
+  if (toolName === "resolve_sales_play_for_hierarchy") {
+    const personName = String(args.person_name ?? "").trim();
+    const hierarchyLevel = String(args.hierarchy_level ?? "SPM_HIER_LVL_4").toUpperCase();
+    const fiscalYear = String(args.fiscal_year ?? "FY27").toUpperCase();
+    if (!personName) {
+      throw new Error("person_name is required");
+    }
+    if (!["SPM_HIER_LVL_2", "SPM_HIER_LVL_3", "SPM_HIER_LVL_4"].includes(hierarchyLevel)) {
+      throw new Error("hierarchy_level must be one of SPM_HIER_LVL_2/SPM_HIER_LVL_3/SPM_HIER_LVL_4");
+    }
+
+    const hierarchyCandidates =
+      hierarchyLevel === "SPM_HIER_LVL_4"
+        ? ["SPM_HIER_LVL_4", "OWNER_L4_EMP_NAME", "PROGRAM_OWNER_NAME"]
+        : hierarchyLevel === "SPM_HIER_LVL_3"
+          ? ["SPM_HIER_LVL_3", "OWNER_L3_EMP_NAME"]
+          : ["SPM_HIER_LVL_2", "OWNER_L2_EMP_NAME"];
+    const fiscalYearCandidates = ["FISCAL_START_YEAR", "FISCAL_YEAR", "FISCALYEAR__C"];
+    const salesPlayCandidates = ["SALES_PLAY_NAME", "SALES_PLAY", "PROGRAM_TYPE"];
+
+    const resolvedHierarchyColumn = await resolveWorkingColumn(
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      hierarchyCandidates
+    );
+    const resolvedFiscalYearColumn = await resolveWorkingColumnOptional(
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      fiscalYearCandidates
+    );
+    const resolvedSalesPlayColumn = await resolveWorkingColumn(
+      "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      salesPlayCandidates
+    );
+
+    const nameMatches = await snowflake.execute(
+      `SELECT DISTINCT ${resolvedHierarchyColumn} AS PERSON_NAME
+       FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS
+       WHERE ${resolvedHierarchyColumn} ILIKE ?
+       ORDER BY 1
+       LIMIT 10`,
+      [`%${personName}%`]
+    );
+
+    const exact = nameMatches.find((row) => String((row as Record<string, unknown>).PERSON_NAME ?? "") === personName);
+    if (!exact) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: "I need the exact hierarchy person name before running the final sales-play query.",
+                suggestions: nameMatches.map((row) => (row as Record<string, unknown>).PERSON_NAME)
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
+    const fiscalFilterClause = resolvedFiscalYearColumn ? `AND ${resolvedFiscalYearColumn} = ?` : "";
+    const binds = resolvedFiscalYearColumn ? [personName, fiscalYear] : [personName];
+    const rows = await snowflake.execute(
+      `SELECT ${resolvedSalesPlayColumn} AS SALES_PLAY_NAME, COUNT(DISTINCT PROGRAM_ID) AS PROGRAM_COUNT
+       FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS
+       WHERE ${resolvedHierarchyColumn} = ?
+         ${fiscalFilterClause}
+       GROUP BY ${resolvedSalesPlayColumn}
+       ORDER BY PROGRAM_COUNT DESC
+       LIMIT 20`,
+      binds
+    );
+
+    const quality = assessResultQuality(rows);
+    if (quality.clarificationNeeded) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: "No valid rows for this person/year scope. Please confirm hierarchy level and fiscal year.",
+                clarifying_questions: [
+                  "Is the person at SPM_HIER_LVL_4, or should I use L2/L3?",
+                  "Should I use FY27 or another fiscal year?",
+                  "Should I broaden beyond one hierarchy person?"
+                ]
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              person_name: personName,
+              hierarchy_level: hierarchyLevel,
+              fiscal_year: resolvedFiscalYearColumn ? fiscalYear : "ALL_AVAILABLE",
+              top_sales_play: rows[0] ?? null,
+              top_sales_plays: rows
+            },
+            null,
+            2
+          )
+        }
+      ]
     };
   }
 
@@ -539,6 +721,10 @@ async function handleResourceRead(params: Record<string, unknown>): Promise<unkn
     const data = await loadContextAssetIndex();
     return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
   }
+  if (uri === "spi://resources/dashboard-lens-catalog") {
+    const data = await loadDashboardLensCatalog();
+    return { contents: [{ uri, mimeType: "application/json", text: JSON.stringify(data, null, 2) }] };
+  }
   throw new Error(`Resource not found: ${uri}`);
 }
 
@@ -611,6 +797,30 @@ function defaultClarifyingQuestions(availableFilterMap: Record<string, string>):
       ? `Please choose filters from: ${keys.slice(0, 8).join(", ")}${keys.length > 8 ? ", ..." : ""}`
       : "Do you want me to broaden the filters to include non-empty records?"
   ];
+}
+
+async function resolveWorkingColumn(tableName: string, candidates: string[]): Promise<string> {
+  for (const candidate of candidates) {
+    try {
+      await snowflake.execute(`SELECT ${candidate} FROM ${tableName} LIMIT 1`);
+      return candidate;
+    } catch {
+      // try next candidate
+    }
+  }
+  throw new Error(`Could not resolve a valid column in ${tableName} from candidates: ${candidates.join(", ")}`);
+}
+
+async function resolveWorkingColumnOptional(tableName: string, candidates: string[]): Promise<string | null> {
+  for (const candidate of candidates) {
+    try {
+      await snowflake.execute(`SELECT ${candidate} FROM ${tableName} LIMIT 1`);
+      return candidate;
+    } catch {
+      // try next candidate
+    }
+  }
+  return null;
 }
 
 async function validateFilters(input: {

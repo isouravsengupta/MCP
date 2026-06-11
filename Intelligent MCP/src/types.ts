@@ -94,3 +94,16 @@ export interface ContextAssetIndex {
     tags: string[];
   }>;
 }
+
+export interface DashboardLensCatalog {
+  generated_at_utc: string;
+  dashboard_file: string;
+  lenses: Array<{
+    step_name: string;
+    label?: string;
+    type?: string;
+    datasets: string[];
+    query_preview?: string;
+    widgets: string[];
+  }>;
+}
