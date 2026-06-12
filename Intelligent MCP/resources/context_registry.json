@@ -30,6 +30,14 @@
         "airflow-dags-uip-gdso/dags/gsp_analytics",
         "business_logic/gsp_analytics/gsp analytics CRMA"
       ]
+    },
+    {
+      "topic": "cross-team-gdso-analytics",
+      "resolver": "semantic_catalog",
+      "primary_paths": [
+        "business_logic/gsp_analytics",
+        "airflow-dags-uip-gdso/dags"
+      ]
     }
   ]
 }

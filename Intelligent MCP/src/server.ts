@@ -217,6 +217,20 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
               }
             },
             {
+              name: "run_pg_contribution",
+              description:
+                "Preferred path for 'PG Contribution (%)' questions. Runs CRMA-equivalent PG contribution metric.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  fiscal_year: { type: "string" },
+                  fiscal_quarter: { type: "string" },
+                  months: { type: "array", items: { type: "string" } }
+                },
+                required: ["fiscal_year", "fiscal_quarter"]
+              }
+            },
+            {
               name: "lookup_opportunity_amount",
               description:
                 "Look up an opportunity by ID directly in SPI Snowflake datasets and return available amount fields.",
@@ -377,10 +391,11 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   }
 
   if (toolName === "run_semantic_query") {
+    const originalQuery = String(args.query ?? "");
     const semanticCatalog = await loadSemanticCatalog();
     const route = buildSemanticRoute(
       {
-        query: String(args.query ?? ""),
+        query: originalQuery,
         fiscalYear: typeof args.fiscal_year === "string" ? args.fiscal_year : undefined,
         fiscalQuarter: typeof args.fiscal_quarter === "string" ? args.fiscal_quarter : undefined,
         opportunityId: typeof args.opportunity_id === "string" ? args.opportunity_id : undefined
@@ -394,7 +409,10 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     }
     const result = await handleToolCall({
       name: route.route_tool,
-      arguments: route.arguments
+      arguments: {
+        ...route.arguments,
+        original_query: originalQuery
+      }
     });
     return {
       content: [
@@ -806,10 +824,61 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   }
 
   if (toolName === "run_forecast_attainment") {
+    const originalQuery = String(args.original_query ?? "");
+    if (!isScopeConfirmedByQuery(originalQuery, String(args.fiscal_year ?? ""), String(args.fiscal_quarter ?? ""))) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message:
+                  "Please confirm fiscal scope in your question (example: 'Forecast attainment FY27 Q2')."
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
     return handleToolCall({
       name: "run_formula_metric",
       arguments: {
         metric_id: "spm_forecast_attainment",
+        original_query: originalQuery,
+        fiscal_year: args.fiscal_year,
+        fiscal_quarter: args.fiscal_quarter,
+        months: args.months
+      }
+    });
+  }
+
+  if (toolName === "run_pg_contribution") {
+    const originalQuery = String(args.original_query ?? "");
+    if (!isScopeConfirmedByQuery(originalQuery, String(args.fiscal_year ?? ""), String(args.fiscal_quarter ?? ""))) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message: "Please confirm fiscal scope in your question (example: 'PG Contribution FY27 Q2')."
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
+    return handleToolCall({
+      name: "run_formula_metric",
+      arguments: {
+        metric_id: "spm_pg_contribution",
+        original_query: originalQuery,
         fiscal_year: args.fiscal_year,
         fiscal_quarter: args.fiscal_quarter,
         months: args.months
@@ -917,6 +986,28 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     if (!metricId || !fiscalYear || !fiscalQuarter) {
       throw new Error("metric_id, fiscal_year, and fiscal_quarter are required.");
     }
+    const originalQuery = String(args.original_query ?? "");
+    if (
+      ["spm_forecast_attainment", "spm_pg_contribution"].includes(metricId) &&
+      !isScopeConfirmedByQuery(originalQuery, fiscalYear, fiscalQuarter)
+    ) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                clarification_needed: true,
+                message:
+                  "For this financial formula metric, fiscal scope must be explicitly present in the user query (for example FY27 Q2)."
+              },
+              null,
+              2
+            )
+          }
+        ]
+      };
+    }
     const formulas = await loadFormulaMetrics();
     const formula = formulas.metrics.find((m) => m.id === metricId);
     if (!formula) {
@@ -987,6 +1078,78 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
         COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0) AS FORECAST_AMT`;
       binds = explicitMonthsProvided
         ? [year2, year4, quarterDigit, ...monthDigits, year2, year4, quarterDigit]
+        : [year2, year4, quarterDigit, year2, year4, quarterDigit];
+    } else if (metricId === "spm_pg_contribution") {
+      const pipegenTable = await resolveWorkingTable([
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PG"
+      ]);
+      const totalPgTable = await resolveWorkingTable([
+        "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+        "SSE_DM_GDSO_PRD.AIO.GSP_CRT_PIPEGEN",
+        "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN"
+      ]);
+      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
+      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      const pgMonthCol = await resolveWorkingColumnOptional(pipegenTable, [
+        "FISCAL_FLIP_MON_NUM_LABEL",
+        "STG_2_FLG_DT_MONTH",
+        "STG_2_FLG_DT_MONTH_NUM",
+        "FISCAL_FLIP_MONTH"
+      ]);
+      const totalYearCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
+      const totalQuarterCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      const totalMonthCol = await resolveWorkingColumnOptional(totalPgTable, [
+        "FISCAL_FLIP_MON_NUM_LABEL",
+        "STG_2_FLG_DT_MONTH",
+        "STG_2_FLG_DT_MONTH_NUM",
+        "FISCAL_FLIP_MONTH"
+      ]);
+      const totalSnapCol = await resolveWorkingColumnOptional(totalPgTable, ["SNAP_YEAR_STATUS", "SNAP_STATUS"]);
+
+      const yearDigits = fiscalYear.replace(/[^0-9]/g, "");
+      const year2 = yearDigits.length >= 2 ? yearDigits.slice(-2) : yearDigits;
+      const year4 = yearDigits.length === 2 ? `20${yearDigits}` : yearDigits;
+      const quarterDigit = fiscalQuarter.replace(/[^0-9]/g, "");
+      const monthDigits = months.map((m) => Number(m));
+      const monthBindPlaceholders = monthDigits.map(() => "?").join(", ");
+      const pgMonthPredicate =
+        explicitMonthsProvided && pgMonthCol
+          ? `AND TRY_TO_NUMBER(REGEXP_SUBSTR(TO_VARCHAR(${pgMonthCol}), '[0-9]{1,2}')) IN (${monthBindPlaceholders})`
+          : "";
+      const totalMonthPredicate =
+        explicitMonthsProvided && totalMonthCol
+          ? `AND TRY_TO_NUMBER(REGEXP_SUBSTR(TO_VARCHAR(${totalMonthCol}), '[0-9]{1,2}')) IN (${monthBindPlaceholders})`
+          : "";
+      const totalSnapPredicate = totalSnapCol ? `AND ${totalSnapCol} = 'CY'` : "";
+
+      sqlText = `WITH SPM_PG AS (
+        SELECT GDSO_ID, MAX(CLOUD_AMT) AS CLOUD_AMT
+        FROM ${pipegenTable}
+        WHERE SNAP_YEAR_STATUS='CY'
+          AND PRODUCT_MATCH='Product Match'
+          AND PROGRAM_TEAM='Sales Program'
+          AND REGEXP_SUBSTR(TO_VARCHAR(${pgYearCol}), '[0-9]{2,4}') IN (?, ?)
+          AND REGEXP_SUBSTR(TO_VARCHAR(${pgQuarterCol}), '[1-4]') = ?
+          ${pgMonthPredicate}
+        GROUP BY GDSO_ID
+      ),
+      TOTAL_PG AS (
+        SELECT CLOUD_AMT
+        FROM ${totalPgTable}
+        WHERE REGEXP_SUBSTR(TO_VARCHAR(${totalYearCol}), '[0-9]{2,4}') IN (?, ?)
+          AND REGEXP_SUBSTR(TO_VARCHAR(${totalQuarterCol}), '[1-4]') = ?
+          ${totalMonthPredicate}
+          ${totalSnapPredicate}
+      )
+      SELECT
+        CASE WHEN COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0)=0 THEN NULL
+             ELSE COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0)/COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0)
+        END AS PG_CONTRIBUTION,
+        COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0) AS SPM_PG_CLOUD_AMT,
+        COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0) AS TOTAL_PG_CLOUD_AMT`;
+      binds = explicitMonthsProvided
+        ? [year2, year4, quarterDigit, ...monthDigits, year2, year4, quarterDigit, ...monthDigits]
         : [year2, year4, quarterDigit, year2, year4, quarterDigit];
     } else {
       const monthBindPlaceholders = months.map(() => "?").join(", ");
@@ -1443,6 +1606,7 @@ function buildSemanticRoute(
       id: string;
       match_phrases: string[];
       route_tool: string;
+      required_context?: string[];
       default_arguments?: Record<string, unknown>;
     }>;
   }
@@ -1489,7 +1653,30 @@ function buildSemanticRoute(
       route_tool: "run_forecast_attainment",
       arguments: {
         fiscal_year: fiscalYear,
-        fiscal_quarter: fiscalQuarter
+        fiscal_quarter: fiscalQuarter,
+        original_query: query
+      },
+      clarification_needed: false
+    };
+  }
+
+  if (q.includes("pg contribution") || q.includes("pg contribution (%)")) {
+    if (!fiscalYear || !fiscalQuarter) {
+      return {
+        intent_id: "pg_contribution",
+        route_tool: "run_pg_contribution",
+        arguments: {},
+        clarification_needed: true,
+        message: "Please provide fiscal_year and fiscal_quarter for PG Contribution (%)."
+      };
+    }
+    return {
+      intent_id: "pg_contribution",
+      route_tool: "run_pg_contribution",
+      arguments: {
+        fiscal_year: fiscalYear,
+        fiscal_quarter: fiscalQuarter,
+        original_query: query
       },
       clarification_needed: false
     };
@@ -1506,13 +1693,56 @@ function buildSemanticRoute(
     };
   }
 
-  const intent = semanticCatalog.intents.find((i) => i.match_phrases.some((phrase) => q.includes(phrase.toLowerCase())));
-  if (intent) {
+  const scored = semanticCatalog.intents
+    .map((intent) => {
+      const score = intent.match_phrases.reduce(
+        (acc, phrase) => (q.includes(phrase.toLowerCase()) ? acc + Math.max(phrase.length, 1) : acc),
+        0
+      );
+      return { intent, score };
+    })
+    .filter((row) => row.score > 0)
+    .sort((a, b) => b.score - a.score);
+  const top = scored[0]?.intent;
+  const second = scored[1];
+  if (top && second && second.score === scored[0].score && scored[0].score > 0) {
     return {
-      intent_id: intent.id,
-      route_tool: intent.route_tool,
+      intent_id: "ambiguous_metric",
+      route_tool: "route_semantic_query",
+      arguments: {},
+      clarification_needed: true,
+      message:
+        "I found multiple matching metrics for this query. Please specify the exact metric name shown in dashboard."
+    };
+  }
+  if (top) {
+    const required = new Set(top.required_context ?? []);
+    if (required.has("fiscal_year") && !fiscalYear) {
+      return {
+        intent_id: top.id,
+        route_tool: top.route_tool,
+        arguments: {},
+        clarification_needed: true,
+        message: "Please provide fiscal_year (for example FY27)."
+      };
+    }
+    if (required.has("fiscal_quarter") && !fiscalQuarter) {
+      return {
+        intent_id: top.id,
+        route_tool: top.route_tool,
+        arguments: {},
+        clarification_needed: true,
+        message: "Please provide fiscal_quarter (for example Q1/Q2)."
+      };
+    }
+    return {
+      intent_id: top.id,
+      route_tool: top.route_tool,
       arguments: {
-        ...(intent.default_arguments ?? {})
+        ...(top.default_arguments ?? {}),
+        ...(fiscalYear ? { fiscal_year: fiscalYear } : {}),
+        ...(fiscalQuarter ? { fiscal_quarter: fiscalQuarter } : {}),
+        original_query: query
       },
       clarification_needed: false
     };
@@ -1538,6 +1768,18 @@ function extractFiscalScope(query: string): { fiscalYear?: string; fiscalQuarter
     : undefined;
   const fiscalQuarter = quarterMatch ? `Q${quarterMatch[1]}` : undefined;
   return { fiscalYear, fiscalQuarter };
+}
+
+function isScopeConfirmedByQuery(query: string, fiscalYear: string, fiscalQuarter: string): boolean {
+  const q = query.toLowerCase();
+  if (!q.trim()) return false;
+  const fyDigits = fiscalYear.replace(/[^0-9]/g, "");
+  const fy2 = fyDigits.length >= 2 ? fyDigits.slice(-2) : fyDigits;
+  const fy4 = fyDigits.length === 2 ? `20${fyDigits}` : fyDigits;
+  const fq = fiscalQuarter.replace(/[^0-9]/g, "");
+  const hasYear = !!fy2 && (q.includes(`fy${fy2}`) || (!!fy4 && q.includes(fy4)));
+  const hasQuarter = !!fq && (q.includes(`q${fq}`) || q.includes(`fq${fq}`) || q.includes(`quarter ${fq}`));
+  return hasYear && hasQuarter;
 }
 
 function ok(id: string | number | null, result: unknown): JsonRpcResponse {

@@ -12,19 +12,19 @@ const rootSpecs = [
   {
     repo: "business_logic",
     category: "etl_sql",
-    root: path.join(businessLogicDir, "gsp_analytics", "SPM_Planning"),
+    root: path.join(businessLogicDir, "gsp_analytics"),
     extensions: [".sql"]
   },
   {
     repo: "business_logic",
     category: "crma_dashboard",
-    root: path.join(businessLogicDir, "gsp_analytics", "gsp analytics CRMA"),
+    root: path.join(businessLogicDir, "gsp_analytics"),
     extensions: [".json"]
   },
   {
     repo: "airflow-dags-uip-gdso",
     category: "airflow_dag",
-    root: path.join(airflowDir, "dags", "gsp_analytics"),
+    root: path.join(airflowDir, "dags"),
     extensions: [".py"]
   }
 ];
@@ -37,8 +37,15 @@ function inferTags(relPath) {
     .filter(Boolean);
   const allow = new Set([
     "spm",
+    "qap",
+    "gdso",
+    "analytics",
     "forecast",
     "pipegen",
+    "quota",
+    "attainment",
+    "acv",
+    "aov",
     "program",
     "planning",
     "performance",
@@ -91,6 +98,12 @@ async function main() {
 
   const payload = {
     generated_at_utc: new Date().toISOString(),
+    roots: rootSpecs.map((spec) => ({
+      repo: spec.repo,
+      category: spec.category,
+      root: spec.root,
+      extensions: spec.extensions
+    })),
     assets
   };
   await fs.writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");

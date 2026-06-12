@@ -36,6 +36,21 @@ function slugify(input) {
     .replace(/^_+|_+$/g, "");
 }
 
+function metricAliases(name, id) {
+  const source = `${name ?? ""} ${id ?? ""}`.toLowerCase();
+  const aliases = new Set();
+  if (source.includes("forecast attainment")) aliases.add("forecast attainment");
+  if (source.includes("attainment")) aliases.add("attainment %");
+  if (source.includes("pg contribution")) aliases.add("pg contribution");
+  if (source.includes("pipegen forecast")) aliases.add("pipegen forecast");
+  if (source.includes("pipegen")) aliases.add("pipegen");
+  if (source.includes("closed acv")) aliases.add("closed acv");
+  if (source.includes("acv")) aliases.add("acv");
+  if (source.includes("top program")) aliases.add("top programs");
+  if (aliases.size === 0) aliases.add(String(name ?? id ?? "").toLowerCase());
+  return [...aliases];
+}
+
 function estimateSourceTable(datasetName, datasetRegistry) {
   const ds = datasetRegistry.datasets.find((entry) => normalizeDatasetName(entry.dataset) === normalizeDatasetName(datasetName));
   const candidate = ds?.table_candidates?.[0];
@@ -199,6 +214,13 @@ async function main() {
         required_context: ["fiscal_year", "fiscal_quarter"]
       },
       {
+        id: "pg_contribution",
+        description: "PG Contribution (%) questions must use dedicated contribution formula routing.",
+        match_phrases: ["pg contribution", "pg contribution (%)", "contribution percentage"],
+        route_tool: "run_pg_contribution",
+        required_context: ["fiscal_year", "fiscal_quarter"]
+      },
+      {
         id: "opportunity_amount_lookup",
         description: "Opportunity-level amount lookup by opportunity id.",
         match_phrases: ["opportunity", "opty", "end amount", "amount for opportunity"],
@@ -219,7 +241,24 @@ async function main() {
         route_tool: "run_adaptive_metric_query",
         default_arguments: { metric_id: "spm_performance_top_programs_fy27" }
       }
-    ],
+    ].concat(
+      definitions.map((d) => ({
+        id: `metric_${d.id}`,
+        description: `Auto-generated semantic route for ${d.id}.`,
+        match_phrases: metricAliases(d.name, d.id),
+        route_tool: "run_metric_query",
+        required_context: ["fiscal_year", "fiscal_quarter"],
+        default_arguments: { metric_id: d.id }
+      })),
+      (formulaMetrics.metrics ?? []).map((m) => ({
+        id: `formula_${m.id}`,
+        description: `Auto-generated semantic route for formula metric ${m.id}.`,
+        match_phrases: metricAliases(m.name, m.id),
+        route_tool: "run_formula_metric",
+        required_context: ["fiscal_year", "fiscal_quarter"],
+        default_arguments: { metric_id: m.id }
+      }))
+    ),
     graph: {
       metrics: [
         ...definitions.map((d) => ({

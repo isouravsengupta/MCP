@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generated_at_utc": "2026-06-11T20:00:52.776Z",
+  "generated_at_utc": "2026-06-11T20:18:39.929Z",
   "intents": [
     {
       "id": "forecast_attainment",
@@ -11,6 +11,20 @@
         "attainment %"
       ],
       "route_tool": "run_forecast_attainment",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ]
+    },
+    {
+      "id": "pg_contribution",
+      "description": "PG Contribution (%) questions must use dedicated contribution formula routing.",
+      "match_phrases": [
+        "pg contribution",
+        "pg contribution (%)",
+        "contribution percentage"
+      ],
+      "route_tool": "run_pg_contribution",
       "required_context": [
         "fiscal_year",
         "fiscal_quarter"
@@ -54,6 +68,98 @@
       "default_arguments": {
         "metric_id": "spm_performance_top_programs_fy27"
       }
+    },
+    {
+      "id": "metric_spm_pipegen_forecast_fy27_q1",
+      "description": "Auto-generated semantic route for spm_pipegen_forecast_fy27_q1.",
+      "match_phrases": [
+        "pipegen forecast",
+        "pipegen"
+      ],
+      "route_tool": "run_metric_query",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_pipegen_forecast_fy27_q1"
+      }
+    },
+    {
+      "id": "metric_spm_pipegen_cloud_fy27_q1",
+      "description": "Auto-generated semantic route for spm_pipegen_cloud_fy27_q1.",
+      "match_phrases": [
+        "pipegen"
+      ],
+      "route_tool": "run_metric_query",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_pipegen_cloud_fy27_q1"
+      }
+    },
+    {
+      "id": "metric_spm_performance_top_programs_fy27",
+      "description": "Auto-generated semantic route for spm_performance_top_programs_fy27.",
+      "match_phrases": [
+        "top programs"
+      ],
+      "route_tool": "run_metric_query",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_performance_top_programs_fy27"
+      }
+    },
+    {
+      "id": "metric_spm_performance_top_performing_programs_fy27",
+      "description": "Auto-generated semantic route for spm_performance_top_performing_programs_fy27.",
+      "match_phrases": [
+        "spm performance top performing programs fy27"
+      ],
+      "route_tool": "run_metric_query",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_performance_top_performing_programs_fy27"
+      }
+    },
+    {
+      "id": "formula_spm_forecast_attainment",
+      "description": "Auto-generated semantic route for formula metric spm_forecast_attainment.",
+      "match_phrases": [
+        "forecast attainment",
+        "attainment %"
+      ],
+      "route_tool": "run_formula_metric",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_forecast_attainment"
+      }
+    },
+    {
+      "id": "formula_spm_pg_contribution",
+      "description": "Auto-generated semantic route for formula metric spm_pg_contribution.",
+      "match_phrases": [
+        "pg contribution"
+      ],
+      "route_tool": "run_formula_metric",
+      "required_context": [
+        "fiscal_year",
+        "fiscal_quarter"
+      ],
+      "default_arguments": {
+        "metric_id": "spm_pg_contribution"
+      }
     }
   ],
   "graph": {
@@ -84,6 +190,12 @@
       },
       {
         "metric_id": "spm_forecast_attainment",
+        "dataset": null,
+        "source_table": null,
+        "route_tool": "run_formula_metric"
+      },
+      {
+        "metric_id": "spm_pg_contribution",
         "dataset": null,
         "source_table": null,
         "route_tool": "run_formula_metric"

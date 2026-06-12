@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-06-11T20:00:52.775Z",
+  "generated_at_utc": "2026-06-11T20:18:39.928Z",
   "sources": {
     "dashboard_lens_catalog": "resources/dashboard_lens_catalog.json",
     "metric_mappings": "resources/metric_mappings.json",
@@ -10,7 +10,7 @@
     "lenses_total": 297,
     "datasets_discovered": 31,
     "metric_definitions_total": 4,
-    "formula_metrics_total": 1,
+    "formula_metrics_total": 2,
     "intake_candidates": 297,
     "scenarios_missing": 0
   },
