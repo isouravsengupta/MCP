@@ -1,10 +1,23 @@
-import { createCanvas } from "@napi-rs/canvas";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { VisualizationPayload } from "./visualization.js";
 
+// @napi-rs/canvas needs native binaries compiled for the target OS/arch.
+// Loaded lazily so Lambda stays functional when the binding is absent (macOS build deployed to Linux).
+type CanvasType = import("@napi-rs/canvas").Canvas;
+type Ctx2D = CanvasType extends { getContext(c: "2d"): infer C } ? C : never;
+
+async function tryLoadCanvas(): Promise<typeof import("@napi-rs/canvas").createCanvas | null> {
+  try {
+    return (await import("@napi-rs/canvas")).createCanvas;
+  } catch {
+    console.warn("chartRenderer: @napi-rs/canvas native binding unavailable — chart rendering disabled.");
+    return null;
+  }
+}
+
 const CHART_COLORS = [
-  "#0070D2", // Salesforce blue
+  "#0070D2",
   "#1FAECE",
   "#54698D",
   "#FFB75D",
@@ -26,15 +39,47 @@ function truncate(str: string, max = 14): string {
   return str.length > max ? str.slice(0, max - 1) + "…" : str;
 }
 
-export function renderChartToPng(viz: VisualizationPayload): Buffer {
-  const canvas = createCanvas(CANVAS_W, CANVAS_H);
-  const ctx = canvas.getContext("2d");
+function renderTable(ctx: Ctx2D, viz: VisualizationPayload): void {
+  const rows = viz.rowsPreview.slice(0, 10);
+  if (rows.length === 0) return;
+  const cols = Object.keys(rows[0]);
+  const colW = Math.min((CANVAS_W - 40) / cols.length, 160);
+  const rowH = 28;
+  const startY = 55;
 
-  // Background
+  ctx.font = "bold 12px sans-serif";
+  ctx.fillStyle = "#0070D2";
+  cols.forEach((col, i) => {
+    ctx.textAlign = "left";
+    ctx.fillText(truncate(col, 18), 20 + i * colW, startY);
+  });
+
+  ctx.font = "12px sans-serif";
+  rows.forEach((row, ri) => {
+    if (ri % 2 === 0) {
+      ctx.fillStyle = "#f4f6f9";
+      ctx.fillRect(20, startY + 6 + ri * rowH, CANVAS_W - 40, rowH);
+    }
+    ctx.fillStyle = "#16325C";
+    cols.forEach((col, ci) => {
+      const val = row[col];
+      const text = typeof val === "number" ? formatLabel(val) : truncate(String(val ?? ""), 18);
+      ctx.textAlign = "left";
+      ctx.fillText(text, 24 + ci * colW, startY + 22 + ri * rowH);
+    });
+  });
+}
+
+export async function renderChartToPng(viz: VisualizationPayload): Promise<Buffer | null> {
+  const createCanvas = await tryLoadCanvas();
+  if (!createCanvas) return null;
+
+  const canvas = createCanvas(CANVAS_W, CANVAS_H);
+  const ctx = canvas.getContext("2d") as Ctx2D;
+
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
 
-  // Title
   ctx.fillStyle = "#16325C";
   ctx.font = "bold 16px sans-serif";
   ctx.textAlign = "center";
@@ -46,7 +91,7 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
 
   if (viz.component === "table" || !viz.xKey || !viz.yKeys?.length || rows.length === 0) {
     renderTable(ctx, viz);
-    return canvas.toBuffer("image/png");
+    return canvas.toBuffer("image/png") as unknown as Buffer;
   }
 
   const labels = rows.map((r) => truncate(String(r[viz.xKey!] ?? "")));
@@ -61,7 +106,6 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
   const minVal = Math.min(...allValues, 0);
   const range = maxVal - minVal || 1;
 
-  // Y-axis grid lines + labels
   const yTicks = 5;
   ctx.strokeStyle = "#e0e5ee";
   ctx.lineWidth = 1;
@@ -91,12 +135,10 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
       ctx.stroke();
     }
   } else {
-    // bar_chart or grouped_bar_yoy
     const groupCount = labels.length;
     const seriesCount = datasets.length;
     const groupW = plotW / groupCount;
     const barW = Math.min((groupW / seriesCount) * 0.8, 50);
-
     for (let gi = 0; gi < groupCount; gi++) {
       for (let si = 0; si < seriesCount; si++) {
         const v = datasets[si].values[gi];
@@ -110,7 +152,6 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
     }
   }
 
-  // X-axis labels
   ctx.fillStyle = "#54698D";
   ctx.font = "11px sans-serif";
   ctx.textAlign = "center";
@@ -122,7 +163,6 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
     ctx.fillText(label, x, CANVAS_H - PADDING.bottom + 18);
   });
 
-  // Legend
   if (datasets.length > 1) {
     const legendY = CANVAS_H - 18;
     const totalW = datasets.reduce((sum, d) => sum + d.key.length * 7 + 24, 0);
@@ -138,39 +178,7 @@ export function renderChartToPng(viz: VisualizationPayload): Buffer {
     }
   }
 
-  return canvas.toBuffer("image/png");
-}
-
-function renderTable(ctx: ReturnType<ReturnType<typeof createCanvas>["getContext"]>, viz: VisualizationPayload): void {
-  const rows = viz.rowsPreview.slice(0, 10);
-  if (rows.length === 0) return;
-  const cols = Object.keys(rows[0]);
-  const colW = Math.min((CANVAS_W - 40) / cols.length, 160);
-  const rowH = 28;
-  const startY = 55;
-
-  ctx.font = "bold 12px sans-serif";
-  ctx.fillStyle = "#0070D2";
-  cols.forEach((col, i) => {
-    ctx.textAlign = "left";
-    ctx.fillText(truncate(col, 18), 20 + i * colW, startY);
-  });
-
-  ctx.font = "12px sans-serif";
-  ctx.fillStyle = "#16325C";
-  rows.forEach((row, ri) => {
-    if (ri % 2 === 0) {
-      ctx.fillStyle = "#f4f6f9";
-      ctx.fillRect(20, startY + 6 + ri * rowH, CANVAS_W - 40, rowH);
-    }
-    ctx.fillStyle = "#16325C";
-    cols.forEach((col, ci) => {
-      const val = row[col];
-      const text = typeof val === "number" ? formatLabel(val) : truncate(String(val ?? ""), 18);
-      ctx.textAlign = "left";
-      ctx.fillText(text, 24 + ci * colW, startY + 22 + ri * rowH);
-    });
-  });
+  return canvas.toBuffer("image/png") as unknown as Buffer;
 }
 
 let s3: S3Client | null = null;
@@ -187,9 +195,10 @@ export async function renderAndUploadChart(
   if (!bucket) return null;
 
   try {
-    const png = renderChartToPng(viz);
-    const s3Key = `charts/${key}.png`;
+    const png = await renderChartToPng(viz);
+    if (!png) return null;
 
+    const s3Key = `charts/${key}.png`;
     await getS3().send(
       new PutObjectCommand({
         Bucket: bucket,
@@ -200,17 +209,11 @@ export async function renderAndUploadChart(
       })
     );
 
-    const url = await getSignedUrl(
+    return await getSignedUrl(
       getS3(),
-      new PutObjectCommand({ Bucket: bucket, Key: s3Key }),
+      new GetObjectCommand({ Bucket: bucket, Key: s3Key }),
       { expiresIn: 3600 }
     );
-
-    // Return a pre-signed GET URL instead
-    const { GetObjectCommand } = await import("@aws-sdk/client-s3");
-    return await getSignedUrl(getS3(), new GetObjectCommand({ Bucket: bucket, Key: s3Key }), {
-      expiresIn: 3600,
-    });
   } catch (err) {
     console.error("Chart render/upload failed:", err);
     return null;
