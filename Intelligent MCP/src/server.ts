@@ -15,6 +15,8 @@ import { buildAdaptiveQuery } from "./analysisPlanner.js";
 import { buildSql } from "./sqlBuilder.js";
 import { SnowflakeClient } from "./snowflake.js";
 import { buildVisualizationPayload } from "./visualization.js";
+import { buildSlackBlocks } from "./slackBlocks.js";
+import { renderAndUploadChart } from "./chartRenderer.js";
 import type { DashboardDatasetRegistry, MetricScenarioCatalog } from "./types.js";
 
 interface JsonRpcRequest {
@@ -269,6 +271,24 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
                 },
                 required: ["query"]
               }
+            },
+            {
+              name: "render_slack_blocks",
+              description: "Convert a visualization payload into Slack Block Kit blocks (Option B). Optionally also generates a chart PNG via S3 (Option A) if SPI_CHART_BUCKET is configured. Pass the visualization object returned by any metric query tool.",
+              inputSchema: {
+                type: "object",
+                properties: {
+                  visualization: {
+                    type: "object",
+                    description: "VisualizationPayload returned by run_metric_query, run_adaptive_metric_query, or query_dashboard_dataset."
+                  },
+                  include_chart_image: {
+                    type: "boolean",
+                    description: "If true, render a PNG chart and embed its URL in the blocks (requires SPI_CHART_BUCKET env var). Defaults to true."
+                  }
+                },
+                required: ["visualization"]
+              }
             }
           ]
         });
@@ -371,6 +391,33 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     }));
     return {
       content: [{ type: "text", text: JSON.stringify([...catalog.metrics, ...formulaMetrics], null, 2) }]
+    };
+  }
+
+  if (toolName === "render_slack_blocks") {
+    const viz = args.visualization as import("./visualization.js").VisualizationPayload;
+    if (!viz || typeof viz !== "object") {
+      throw new Error("render_slack_blocks requires a visualization object.");
+    }
+    const includeChart = args.include_chart_image !== false;
+    const chartImageUrl = includeChart ? await renderAndUploadChart(viz, `render_slack_blocks_${Date.now()}`) : null;
+    const blocks = buildSlackBlocks(viz, chartImageUrl);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              slack_blocks: blocks,
+              chart_image_url: chartImageUrl,
+              block_count: blocks.length,
+              chart_rendered: chartImageUrl !== null
+            },
+            null,
+            2
+          )
+        }
+      ]
     };
   }
 
@@ -801,6 +848,9 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
         ]
       };
     }
+    const vizQdd = buildVisualizationPayload(rows, `${dataset} ${measure} by ${groupBy.join(", ") || "all"}`);
+    const chartImageUrlQdd = await renderAndUploadChart(vizQdd, `query_dashboard_dataset_${dataset}_${Date.now()}`);
+    const slackBlocksQdd = buildSlackBlocks(vizQdd, chartImageUrlQdd);
     return {
       content: [
         {
@@ -813,7 +863,9 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
               binds,
               rowCount: rows.length,
               rows,
-              visualization: buildVisualizationPayload(rows, `${dataset} ${measure} by ${groupBy.join(", ") || "all"}`)
+              visualization: vizQdd,
+              chart_image_url: chartImageUrlQdd,
+              slack_blocks: slackBlocksQdd
             },
             null,
             2
@@ -1346,6 +1398,8 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     }
     const includeVisualization = args.include_visualization !== false;
     const visualization = includeVisualization ? buildVisualizationPayload(rows, metric.name) : null;
+    const chartImageUrl = visualization ? await renderAndUploadChart(visualization, `run_metric_query_${metric.id}_${Date.now()}`) : null;
+    const slackBlocks = visualization ? buildSlackBlocks(visualization, chartImageUrl) : null;
     return {
       content: [
         {
@@ -1356,8 +1410,11 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
               rowCount: rows.length,
               rows,
               visualization,
+              chart_image_url: chartImageUrl,
+              slack_blocks: slackBlocks,
               presentation_hints: {
                 render_component: visualization?.component ?? "table",
+                chart_available: chartImageUrl !== null,
                 reason: "Auto-selected based on row shape and YoY/grouping columns"
               }
             },
@@ -1477,6 +1534,8 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       };
     }
     const visualization = buildVisualizationPayload(rows, `${metric.name} adaptive analysis`);
+    const chartImageUrl = await renderAndUploadChart(visualization, `run_adaptive_metric_query_${metric.id}_${Date.now()}`);
+    const slackBlocks = buildSlackBlocks(visualization, chartImageUrl);
     return {
       content: [
         {
@@ -1489,6 +1548,8 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
               rowCount: rows.length,
               rows,
               visualization,
+              chart_image_url: chartImageUrl,
+              slack_blocks: slackBlocks,
               diagnostics: {
                 fallbackApplied,
                 fallbackReason,

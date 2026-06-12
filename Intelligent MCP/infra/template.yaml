@@ -122,6 +122,15 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource: !Ref SnowflakePasswordSecretArn
+        - PolicyName: ChartsBucketAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub "${SpiChartsBucket.Arn}/charts/*"
 
   SpiMcpFunctionSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -145,6 +154,9 @@ Resources:
         SecurityGroupIds:
           - !Ref SpiMcpFunctionSecurityGroup
         SubnetIds: !Ref ExistingPrivateSubnetIds
+      Environment:
+        Variables:
+          SPI_CHART_BUCKET: !Ref SpiChartsBucket
       Events:
         McpApi:
           Type: HttpApi
@@ -177,6 +189,21 @@ Resources:
           - OPTIONS
         MaxAge: 300
 
+  SpiChartsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "spi-mcp-charts-${Environment}-${AWS::AccountId}"
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireCharts
+            Status: Enabled
+            ExpirationInDays: 1
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
   SpiMcpLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -196,3 +223,8 @@ Outputs:
     Value: !GetAtt SpiMcpFunction.Arn
     Export:
       Name: !Sub "spi-mcp-lambda-arn-${Environment}"
+
+  ChartsBucketName:
+    Value: !Ref SpiChartsBucket
+    Export:
+      Name: !Sub "spi-mcp-charts-bucket-${Environment}"
