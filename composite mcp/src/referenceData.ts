@@ -3,8 +3,6 @@ export interface KnownCompositeSku {
   relatedFulfillmentProviders: string[];
 }
 
-// This starter list is intentionally small and easy to edit.
-// You can keep adding examples from Org62 data exports.
 export const KNOWN_COMPOSITE_SKUS: KnownCompositeSku[] = [
   {
     name: "Automation Advanced",

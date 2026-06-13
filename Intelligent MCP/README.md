@@ -152,10 +152,3 @@ For daily automation, run `ops/sync-context.sh` (cron/launchd). It now executes:
 5. Add caching for repeated aggregate queries.
 6. Map `visualization.component` to Slack app blocks or a Canvas renderer for richer chart rendering.
 
-## Composite SKU Slack POC
-
-This repo now includes a beginner-friendly Slack POC for Composite SKU scenario validation.
-
-- Run Slack app: `npm run composite:dev`
-- Run local sample check: `npm run composite:check`
-- Setup guide: `slack-skill/composite-sku-poc.md`

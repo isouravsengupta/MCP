@@ -1,5 +1,4 @@
 export type RiskLevel = "allowed" | "risky" | "blocked";
-
 export type OrderPattern = "single_order" | "multi_order";
 
 export interface CompositeScenarioInput {
