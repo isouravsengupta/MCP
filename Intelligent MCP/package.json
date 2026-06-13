@@ -14,14 +14,18 @@
     "ops:generate-context-index": "node ops/generate-context-index.mjs",
     "ops:generate-dashboard-catalog": "node ops/generate-dashboard-catalog.mjs",
     "ops:refresh-metric-artifacts": "node ops/refresh-metric-artifacts.mjs",
-    "ops:refresh-all": "npm run ops:generate-context-index && npm run ops:generate-dashboard-catalog && npm run ops:refresh-metric-artifacts"
+    "ops:refresh-all": "npm run ops:generate-context-index && npm run ops:generate-dashboard-catalog && npm run ops:refresh-metric-artifacts",
+    "composite:dev": "tsx src/composite/slackApp.ts",
+    "composite:check": "tsx src/composite/cli.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1062.0",
     "@aws-sdk/s3-request-presigner": "^3.1062.0",
     "@modelcontextprotocol/sdk": "^1.13.1",
+    "@slack/bolt": "^4.5.0",
     "@napi-rs/canvas": "^1.0.0",
     "chart.js": "^4.5.1",
+    "dotenv": "^16.4.7",
     "snowflake-sdk": "^2.0.2",
     "zod": "^3.23.8"
   },
