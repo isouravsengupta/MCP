@@ -11,6 +11,13 @@ export interface CompositeScenarioInput {
   submittedBy?: string;
 }
 
+export interface RuleConditions {
+  forceOrgCount?: { op: "eq" | "gt" | "lt" | "gte" | "lte"; value: number };
+  anypointOrgCount?: { op: "eq" | "gt" | "lt" | "gte" | "lte"; value: number };
+  orderPattern?: "single_order" | "multi_order";
+  skuNameContains?: string;
+}
+
 export interface RuleDefinition {
   ruleId: string;
   title: string;
@@ -18,6 +25,7 @@ export interface RuleDefinition {
   verdictIfTriggered: RiskLevel;
   recommendedOwner: string;
   enabled: boolean;
+  conditions?: RuleConditions;
 }
 
 export interface SkuDefinition {

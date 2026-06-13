@@ -2,114 +2,114 @@
   "rules": [
     {
       "ruleId": "SKU-001",
-      "title": "Composite SKU known in reference catalogue",
-      "description": "Checks if the submitted SKU exists in the approved catalogue",
+      "title": "Composite SKU must exist in approved product catalogue",
+      "description": "The submitted SKU must be a known composite SKU in the Salesforce product catalogue. Unknown or unrecognised SKU names cannot be provisioned and must be reviewed by L&P Product Operations before any order is committed.",
       "verdictIfTriggered": "risky",
       "recommendedOwner": "L&P Product Operations",
       "enabled": true
     },
     {
       "ruleId": "TRUST-001",
-      "title": "One Force org linked to many Anypoint orgs",
-      "description": "A single Force org mapped to multiple Anypoint orgs violates tenant trust constraints",
+      "title": "One Force.com org cannot be linked to multiple Anypoint orgs",
+      "description": "A single Salesforce Force.com org mapped to more than one MuleSoft Anypoint org violates tenant trust architecture. Composite provisioning requires a 1-to-1 Force.com to Anypoint org relationship. Any deviation blocks trust establishment and causes provisioning failure.",
       "verdictIfTriggered": "blocked",
-      "recommendedOwner": "Global Identity / Quoting Guardrail",
+      "recommendedOwner": "Global Identity / Quoting Guardrail Team",
+      "enabled": true
+    },
+    {
+      "ruleId": "TRUST-002",
+      "title": "Composite SKU requires trust roles to be configured on Product2",
+      "description": "If the Product Provisioning Target Role Trust records are missing on the composite Product2, trust establishment between the Force.com and Anypoint tenants will be silently skipped during provisioning. The order appears to succeed but the customer never receives access.",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "Global Identity / L&P Product Setup",
       "enabled": true
     },
     {
       "ruleId": "OPS-001",
-      "title": "Multi-order with multiple Anypoint orgs",
-      "description": "Multi-order patterns with more than one Anypoint org require sequencing and trust teardown validation",
+      "title": "Multi-order with multiple Anypoint orgs requires sequencing validation",
+      "description": "A multi-order pattern involving more than one Anypoint org requires trust teardown and re-establishment sequencing. Without pre-validation, later orders in the sequence may fail silently or leave tenants in a broken trust state that requires manual remediation by the provisioning team.",
       "verdictIfTriggered": "risky",
-      "recommendedOwner": "L&P Provisioning",
+      "recommendedOwner": "L&P Provisioning Team",
       "enabled": true
     },
     {
       "ruleId": "PTR-001",
-      "title": "PTR required for composite fulfillment provider",
-      "description": "If Product Fulfillment Provider is composite, PTR must be populated on all PLMs",
+      "title": "Provisioning Target Role must be set on all PLMs for composite SKUs",
+      "description": "For any SKU where the Product Fulfillment Provider is 'composite', every associated Product License Map (PLM) record must have the Provisioning Target Role (PTR) field populated. A missing PTR on even one PLM causes the entire composite provisioning flow to fail with an INVALID_INPUT error.",
       "verdictIfTriggered": "blocked",
       "recommendedOwner": "L&P Product Setup",
       "enabled": true
     },
     {
       "ruleId": "PTR-002",
-      "title": "PTR must be blank for non-composite products",
-      "description": "If Product Fulfillment Provider is not composite, PTR should not be set on PLMs",
+      "title": "Non-composite SKUs must not have PTR populated on PLMs",
+      "description": "If a SKU's Fulfillment Provider is not composite, having a Provisioning Target Role on its PLMs will cause an unexpected composite provisioning attempt. This misconfiguration can corrupt tenant trust state for unrelated composite orders on the same org.",
       "verdictIfTriggered": "blocked",
       "recommendedOwner": "L&P Product Setup",
       "enabled": true
     },
     {
       "ruleId": "PTR-003",
-      "title": "PTR changes on active auto-provisioned SKUs are restricted",
-      "description": "Updating PTR on active auto-provisioned SKUs may fail with INVALID_INPUT unless SKU is moved to a safe config state first",
+      "title": "PTR changes on active auto-provisioned SKUs require safe-state transition",
+      "description": "Updating the Provisioning Target Role on an active, auto-provisioned composite SKU will fail with INVALID_INPUT unless the SKU is first moved to a safe configuration state. Attempting an in-place PTR change on a live customer org risks breaking existing provisioning without rollback.",
       "verdictIfTriggered": "risky",
       "recommendedOwner": "L&P Product Operations",
       "enabled": true
     },
     {
-      "ruleId": "PTR-004",
-      "title": "PTR and Product PTR Trust are distinct configurations",
-      "description": "PTR on PLM is mandatory for composite setup; Product Provisioning Target Role Trust on Product2 is separate and should be validated independently",
-      "verdictIfTriggered": "risky",
-      "recommendedOwner": "L&P + Global Identity",
-      "enabled": true
-    },
-    {
-      "ruleId": "TRUST-002",
-      "title": "Composite trust establishment requires trust roles",
-      "description": "If trust roles are missing on the composite SKU, trust establishment can be skipped",
-      "verdictIfTriggered": "blocked",
-      "recommendedOwner": "Global Identity / L&P",
-      "enabled": true
-    },
-    {
       "ruleId": "PTG-001",
-      "title": "Composite SKU should provision through PTG",
-      "description": "Composite SKUs should map to a Provisioning Target Group containing required Tenants and Tenant Parameter Maps per CSP",
+      "title": "Composite SKU must map to a Provisioning Target Group",
+      "description": "Every composite SKU must be mapped to a Provisioning Target Group (PTG) that contains the required Tenants and Tenant Parameter Maps for each CSP involved. Without a PTG mapping, the provisioning engine cannot resolve which tenants to provision and the order fails at the fulfillment stage.",
       "verdictIfTriggered": "blocked",
-      "recommendedOwner": "L&P Provisioning",
+      "recommendedOwner": "L&P Provisioning Team",
       "enabled": true
     },
     {
       "ruleId": "INT-001",
-      "title": "Integration name must be allowlisted",
-      "description": "Provisioning requires IntegrationName entry in licensing allowlist configuration",
+      "title": "IntegrationName must be present in the licensing allowlist",
+      "description": "The IntegrationName associated with the composite SKU must have a corresponding entry in the licensing allowlist configuration file (licensing.xml). If the IntegrationName is not allowlisted, the Licensing Platform will reject the provisioning request even if all other configuration is correct.",
       "verdictIfTriggered": "blocked",
-      "recommendedOwner": "Licensing Platform",
+      "recommendedOwner": "Licensing Platform Team",
       "enabled": true
     },
     {
       "ruleId": "PRICE-001",
-      "title": "Single pricebook per contract constraint",
-      "description": "Composite purchase may fail if required products are split across incompatible pricebooks under one contract",
+      "title": "All products in a composite order must belong to the same pricebook",
+      "description": "A composite SKU purchase will fail at order creation if the required products and add-ons span more than one pricebook under a single contract. The CPQ engine enforces a single pricebook per contract, and pricebook conflicts silently drop line items, leaving the customer with an incomplete entitlement.",
       "verdictIfTriggered": "risky",
       "recommendedOwner": "Product Ops / Deal Desk",
       "enabled": true
     },
     {
       "ruleId": "CSP-001",
-      "title": "MuleSoft + Tableau direct composite pairing unsupported",
-      "description": "Current framework supports Core plus another CSP pattern; direct MuleSoft + Tableau bundle should be treated as unsupported unless policy changes",
+      "title": "Direct MuleSoft and Tableau composite pairing is not supported",
+      "description": "The current composite SKU framework supports a Core (Force.com) plus one additional CSP pattern only. A direct MuleSoft plus Tableau bundle without a Force.com core is architecturally unsupported. Attempting this order will result in a provisioning configuration error that cannot be resolved without a product architecture change.",
       "verdictIfTriggered": "blocked",
       "recommendedOwner": "L&P Product Strategy",
       "enabled": true
     },
     {
       "ruleId": "SKU-002",
-      "title": "Slack CSP onboarded but no Org62 composite SKU",
-      "description": "Slack is onboarded in framework but may not have a live composite SKU in Org62",
+      "title": "Slack CSP is onboarded in framework but has no live composite SKU in Org62",
+      "description": "Slack has been technically onboarded into the composite SKU framework but does not yet have a live, activated composite SKU in Org62 (Salesforce's production org). Any order referencing a Slack-based composite SKU will pass quoting but fail at provisioning time.",
       "verdictIfTriggered": "risky",
       "recommendedOwner": "L&P Product Operations",
       "enabled": true
     },
     {
       "ruleId": "FLEX-001",
-      "title": "Flex Foundation prerequisite for MuleSoft base subscriptions",
-      "description": "MuleSoft base composite subscriptions may require Salesforce Flex Foundation entitlement to be present",
+      "title": "MuleSoft base composite subscriptions require Salesforce Flex Foundation entitlement",
+      "description": "MuleSoft base composite subscriptions depend on the Salesforce Flex Foundation entitlement being present and active on the customer's Force.com org before provisioning begins. If Flex Foundation is absent, the Anypoint provisioning step completes but the customer cannot activate their integration capacity.",
       "verdictIfTriggered": "risky",
       "recommendedOwner": "Licensing + Deal Configuration",
+      "enabled": true
+    },
+    {
+      "ruleId": "MULTI-001",
+      "title": "Multiple Force.com orgs on a single composite order require individual trust validation",
+      "description": "When a customer order spans more than one Force.com org, each org must independently have its trust relationship established with the target Anypoint org. Composite provisioning does not cascade trust setup across orgs automatically. Each org pairing must be validated before order submission.",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "Global Identity / L&P Provisioning",
       "enabled": true
     }
   ]

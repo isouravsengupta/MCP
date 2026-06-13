@@ -79,7 +79,7 @@ export function buildResultBlocks(result: {
         text: { type: "plain_text", text: "❌ Verdict is wrong" },
         style: "danger",
         action_id: "feedback_incorrect",
-        value: result.caseId
+        value: JSON.stringify({ caseId: result.caseId, verdict: result.verdict, skuName: result.summary.slice(0, 80) })
       }
     ]
   });

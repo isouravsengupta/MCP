@@ -13,9 +13,8 @@ function requireEnv(name: string): string {
 const app = new App({
   token: requireEnv("SLACK_BOT_TOKEN"),
   signingSecret: requireEnv("SLACK_SIGNING_SECRET"),
-  appToken: process.env.SLACK_APP_TOKEN,
-  socketMode: process.env.SLACK_SOCKET_MODE === "true",
-  logLevel: LogLevel.INFO
+  logLevel: LogLevel.INFO,
+  processBeforeResponse: true
 });
 
 app.command("/composite-check", async ({ ack, body, client }) => {
@@ -198,7 +197,7 @@ app.message(async ({ message, say }) => {
   try {
     await say("🔍 Analysing your request...");
 
-    const parsed = await parseNaturalLanguage(userText);
+    const parsed = parseNaturalLanguage(userText);
 
     if (!parsed.compositeSkuName) {
       await say(
@@ -240,13 +239,183 @@ app.action("feedback_correct", async ({ ack, action, client, body }) => {
 
 app.action("feedback_incorrect", async ({ ack, action, client, body }) => {
   await ack();
-  const caseId = (action as { value: string }).value;
+  const raw = (action as { value: string }).value;
+  let caseId = raw;
+  let currentVerdict = "unknown";
+  try {
+    const parsed = JSON.parse(raw) as { caseId: string; verdict: string; skuName: string };
+    caseId = parsed.caseId;
+    currentVerdict = parsed.verdict;
+  } catch { /* plain caseId from old messages */ }
+
   await sendFeedback(caseId, "incorrect");
-  await client.chat.postEphemeral({
-    channel: body.channel?.id ?? body.user.id,
-    user: body.user.id,
-    text: "❌ Thanks — recorded as incorrect. This will help improve future verdicts."
+
+  const triggerId = (body as { trigger_id?: string }).trigger_id;
+  if (!triggerId) return;
+
+  await client.views.open({
+    trigger_id: triggerId,
+    view: {
+      type: "modal",
+      callback_id: "correction_modal",
+      private_metadata: caseId,
+      title: { type: "plain_text", text: "Correct this verdict" },
+      submit: { type: "plain_text", text: "Add as rule" },
+      close: { type: "plain_text", text: "Cancel" },
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `The current verdict was *${currentVerdict.toUpperCase()}*. Tell us what it should be and why — this will be added as a new triage rule so the MCP learns from it.`
+          }
+        },
+        {
+          type: "input",
+          block_id: "rule_id_block",
+          label: { type: "plain_text", text: "Rule ID (e.g. CUSTOM-001)" },
+          element: { type: "plain_text_input", action_id: "rule_id_input", placeholder: { type: "plain_text", text: "CUSTOM-001" } }
+        },
+        {
+          type: "input",
+          block_id: "rule_title_block",
+          label: { type: "plain_text", text: "Rule title (short summary)" },
+          element: { type: "plain_text_input", action_id: "rule_title_input" }
+        },
+        {
+          type: "input",
+          block_id: "rule_desc_block",
+          label: { type: "plain_text", text: "Why should this be a rule? (describe the condition)" },
+          element: { type: "plain_text_input", action_id: "rule_desc_input", multiline: true }
+        },
+        {
+          type: "input",
+          block_id: "correct_verdict_block",
+          label: { type: "plain_text", text: "Correct verdict for this scenario" },
+          element: {
+            type: "static_select",
+            action_id: "correct_verdict_input",
+            options: [
+              { text: { type: "plain_text", text: "✅ Allowed" }, value: "allowed" },
+              { text: { type: "plain_text", text: "⚠️ Risky" }, value: "risky" },
+              { text: { type: "plain_text", text: "🚫 Blocked" }, value: "blocked" }
+            ]
+          }
+        },
+        {
+          type: "input",
+          block_id: "owner_block",
+          optional: true,
+          label: { type: "plain_text", text: "Rule owner (optional)" },
+          element: { type: "plain_text_input", action_id: "owner_input" }
+        },
+        {
+          type: "section",
+          text: { type: "mrkdwn", text: "*Conditions (optional) — define when this rule fires:*" }
+        },
+        {
+          type: "input",
+          block_id: "force_org_count_block",
+          optional: true,
+          label: { type: "plain_text", text: "Force org count triggers when..." },
+          element: {
+            type: "static_select",
+            action_id: "force_org_count_input",
+            placeholder: { type: "plain_text", text: "Select condition" },
+            options: [
+              { text: { type: "plain_text", text: "exactly 1" }, value: "eq:1" },
+              { text: { type: "plain_text", text: "more than 1" }, value: "gt:1" },
+              { text: { type: "plain_text", text: "more than 2" }, value: "gt:2" }
+            ]
+          }
+        },
+        {
+          type: "input",
+          block_id: "anypoint_org_count_block",
+          optional: true,
+          label: { type: "plain_text", text: "Anypoint org count triggers when..." },
+          element: {
+            type: "static_select",
+            action_id: "anypoint_org_count_input",
+            placeholder: { type: "plain_text", text: "Select condition" },
+            options: [
+              { text: { type: "plain_text", text: "exactly 1" }, value: "eq:1" },
+              { text: { type: "plain_text", text: "more than 1" }, value: "gt:1" },
+              { text: { type: "plain_text", text: "more than 2" }, value: "gt:2" }
+            ]
+          }
+        },
+        {
+          type: "input",
+          block_id: "order_pattern_cond_block",
+          optional: true,
+          label: { type: "plain_text", text: "Order pattern triggers when..." },
+          element: {
+            type: "static_select",
+            action_id: "order_pattern_cond_input",
+            placeholder: { type: "plain_text", text: "Any pattern" },
+            options: [
+              { text: { type: "plain_text", text: "Single order" }, value: "single_order" },
+              { text: { type: "plain_text", text: "Multi order" }, value: "multi_order" }
+            ]
+          }
+        },
+        {
+          type: "input",
+          block_id: "sku_contains_block",
+          optional: true,
+          label: { type: "plain_text", text: "SKU name contains (optional)" },
+          element: { type: "plain_text_input", action_id: "sku_contains_input", placeholder: { type: "plain_text", text: "e.g. Automation Advanced" } }
+        }
+      ]
+    }
   });
+});
+
+app.view("correction_modal", async ({ ack, body, view, client }) => {
+  await ack();
+  const v = view.state.values;
+  const caseId = view.private_metadata;
+
+  const ruleId = v.rule_id_block.rule_id_input.value ?? `FEEDBACK-${Date.now()}`;
+  const title = v.rule_title_block.rule_title_input.value ?? "User correction rule";
+  const description = v.rule_desc_block.rule_desc_input.value ?? "";
+  const verdictIfTriggered = v.correct_verdict_block.correct_verdict_input.selected_option?.value ?? "risky";
+  const recommendedOwner = v.owner_block.owner_input.value ?? undefined;
+
+  // Build conditions from optional fields
+  const conditions: Record<string, unknown> = {};
+  const forceOrgCond = v.force_org_count_block?.force_org_count_input?.selected_option?.value;
+  if (forceOrgCond) {
+    const [op, val] = forceOrgCond.split(":");
+    conditions.forceOrgCount = { op, value: Number(val) };
+  }
+  const anypointOrgCond = v.anypoint_org_count_block?.anypoint_org_count_input?.selected_option?.value;
+  if (anypointOrgCond) {
+    const [op, val] = anypointOrgCond.split(":");
+    conditions.anypointOrgCount = { op, value: Number(val) };
+  }
+  const orderPatternCond = v.order_pattern_cond_block?.order_pattern_cond_input?.selected_option?.value;
+  if (orderPatternCond) conditions.orderPattern = orderPatternCond;
+  const skuContains = v.sku_contains_block?.sku_contains_input?.value;
+  if (skuContains) conditions.skuNameContains = skuContains;
+
+  try {
+    await addRule({
+      ruleId, title, description, verdictIfTriggered, recommendedOwner,
+      conditions: Object.keys(conditions).length > 0 ? conditions as never : undefined
+    });
+    await client.chat.postMessage({
+      channel: body.user.id,
+      text: `✅ Thanks! Rule *${ruleId}* has been added to the MCP and is now live for future evaluations.\n_Case ID: \`${caseId}\`_`
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    await client.chat.postMessage({
+      channel: body.user.id,
+      text: `⚠️ Verdict was recorded but rule could not be saved: ${msg}`
+    });
+  }
 });
 
 const PORT = Number(process.env.PORT ?? 3001);

@@ -1,7 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic();
-
 export interface ParsedPayload {
   compositeSkuName: string;
   forceOrgIds: string[];
@@ -10,38 +6,52 @@ export interface ParsedPayload {
   notes?: string;
 }
 
-const SYSTEM_PROMPT = `You are a Salesforce composite SKU triage assistant. Extract structured order information from plain-English messages.
+export function parseNaturalLanguage(text: string): ParsedPayload {
+  const lower = text.toLowerCase();
 
-Rules:
-- compositeSkuName: the SKU or product being ordered (e.g. "Automation Advanced", "Integration Advanced")
-- forceOrgIds: Salesforce/Force org IDs or labels (e.g. "org A", "A", "salesforce org 1")
-- anypointOrgIds: Anypoint/MuleSoft org IDs or labels (e.g. "org X", "X", "anypoint org 1")
-- orderPattern: "multi_order" if the message says "multi order", "multi-order", or "multiple orders"; otherwise "single_order"
-- If a field is not mentioned, use an empty array or empty string
+  // Order pattern
+  const orderPattern: "single_order" | "multi_order" =
+    lower.includes("multi order") || lower.includes("multi-order") || lower.includes("multiple order")
+      ? "multi_order"
+      : "single_order";
 
-Return ONLY valid JSON matching this exact schema, no explanation:
-{
-  "compositeSkuName": "string",
-  "forceOrgIds": ["string"],
-  "anypointOrgIds": ["string"],
-  "orderPattern": "single_order" | "multi_order",
-  "notes": "string or omit"
-}`;
-
-export async function parseNaturalLanguage(userText: string): Promise<ParsedPayload> {
-  const response = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 512,
-    thinking: { type: "adaptive" },
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userText }]
-  });
-
-  const textBlock = response.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
-    throw new Error("No text response from Claude");
+  // SKU name — look for known SKU keywords
+  const skuPatterns = [
+    "automation advanced",
+    "integration advanced",
+    "platform",
+    "anypoint",
+    "mulesoft",
+    "tableau",
+    "slack",
+    "sales cloud",
+    "service cloud",
+    "revenue cloud",
+    "marketing cloud"
+  ];
+  let compositeSkuName = "";
+  for (const sku of skuPatterns) {
+    if (lower.includes(sku)) {
+      compositeSkuName = sku.replace(/\b\w/g, (c) => c.toUpperCase());
+      break;
+    }
   }
 
-  const json = textBlock.text.trim().replace(/^```json\s*/i, "").replace(/```$/, "").trim();
-  return JSON.parse(json) as ParsedPayload;
+  // Force org IDs — extract labels after "force org" or "salesforce org"
+  const forceOrgIds: string[] = [];
+  const forceMatches = text.matchAll(/(?:force|salesforce)\s+org[s]?\s+([A-Za-z0-9,\s]+?)(?:\s+and\s+anypoint|\s+new|\s+order|,|$)/gi);
+  for (const m of forceMatches) {
+    const ids = m[1].split(/[,\s]+and\s+|[,\s]+/).map((s) => s.trim()).filter(Boolean);
+    forceOrgIds.push(...ids);
+  }
+
+  // Anypoint org IDs — extract labels after "anypoint org"
+  const anypointOrgIds: string[] = [];
+  const anypointMatches = text.matchAll(/anypoint\s+org[s]?\s+([A-Za-z0-9,\s]+?)(?:\s+new|\s+order|,|$)/gi);
+  for (const m of anypointMatches) {
+    const ids = m[1].split(/[,\s]+and\s+|[,\s]+/).map((s) => s.trim()).filter(Boolean);
+    anypointOrgIds.push(...ids);
+  }
+
+  return { compositeSkuName, forceOrgIds, anypointOrgIds, orderPattern };
 }

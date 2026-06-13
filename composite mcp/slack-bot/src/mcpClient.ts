@@ -45,6 +45,12 @@ export async function addRule(rule: {
   description: string;
   verdictIfTriggered: string;
   recommendedOwner?: string;
+  conditions?: {
+    forceOrgCount?: { op: string; value: number };
+    anypointOrgCount?: { op: string; value: number };
+    orderPattern?: string;
+    skuNameContains?: string;
+  };
 }) {
   const res = await fetch(`${MCP_URL}/tools/add-rule`, {
     method: "POST",

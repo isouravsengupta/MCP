@@ -5,16 +5,40 @@
       "relatedFulfillmentProviders": ["force.com", "mulesoft", "mulesoft_rpa"]
     },
     {
-      "name": "Marketing Cloud Personalization+ (AMER)",
-      "relatedFulfillmentProviders": ["force.com", "exacttarget"]
+      "name": "Integration Advanced",
+      "relatedFulfillmentProviders": ["force.com", "mulesoft"]
     },
     {
-      "name": "Health Cloud Intelligence + Tableau - Enterprise Edition",
+      "name": "Salesforce Flex Foundation",
+      "relatedFulfillmentProviders": ["force.com"]
+    },
+    {
+      "name": "MuleSoft Integration Starter",
+      "relatedFulfillmentProviders": ["force.com", "mulesoft"]
+    },
+    {
+      "name": "MuleSoft Anypoint Integration Advanced",
+      "relatedFulfillmentProviders": ["force.com", "mulesoft"]
+    },
+    {
+      "name": "Health Cloud + Tableau Enterprise",
       "relatedFulfillmentProviders": ["force.com", "tableau"]
     },
     {
-      "name": "MuleSoft - MuleSoft Integration SF - Starter",
-      "relatedFulfillmentProviders": ["force.com", "mulesoft"]
+      "name": "Marketing Cloud Personalization Plus",
+      "relatedFulfillmentProviders": ["force.com", "exacttarget"]
+    },
+    {
+      "name": "Sales Cloud Unlimited Plus",
+      "relatedFulfillmentProviders": ["force.com"]
+    },
+    {
+      "name": "Salesforce Platform Starter",
+      "relatedFulfillmentProviders": ["force.com"]
+    },
+    {
+      "name": "Tableau CRM Plus",
+      "relatedFulfillmentProviders": ["force.com", "tableau"]
     }
   ]
 }
