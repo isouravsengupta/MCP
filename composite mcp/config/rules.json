@@ -1,0 +1,116 @@
+{
+  "rules": [
+    {
+      "ruleId": "SKU-001",
+      "title": "Composite SKU known in reference catalogue",
+      "description": "Checks if the submitted SKU exists in the approved catalogue",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "L&P Product Operations",
+      "enabled": true
+    },
+    {
+      "ruleId": "TRUST-001",
+      "title": "One Force org linked to many Anypoint orgs",
+      "description": "A single Force org mapped to multiple Anypoint orgs violates tenant trust constraints",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "Global Identity / Quoting Guardrail",
+      "enabled": true
+    },
+    {
+      "ruleId": "OPS-001",
+      "title": "Multi-order with multiple Anypoint orgs",
+      "description": "Multi-order patterns with more than one Anypoint org require sequencing and trust teardown validation",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "L&P Provisioning",
+      "enabled": true
+    },
+    {
+      "ruleId": "PTR-001",
+      "title": "PTR required for composite fulfillment provider",
+      "description": "If Product Fulfillment Provider is composite, PTR must be populated on all PLMs",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "L&P Product Setup",
+      "enabled": true
+    },
+    {
+      "ruleId": "PTR-002",
+      "title": "PTR must be blank for non-composite products",
+      "description": "If Product Fulfillment Provider is not composite, PTR should not be set on PLMs",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "L&P Product Setup",
+      "enabled": true
+    },
+    {
+      "ruleId": "PTR-003",
+      "title": "PTR changes on active auto-provisioned SKUs are restricted",
+      "description": "Updating PTR on active auto-provisioned SKUs may fail with INVALID_INPUT unless SKU is moved to a safe config state first",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "L&P Product Operations",
+      "enabled": true
+    },
+    {
+      "ruleId": "PTR-004",
+      "title": "PTR and Product PTR Trust are distinct configurations",
+      "description": "PTR on PLM is mandatory for composite setup; Product Provisioning Target Role Trust on Product2 is separate and should be validated independently",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "L&P + Global Identity",
+      "enabled": true
+    },
+    {
+      "ruleId": "TRUST-002",
+      "title": "Composite trust establishment requires trust roles",
+      "description": "If trust roles are missing on the composite SKU, trust establishment can be skipped",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "Global Identity / L&P",
+      "enabled": true
+    },
+    {
+      "ruleId": "PTG-001",
+      "title": "Composite SKU should provision through PTG",
+      "description": "Composite SKUs should map to a Provisioning Target Group containing required Tenants and Tenant Parameter Maps per CSP",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "L&P Provisioning",
+      "enabled": true
+    },
+    {
+      "ruleId": "INT-001",
+      "title": "Integration name must be allowlisted",
+      "description": "Provisioning requires IntegrationName entry in licensing allowlist configuration",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "Licensing Platform",
+      "enabled": true
+    },
+    {
+      "ruleId": "PRICE-001",
+      "title": "Single pricebook per contract constraint",
+      "description": "Composite purchase may fail if required products are split across incompatible pricebooks under one contract",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "Product Ops / Deal Desk",
+      "enabled": true
+    },
+    {
+      "ruleId": "CSP-001",
+      "title": "MuleSoft + Tableau direct composite pairing unsupported",
+      "description": "Current framework supports Core plus another CSP pattern; direct MuleSoft + Tableau bundle should be treated as unsupported unless policy changes",
+      "verdictIfTriggered": "blocked",
+      "recommendedOwner": "L&P Product Strategy",
+      "enabled": true
+    },
+    {
+      "ruleId": "SKU-002",
+      "title": "Slack CSP onboarded but no Org62 composite SKU",
+      "description": "Slack is onboarded in framework but may not have a live composite SKU in Org62",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "L&P Product Operations",
+      "enabled": true
+    },
+    {
+      "ruleId": "FLEX-001",
+      "title": "Flex Foundation prerequisite for MuleSoft base subscriptions",
+      "description": "MuleSoft base composite subscriptions may require Salesforce Flex Foundation entitlement to be present",
+      "verdictIfTriggered": "risky",
+      "recommendedOwner": "Licensing + Deal Configuration",
+      "enabled": true
+    }
+  ]
+}
