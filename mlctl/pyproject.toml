@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "mlctl"
+version = "0.1.0"
+description = "Agentic ML Platform CLI — natural language interface for the full ML lifecycle"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.30.0",
+    "mcp>=1.0.0",
+]
+
+[project.scripts]
+mlctl = "mlctl.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mlctl*", "mock*"]

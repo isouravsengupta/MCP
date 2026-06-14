@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix · Slack</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Lato','Segoe UI',sans-serif;background:#1a1d21;color:#d1d2d3;height:100vh;display:flex;overflow:hidden;font-size:14px}
+
+    /* ════════════════════════════════════
+       FAR LEFT — workspace rail
+    ════════════════════════════════════ */
+    .rail{width:68px;background:#1a1d21;border-right:1px solid #2d2f33;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;flex-shrink:0}
+    .rail-workspace{width:42px;height:42px;background:linear-gradient(135deg,#e50914,#b20710);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0}
+    .rail-workspace svg{width:26px;height:26px;fill:#fff}
+    .rail-workspace::after{content:'';position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:3px;height:20px;background:#fff;border-radius:0 2px 2px 0}
+    .rail-divider{width:32px;height:1px;background:#2d2f33;margin:4px 0}
+    .rail-btn{width:42px;height:42px;border-radius:10px;background:#2d2f33;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#9b9ea4;font-size:22px;transition:all .15s;flex-shrink:0}
+    .rail-btn:hover{background:#3d4046;color:#fff}
+    .rail-btn.active{background:#1164a3}
+    .rail-btn svg{width:20px;height:20px;fill:currentColor}
+    .rail-spacer{flex:1}
+    .rail-avatar{width:36px;height:36px;border-radius:50%;background:#4a154b;border:2px solid #26a268;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
+
+    /* ════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════ */
+    .sidebar{width:260px;background:#1a1d21;border-right:1px solid #2d2f33;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+    .sidebar-header{padding:12px 16px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .sidebar-workspace-name{font-size:17px;font-weight:900;color:#fff;letter-spacing:-.3px}
+    .sidebar-icons{display:flex;gap:8px;color:#9b9ea4}
+    .sidebar-icons span{cursor:pointer;font-size:16px;transition:color .15s}
+    .sidebar-icons span:hover{color:#fff}
+    .sidebar-status{display:flex;align-items:center;gap:6px;padding:0 16px 12px;font-size:13px;color:#9b9ea4}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:#26a268;border:1.5px solid #1a1d21}
+    .sidebar-search{margin:0 8px 8px;background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;font-size:13px;color:#d1d2d3;outline:none;width:calc(100% - 16px)}
+    .sidebar-search::placeholder{color:#6b6f76}
+    .sidebar-scroll{flex:1;overflow-y:auto}
+    .sidebar-scroll::-webkit-scrollbar{width:4px}
+    .sidebar-scroll::-webkit-scrollbar-thumb{background:#3d4046;border-radius:4px}
+    .sidebar-section{padding:4px 0}
+    .sidebar-section-header{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 2px 8px;cursor:pointer}
+    .sidebar-section-title{font-size:13px;font-weight:700;color:#9b9ea4;display:flex;align-items:center;gap:4px}
+    .sidebar-section-title .arrow{font-size:10px;transition:transform .15s}
+    .sidebar-section-add{color:#9b9ea4;font-size:16px;opacity:0;transition:opacity .15s}
+    .sidebar-section-header:hover .sidebar-section-add{opacity:1}
+    .sidebar-item{display:flex;align-items:center;gap:8px;padding:4px 8px 4px 16px;border-radius:4px;cursor:pointer;color:#9b9ea4;transition:all .1s;margin:0 4px;user-select:none}
+    .sidebar-item:hover{background:#2d2f33;color:#d1d2d3}
+    .sidebar-item.active{background:#1164a3;color:#fff}
+    .sidebar-item.active .item-prefix{color:#fff}
+    .item-prefix{font-size:16px;width:16px;text-align:center;flex-shrink:0;color:#6b6f76}
+    .item-name{flex:1;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .item-badge{background:#e01e5a;color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 6px;min-width:18px;text-align:center;flex-shrink:0}
+    .item-count{font-size:12px;color:#9b9ea4}
+    .dm-avatar{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+    .online-badge{width:8px;height:8px;border-radius:50%;background:#26a268;border:1.5px solid #1a1d21;flex-shrink:0}
+
+    /* ════════════════════════════════════
+       MIDDLE — channel
+    ════════════════════════════════════ */
+    .channel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+    .channel-header{height:49px;border-bottom:1px solid #2d2f33;display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0}
+    .channel-header-left{display:flex;align-items:center;gap:8px}
+    .channel-title{font-size:16px;font-weight:700;color:#fff}
+    .channel-members{display:flex;align-items:center;gap:4px;font-size:13px;color:#9b9ea4;background:#2d2f33;border-radius:20px;padding:3px 10px;cursor:pointer;transition:all .15s}
+    .channel-members:hover{background:#3d4046}
+    .channel-tabs{display:flex;align-items:center;gap:0;padding:0 16px;border-bottom:1px solid #2d2f33;flex-shrink:0;overflow-x:auto}
+    .channel-tab{padding:10px 14px;font-size:13px;color:#9b9ea4;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+    .channel-tab:hover{color:#d1d2d3}
+    .channel-tab.active{color:#fff;border-bottom-color:#fff}
+    .channel-feed{flex:1;overflow-y:auto;padding:16px}
+    .channel-feed::-webkit-scrollbar{width:4px}
+    .channel-feed::-webkit-scrollbar-thumb{background:#3d4046;border-radius:4px}
+    .day-divider{display:flex;align-items:center;gap:10px;margin:16px 0 8px;color:#6b6f76;font-size:12px;font-weight:700}
+    .day-divider::before,.day-divider::after{content:'';flex:1;height:1px;background:#2d2f33}
+    .feed-msg{display:flex;gap:10px;padding:4px 8px;border-radius:6px;margin:1px 0;transition:background .1s}
+    .feed-msg:hover{background:#222529}
+    .feed-avatar{width:36px;height:36px;border-radius:8px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+    .feed-body{flex:1;min-width:0}
+    .feed-meta{display:flex;align-items:baseline;gap:6px;margin-bottom:2px}
+    .feed-name{font-size:15px;font-weight:700;color:#fff}
+    .feed-app{font-size:10px;background:#1164a3;color:#fff;border-radius:3px;padding:1px 5px;font-weight:700}
+    .feed-time{font-size:11px;color:#6b6f76}
+    .feed-text{font-size:14px;line-height:1.55;color:#d1d2d3}
+    .feed-text code{background:#2d2f33;border-radius:3px;padding:1px 5px;font-family:'SF Mono',monospace;font-size:12px;color:#e8912d}
+    .workflow-badge{display:inline-flex;align-items:center;gap:4px;background:#1c3a5e;border:1px solid #1164a3;border-radius:4px;padding:2px 8px;font-size:11px;color:#1d9bd1;font-weight:600;margin-bottom:4px}
+    .channel-input-area{padding:0 16px 16px;flex-shrink:0}
+    .channel-input-box{background:#2d2f33;border:1px solid #3d4046;border-radius:8px;overflow:hidden}
+    .input-toolbar{display:flex;align-items:center;gap:2px;padding:6px 8px;border-bottom:1px solid #3d4046}
+    .tb-btn{background:none;border:none;color:#6b6f76;font-size:15px;cursor:pointer;padding:3px 5px;border-radius:3px;transition:all .15s;line-height:1}
+    .tb-btn:hover{background:#3d4046;color:#d1d2d3}
+    .tb-divider{width:1px;height:16px;background:#3d4046;margin:0 3px}
+    .input-row{display:flex;align-items:flex-end;gap:8px;padding:8px 10px}
+    textarea{flex:1;background:transparent;border:none;outline:none;color:#d1d2d3;font-size:14px;font-family:inherit;resize:none;min-height:22px;max-height:100px;line-height:1.5}
+    textarea::placeholder{color:#6b6f76}
+    .send-btn{width:32px;height:32px;background:#007a5a;border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+    .send-btn:hover{background:#00a67e}
+    .send-btn:disabled{background:#2d2f33;cursor:not-allowed}
+    .send-btn svg{width:16px;height:16px;fill:#fff}
+
+    /* ════════════════════════════════════
+       RIGHT PANEL — Slackbot (mlctl)
+    ════════════════════════════════════ */
+    .rightpanel{width:380px;min-width:280px;max-width:720px;border-left:1px solid #2d2f33;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;background:#1a1d21;position:relative}
+    .rp-resize-handle{position:absolute;left:0;top:0;bottom:0;width:5px;cursor:ew-resize;z-index:10;background:transparent;transition:background .15s}
+    .rp-resize-handle:hover,.rp-resize-handle.dragging{background:rgba(17,100,163,.5)}
+    .rp-header{height:49px;border-bottom:1px solid #2d2f33;display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0}
+    .rp-title{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+    .rp-bot-icon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff}
+    .rp-close{color:#9b9ea4;font-size:18px;cursor:pointer;transition:color .15s;padding:4px}
+    .rp-close:hover{color:#fff}
+    .rp-tabs{display:flex;border-bottom:1px solid #2d2f33;padding:0 8px;overflow-x:auto;flex-shrink:0}
+    .rp-tabs::-webkit-scrollbar{display:none}
+    .rp-tab{padding:10px 10px;font-size:13px;color:#9b9ea4;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+    .rp-tab:hover{color:#d1d2d3}
+    .rp-tab.active{color:#fff;border-bottom-color:#fff}
+    .rp-messages{flex:1;overflow-y:auto;padding:16px 12px 8px}
+    .rp-messages::-webkit-scrollbar{width:4px}
+    .rp-messages::-webkit-scrollbar-thumb{background:#3d4046;border-radius:4px}
+
+    /* Welcome card in right panel */
+    .rp-welcome{text-align:center;padding:24px 16px 16px}
+    .rp-welcome-icon{width:72px;height:72px;border-radius:16px;background:linear-gradient(135deg,#e50914,#ff6b35);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff}
+    .rp-welcome h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:6px}
+    .rp-welcome p{font-size:13px;color:#9b9ea4;line-height:1.5}
+    .rp-card{background:#222529;border:1px solid #2d2f33;border-radius:8px;padding:12px 14px;margin:8px 0;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+    .rp-card:hover{background:#2d2f33;border-color:#3d4046}
+    .rp-card-icon{font-size:20px;flex-shrink:0}
+    .rp-card-text{flex:1}
+    .rp-card-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+    .rp-card-desc{font-size:12px;color:#9b9ea4}
+    .rp-card-arrow{color:#9b9ea4;font-size:16px}
+
+    /* Bot messages in right panel */
+    .rp-bot-msg{margin:8px 0}
+    .rp-bot-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+    .rp-bot-name{font-size:13px;font-weight:700;color:#f5a623}
+    .rp-bot-badge{font-size:10px;background:#1164a3;color:#fff;border-radius:3px;padding:1px 5px;font-weight:700}
+    .rp-bot-time{font-size:11px;color:#6b6f76}
+    .rp-bot-bubble{background:#222529;border:1px solid #2d2f33;border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.6;color:#d1d2d3}
+    .rp-bot-bubble code{background:#1a1d21;border-radius:3px;padding:1px 5px;font-family:'SF Mono',monospace;font-size:11px;color:#e8912d}
+    .rp-user-msg{text-align:right;margin:8px 0}
+    .rp-user-bubble{display:inline-block;background:#1164a3;border-radius:8px;padding:8px 12px;font-size:13px;color:#fff;text-align:left;max-width:90%}
+    .rp-user-meta{font-size:11px;color:#6b6f76;margin-top:3px}
+
+    /* Tool block in right panel */
+    .rp-tool{background:#1a1d21;border:1px solid #2d2f33;border-left:3px solid #e01e5a;border-radius:6px;padding:8px 10px;margin:6px 0;font-family:'SF Mono',monospace;font-size:11px}
+    .rp-tool-header{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+    .rp-tool-name{color:#e8912d;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.4px}
+    .rp-tool-ok{color:#26a268;font-size:10px}
+    .rp-tool-sql{background:#0d1117;border-radius:3px;padding:4px 6px;color:#79c0ff;font-size:10px;margin:3px 0;word-break:break-all}
+    .rp-tool-result{color:#8b949e;font-size:10px;max-height:50px;overflow:hidden;position:relative}
+    .rp-tool-result::after{content:'';position:absolute;bottom:0;left:0;right:0;height:14px;background:linear-gradient(transparent,#1a1d21)}
+
+    /* Charts in right panel */
+    .rp-chart-wrap{background:#1a1d21;border:1px solid #2d2f33;border-radius:8px;padding:12px;margin:8px 0}
+    .rp-chart-title{font-size:11px;font-weight:700;color:#9b9ea4;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+    .rp-chart-tabs{display:flex;gap:4px;margin-bottom:10px}
+    .rp-chart-tab{font-size:11px;padding:3px 8px;border-radius:4px;cursor:pointer;color:#9b9ea4;background:#2d2f33;border:1px solid #3d4046;transition:all .15s}
+    .rp-chart-tab.active{background:#1164a3;border-color:#1164a3;color:#fff}
+    .rp-chart-canvas-wrap{position:relative;height:180px}
+
+    /* Typing in right panel */
+    .rp-typing{display:flex;align-items:center;gap:6px;padding:6px 0;color:#6b6f76;font-size:12px}
+    .rp-typing-avatar{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;flex-shrink:0}
+    .typing-dots{display:flex;gap:3px}
+    .typing-dot{width:5px;height:5px;background:#6b6f76;border-radius:50%;animation:td 1.2s ease-in-out infinite}
+    .typing-dot:nth-child(2){animation-delay:.2s}
+    .typing-dot:nth-child(3){animation-delay:.4s}
+    @keyframes td{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+    /* Right panel input */
+    .rp-input-area{padding:0 12px 12px;flex-shrink:0}
+    .rp-input-box{background:#2d2f33;border:1px solid #3d4046;border-radius:8px;overflow:hidden}
+    .rp-input-row{display:flex;align-items:flex-end;gap:6px;padding:8px 10px}
+    .rp-toolbar{display:flex;align-items:center;gap:2px;padding:5px 8px;border-bottom:1px solid #3d4046}
+
+    /* Model config dropdown */
+    .model-dropdown{position:absolute;top:48px;right:12px;background:#222529;border:1px solid #3d4046;border-radius:8px;padding:12px;z-index:100;min-width:280px;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
+    .model-dropdown.open{display:block}
+    .md-section{margin-bottom:12px}
+    .md-label{font-size:11px;color:#6b6f76;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .md-providers{display:flex;gap:6px;flex-wrap:wrap}
+    .md-provider{background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;font-size:12px;color:#9b9ea4;cursor:pointer;transition:all .15s}
+    .md-provider:hover{border-color:#555;color:#d1d2d3}
+    .md-provider.active{background:#1164a3;border-color:#1164a3;color:#fff}
+    .md-provider.disabled{opacity:.35;cursor:not-allowed}
+    .md-select{width:100%;background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:6px 10px;color:#d1d2d3;font-size:13px;outline:none}
+    .md-key{width:100%;background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:6px 10px;color:#d1d2d3;font-size:13px;outline:none}
+    .md-key::placeholder{color:#4a4e57}
+    .md-apply{width:100%;background:#007a5a;border:none;border-radius:6px;padding:7px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-top:6px;transition:opacity .15s}
+    .md-apply:hover{opacity:.85}
+    .md-note{font-size:10px;color:#4a4e57;margin-top:3px}
+  </style>
+</head>
+<body>
+
+<!-- ══ RAIL ══ -->
+<div class="rail">
+  <div class="rail-workspace" title="Netflix AI Platform">
+    <svg viewBox="0 0 111 30"><path d="M105.062 14.986l-3.104-8.553v8.553h-3.19V.022h3.017l3.29 8.85V.022h3.167v14.964h-3.18zm-8.37 0V.022h-3.19v14.964h3.19zM87.2 2.875v12.111h-3.19V2.875h-3.63V.022h10.452v2.853H87.2zm-7.998 12.11H72.9l-3.35-14.963h3.307l1.94 9.955 1.876-9.955h3.35l-3.82 14.964zm-12.98 0V.022h-3.19v14.964h3.19zm-6.62 0H54.23V.022h5.37v2.853h-2.18v3.354h2.18v2.853h-2.18v2.905h2.18v2.998zm-8.59 0L49.1 8.1l-1.27 6.887h-3.1L46.86.022h3.078l2.286 8.552L54.51.022h3.08l2.13 14.964h-3.1l-1.27-6.887-1.915 6.887h-3.423zM38.29 2.875v12.111H35.1V2.875h-3.63V.022H41.92v2.853H38.29zm-7.97 12.11h-6.4V.022h3.19v12.11h3.21v2.853zm-9.36-7.482c0 4.675-2.05 7.482-5.48 7.482-3.43 0-5.48-2.807-5.48-7.482S12.05.022 15.48.022c3.43 0 5.48 2.807 5.48 7.482zm-3.19 0c0-3.19-.77-4.63-2.29-4.63-1.52 0-2.29 1.44-2.29 4.63 0 3.19.77 4.63 2.29 4.63 1.52 0 2.29-1.44 2.29-4.63zM5.16 14.986H2V.022h3.16v14.964z"/></svg>
+  </div>
+  <div class="rail-divider"></div>
+  <div class="rail-btn active" title="Home">
+    <svg viewBox="0 0 20 20"><path d="M10 2L2 9h2v9h5v-5h2v5h5V9h2L10 2z"/></svg>
+  </div>
+  <div class="rail-btn" title="DMs">
+    <svg viewBox="0 0 20 20"><path d="M18 2H2a1 1 0 00-1 1v11a1 1 0 001 1h3v3l4-3h9a1 1 0 001-1V3a1 1 0 00-1-1z"/></svg>
+  </div>
+  <div class="rail-btn" title="Activity">
+    <svg viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
+  </div>
+  <div class="rail-btn" title="More">
+    <svg viewBox="0 0 20 20"><circle cx="4" cy="10" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="16" cy="10" r="1.5"/></svg>
+  </div>
+  <div class="rail-spacer"></div>
+  <img src="/static/me.jpg" onerror="this.outerHTML='<div class=\'rail-avatar\' onclick=\'showSouravProfile()\' title=\'Sourav Sengupta\'>S</div>'" style="width:36px;height:36px;border-radius:50%;border:2px solid #26a268;object-fit:cover;cursor:pointer" title="Sourav Sengupta" onclick="showSouravProfile()"/>
+</div>
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-workspace-name">Netflix <span style="color:#9b9ea4;font-size:13px">▾</span></div>
+    <div class="sidebar-icons">
+      <span title="Edit">✏️</span>
+      <span title="Settings">⚙️</span>
+    </div>
+  </div>
+  <div class="sidebar-status" onclick="showSouravProfile()" style="cursor:pointer" onmouseover="this.style.color='#d1d2d3'" onmouseout="this.style.color=''">
+    <div class="status-dot"></div>
+    <span>Sourav Sengupta</span>
+  </div>
+  <input class="sidebar-search" placeholder="🔍 Find a conversation…"/>
+  <div class="sidebar-scroll">
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-header" onclick="toggleSection('channels-body',this)">
+        <div class="sidebar-section-title"><span class="arrow">▾</span> Channels</div>
+        <span class="sidebar-section-add" onclick="event.stopPropagation()">＋</span>
+      </div>
+      <div id="channels-body">
+      <div class="sidebar-item active" onclick="switchChannel('ml-platform')" id="ch-ml-platform">
+        <span class="item-prefix">#</span><span class="item-name">ml-platform</span>
+      </div>
+      <div class="sidebar-item" onclick="switchChannel('experiments')" id="ch-experiments">
+        <span class="item-prefix">#</span><span class="item-name">experiments</span><span class="item-badge">3</span>
+      </div>
+      <div class="sidebar-item" onclick="switchChannel('deployments')" id="ch-deployments">
+        <span class="item-prefix">#</span><span class="item-name">deployments</span>
+      </div>
+      <div class="sidebar-item" onclick="switchChannel('pipelines')" id="ch-pipelines">
+        <span class="item-prefix">#</span><span class="item-name">pipelines</span>
+      </div>
+      <div class="sidebar-item" onclick="switchChannel('data-queries')" id="ch-data-queries">
+        <span class="item-prefix">#</span><span class="item-name">data-queries</span>
+      </div>
+      <div class="sidebar-item" onclick="switchChannel('model-registry')" id="ch-model-registry">
+        <span class="item-prefix">#</span><span class="item-name">model-registry</span>
+      </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-header" onclick="toggleSection('dms-body',this)">
+        <div class="sidebar-section-title"><span class="arrow">▾</span> Direct messages</div>
+        <span class="sidebar-section-add" onclick="event.stopPropagation()">＋</span>
+      </div>
+      <div id="dms-body">
+      <div class="sidebar-item active" style="background:#1164a3">
+        <div class="dm-avatar" style="background:linear-gradient(135deg,#e50914,#ff6b35);color:#fff">ml</div>
+        <span class="item-name">mlctl</span>
+        <div class="online-badge"></div>
+      </div>
+      <div class="sidebar-item" onclick="showHanProfile()">
+        <img src="/static/han.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:18px;height:18px;border-radius:4px;object-fit:cover;flex-shrink:0"/><div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#1164a3,#0b4d8a);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;flex-shrink:0;display:none">HZ</div>
+        <span class="item-name">han.zhang</span>
+        <div class="online-badge" style="background:#26a268"></div>
+      </div>
+      <div class="sidebar-item" onclick="showSouravProfile()">
+        <img src="/static/me.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:18px;height:18px;border-radius:4px;object-fit:cover;flex-shrink:0"/>
+        <div class="dm-avatar" style="background:#4a154b;color:#fff;display:none">S</div>
+        <span class="item-name">Sourav Sengupta</span>
+        <span style="font-size:11px;color:#6b6f76">· you</span>
+      </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ CHANNEL (middle) ══ -->
+<div class="channel">
+  <div class="channel-header">
+    <div class="channel-header-left">
+      <span style="font-size:18px;color:#9b9ea4">#</span>
+      <span class="channel-title" id="channelTitle">ml-platform</span>
+      <span style="color:#6b6f76;font-size:13px;margin-left:4px" id="channelMemberCount">1,944</span>
+      <span style="color:#6b6f76;font-size:16px;cursor:pointer">🔔</span>
+      <span style="color:#6b6f76;font-size:16px;cursor:pointer">🔍</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="channel-members" onclick="toggleRightPanel()" id="slackbotToggleBtn" title="Toggle Slackbot panel">
+        🤖 <span>Slackbot</span>
+      </div>
+      <div class="channel-members" title="Members">👥 <span>4</span></div>
+    </div>
+  </div>
+  <div class="channel-tabs">
+    <div class="channel-tab active">Messages</div>
+    <div class="channel-tab">Pins</div>
+    <div class="channel-tab">Files</div>
+    <div class="channel-tab">Integrations ▾</div>
+    <div class="channel-tab">More ▾</div>
+  </div>
+  <div class="channel-feed" id="channelFeed">
+    <div class="day-divider">Today</div>
+    <div class="feed-msg">
+      <div class="feed-avatar" style="background:linear-gradient(135deg,#e50914,#ff6b35);color:#fff">ml</div>
+      <div class="feed-body">
+        <div class="feed-meta">
+          <span class="feed-name">mlctl</span>
+          <span class="feed-app">APP</span>
+          <span class="feed-time">9:00 AM</span>
+        </div>
+        <div class="feed-text">👋 <strong>mlctl is live in this channel.</strong> Mention <code>@mlctl</code> or use the <strong>Slackbot panel →</strong> to run ML platform operations. I'm connected to the Netflix AI Platform.</div>
+      </div>
+    </div>
+  </div>
+  <div class="channel-input-area">
+    <div class="channel-input-box">
+      <div class="input-toolbar">
+        <button class="tb-btn">𝐁</button><button class="tb-btn">𝐼</button><button class="tb-btn">S̶</button>
+        <div class="tb-divider"></div>
+        <button class="tb-btn">🔗</button><button class="tb-btn" onclick="mentionMlctl()">@</button><button class="tb-btn">📎</button>
+      </div>
+      <div class="input-row">
+        <textarea id="channelInput" placeholder="Message #ml-platform" rows="1" onkeydown="handleChannelKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="channelSendBtn" onclick="sendChannelMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RIGHT PANEL — Slackbot ══ -->
+<div class="rightpanel" id="rightPanel">
+  <div class="rp-resize-handle" id="rpResizeHandle"></div>
+
+  <div class="rp-header">
+    <div class="rp-title">
+      <div class="rp-bot-icon">ml</div>
+      Slackbot
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="font-size:13px;color:#9b9ea4;cursor:pointer;background:#2d2f33;border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px" onclick="toggleModelDropdown()">
+        <span style="color:#26a268">●</span>
+        <span id="rpProvider">Ollama</span>
+        <span style="color:#6b6f76" id="rpModel">llama3.2</span>
+        <span style="color:#4a4e57">▾</span>
+      </div>
+      <span class="rp-close" onclick="document.querySelector('.rightpanel').style.display='none'">✕</span>
+    </div>
+  </div>
+
+  <!-- model dropdown -->
+  <div class="model-dropdown" id="modelDropdown">
+    <div class="md-section">
+      <div class="md-label">Provider</div>
+      <div class="md-providers">
+        <div class="md-provider active" data-provider="ollama" onclick="selectProvider('ollama',this)">💻 Ollama <span style="color:#26a268;font-size:10px">local</span></div>
+        <div class="md-provider" data-provider="openai" onclick="selectProvider('openai',this)">🤖 OpenAI</div>
+        <div class="md-provider" data-provider="anthropic" onclick="selectProvider('anthropic',this)">🧠 Anthropic</div>
+        <div class="md-provider" data-provider="azure" onclick="selectProvider('azure',this)">☁️ Azure</div>
+        <div class="md-provider disabled" title="Requires Netflix internal SDK">🎬 Netflix Internal</div>
+      </div>
+    </div>
+    <div class="md-section">
+      <div class="md-label">Model</div>
+      <select class="md-select" id="modelSelect">
+        <option>ollama/llama3.2</option>
+      </select>
+    </div>
+    <div class="md-section" id="keyGroup" style="display:none">
+      <div class="md-label">API Key <span class="md-note">(session only · never stored)</span></div>
+      <input type="password" class="md-key" id="apiKeyInput" placeholder="Paste your API key…"/>
+    </div>
+    <button class="md-apply" onclick="applyConfig()">Apply model →</button>
+  </div>
+
+  <div class="rp-tabs">
+    <div class="rp-tab active">Messages</div>
+    <div class="rp-tab">History</div>
+    <div class="rp-tab">Skills</div>
+    <div class="rp-tab">Tasks</div>
+    <div class="rp-tab">Files &amp; links</div>
+  </div>
+
+  <div class="rp-messages" id="rpMessages">
+    <!-- Welcome -->
+    <div class="rp-welcome">
+      <div class="rp-welcome-icon">ml</div>
+      <h3>Good afternoon, Sourav!</h3>
+      <p>I'm <strong>mlctl</strong> — your Netflix AI Platform agent. Ask me to run experiments, deploy models, query the platform, or orchestrate the full ML lifecycle.</p>
+    </div>
+    <div class="rp-card" onclick="sendBot('Show me all recent experiments with their accuracy metrics')">
+      <div class="rp-card-icon">🧪</div>
+      <div class="rp-card-text">
+        <div class="rp-card-title">Explore experiments</div>
+        <div class="rp-card-desc">List recent training runs with metrics</div>
+      </div>
+      <div class="rp-card-arrow">›</div>
+    </div>
+    <div class="rp-card" onclick="sendBot('Compare all experiments, find the best one by accuracy, register it as netflix_recommender and deploy it to staging')">
+      <div class="rp-card-icon">🚀</div>
+      <div class="rp-card-text">
+        <div class="rp-card-title">Full ML lifecycle</div>
+        <div class="rp-card-desc">Compare → register → deploy in one shot</div>
+      </div>
+      <div class="rp-card-arrow">›</div>
+    </div>
+    <div class="rp-card" onclick="sendBot('Use natural_language_query to find all experiments with accuracy above 0.92. Show me the SQL that was generated.')">
+      <div class="rp-card-icon">🔍</div>
+      <div class="rp-card-text">
+        <div class="rp-card-title">Text-to-SQL query</div>
+        <div class="rp-card-desc">Natural language → real SQL → results</div>
+      </div>
+      <div class="rp-card-arrow">›</div>
+    </div>
+    <div class="rp-card" onclick="sendBot('What models are currently deployed and are any ready for production?')">
+      <div class="rp-card-icon">📦</div>
+      <div class="rp-card-text">
+        <div class="rp-card-title">Model status</div>
+        <div class="rp-card-desc">Check deployments and registry</div>
+      </div>
+      <div class="rp-card-arrow">›</div>
+    </div>
+  </div>
+
+  <div class="rp-input-area">
+    <div class="rp-input-box">
+      <div class="rp-toolbar">
+        <button class="tb-btn">𝐁</button><button class="tb-btn">𝐼</button><button class="tb-btn">⌨</button>
+        <div class="tb-divider"></div>
+        <button class="tb-btn">📎</button>
+      </div>
+      <div class="rp-input-row">
+        <textarea id="botInput" placeholder="Ask mlctl anything about your ML platform…" rows="1" onkeydown="handleBotKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="botSendBtn" onclick="sendBotMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ SOURAV SENGUPTA PROFILE OVERLAY ══ -->
+<div id="souravProfile" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+  <div style="background:#222529;border-radius:12px;width:340px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);position:relative">
+    <div style="height:80px;background:linear-gradient(135deg,#4a154b,#7c3085);position:relative">
+      <div onclick="document.getElementById('souravProfile').style.display='none'" style="position:absolute;top:10px;right:12px;color:#ffffff99;font-size:18px;cursor:pointer;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center">✕</div>
+    </div>
+    <div style="padding:0 20px;margin-top:-40px;display:flex;align-items:flex-end;justify-content:space-between">
+      <div style="position:relative">
+        <img src="/static/me.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:80px;height:80px;border-radius:50%;border:4px solid #222529;object-fit:cover"/>
+        <div style="width:80px;height:80px;border-radius:50%;border:4px solid #222529;background:linear-gradient(135deg,#4a154b,#7c3085);display:none;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff">S</div>
+        <div style="position:absolute;bottom:4px;right:4px;width:14px;height:14px;border-radius:50%;background:#26a268;border:2px solid #222529"></div>
+      </div>
+      <button style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:7px 16px;color:#d1d2d3;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px" onclick="document.getElementById('souravProfile').style.display='none'">Edit profile</button>
+    </div>
+    <div style="padding:12px 20px 20px">
+      <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:2px">Sourav Sengupta</div>
+      <div style="font-size:13px;color:#9b9ea4;margin-bottom:12px">Software Engineer 5 – Model Development and Management, AI Platform</div>
+      <div style="background:#1a1d21;border-radius:8px;padding:12px;margin-bottom:12px">
+        <div style="font-size:11px;color:#6b6f76;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">About</div>
+        <div style="font-size:13px;color:#d1d2d3;line-height:1.55">Building intelligent ML platform tooling and agentic infrastructure. Passionate about developer experience, model lifecycle management, and data engineering at scale. 🎬</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>🏢</span><span style="color:#d1d2d3">Netflix</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>🕐</span><span>Local time <strong style="color:#d1d2d3" id="souravTime"></strong></span>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #2d2f33">
+        <div style="font-size:11px;color:#6b6f76;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Channels</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># ml-platform</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># experiments</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># deployments</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># pipelines</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># model-registry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HAN ZHANG PROFILE OVERLAY ══ -->
+<div id="hanProfile" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.6);align-items:center;justify-content:center">
+  <div style="background:#222529;border-radius:12px;width:340px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);position:relative">
+
+    <!-- Banner -->
+    <div style="height:80px;background:linear-gradient(135deg,#e50914,#b20710);position:relative">
+      <div onclick="document.getElementById('hanProfile').style.display='none'" style="position:absolute;top:10px;right:12px;color:#ffffff99;font-size:18px;cursor:pointer;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center">✕</div>
+    </div>
+
+    <!-- Avatar -->
+    <div style="padding:0 20px;margin-top:-40px;display:flex;align-items:flex-end;justify-content:space-between">
+      <div style="position:relative">
+        <img src="/static/han.jpg" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:80px;height:80px;border-radius:50%;border:4px solid #222529;object-fit:cover"/><div style="width:80px;height:80px;border-radius:50%;border:4px solid #222529;background:linear-gradient(135deg,#1164a3,#0b4d8a);display:none;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff">HZ</div>
+        <div style="position:absolute;bottom:4px;right:4px;width:14px;height:14px;border-radius:50%;background:#26a268;border:2px solid #222529"></div>
+      </div>
+      <button onclick="openDmWithHan()" style="background:#007a5a;border:none;border-radius:6px;padding:7px 16px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Message</button>
+    </div>
+
+    <!-- Info -->
+    <div style="padding:12px 20px 20px">
+      <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:2px">Han Zhang</div>
+      <div style="font-size:13px;color:#9b9ea4;margin-bottom:12px">Engineering Manager, AI Platform</div>
+
+      <div style="background:#1a1d21;border-radius:8px;padding:12px;margin-bottom:12px">
+        <div style="font-size:11px;color:#6b6f76;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">About</div>
+        <div style="font-size:13px;color:#d1d2d3;line-height:1.55">Building scalable ML infrastructure and developer-facing tooling that empowers ML researchers and data scientists at global scale. 🎬</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>🏢</span><span style="color:#d1d2d3">Netflix</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>📍</span><span>Los Gatos, CA</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>🕐</span><span>Local time <strong style="color:#d1d2d3" id="hanTime"></strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#9b9ea4">
+          <span>💼</span><span>Previously: AWS Elastic MapReduce · Cisco Security</span>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid #2d2f33">
+        <div style="font-size:11px;color:#6b6f76;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Channels</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># ml-platform</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># experiments</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># deployments</span>
+          <span style="background:#2d2f33;border-radius:4px;padding:3px 8px;font-size:12px;color:#9b9ea4"># model-registry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MODELS={
+    ollama:['ollama/llama3.2','ollama/llama3.1','ollama/mistral','ollama/gemma2'],
+    openai:['gpt-4o-mini','gpt-4o','gpt-3.5-turbo'],
+    anthropic:['claude-haiku-4-5-20251001','claude-sonnet-4-6','claude-opus-4-8'],
+    azure:['azure/gpt-4o-mini','azure/gpt-4o'],
+  };
+  let cfg={provider:'ollama',model:'ollama/llama3.2',apiKey:''};
+
+  function now(){return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});}
+
+  // ── Model config ──
+  function toggleModelDropdown(){document.getElementById('modelDropdown').classList.toggle('open');}
+  document.addEventListener('click',e=>{if(!e.target.closest('#modelDropdown')&&!e.target.closest('[onclick="toggleModelDropdown()"]'))document.getElementById('modelDropdown').classList.remove('open');});
+
+  function selectProvider(p,btn){
+    document.querySelectorAll('.md-provider').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const sel=document.getElementById('modelSelect');
+    sel.innerHTML=(MODELS[p]||[]).map(m=>`<option value="${m}">${m.split('/').pop()}</option>`).join('');
+    document.getElementById('keyGroup').style.display=p==='ollama'?'none':'block';
+  }
+
+  function applyConfig(){
+    const p=document.querySelector('.md-provider.active')?.dataset.provider||'ollama';
+    const m=document.getElementById('modelSelect').value;
+    const k=document.getElementById('apiKeyInput').value.trim();
+    cfg={provider:p,model:m,apiKey:k};
+    document.getElementById('rpProvider').textContent=p.charAt(0).toUpperCase()+p.slice(1);
+    document.getElementById('rpModel').textContent=m.split('/').pop();
+    document.getElementById('modelDropdown').classList.remove('open');
+    fetch('/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'',provider:p,model:m})});
+  }
+
+  // ── Channel ──
+  function switchChannel(id){
+    document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+    const el=document.getElementById('ch-'+id);
+    if(el){el.classList.add('active');const b=el.querySelector('.item-badge');if(b)b.remove();}
+    document.getElementById('channelTitle').textContent=id;
+    document.getElementById('channelInput').placeholder=`Message #${id}`;
+  }
+
+  function mentionMlctl(){
+    const ta=document.getElementById('channelInput');
+    ta.value+='@mlctl ';ta.focus();
+  }
+
+  function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+  function handleChannelKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChannelMessage();}}
+  function handleBotKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendBotMessage();}}
+
+  function sendChannelMessage(){
+    const ta=document.getElementById('channelInput');
+    const text=ta.value.trim();
+    if(!text)return;
+    ta.value='';ta.style.height='auto';
+    addChannelMessage('Sourav Sengupta',text,'#4a154b','S');
+    // if message mentions @mlctl, route to bot
+    if(text.toLowerCase().includes('@mlctl')||text.startsWith('/')){
+      const clean=text.replace(/@mlctl\s*/gi,'').trim();
+      setTimeout(()=>sendBot(clean||text,true),300);
+    }
+  }
+
+  function addChannelMessage(name,text,bg,initials){
+    const feed=document.getElementById('channelFeed');
+    const row=document.createElement('div');
+    row.className='feed-msg';
+    row.innerHTML=`
+      <img src="/static/me.jpg" onerror="this.outerHTML='<div class=\'feed-avatar\' style=\'background:${bg};color:#fff\'>${initials}</div>'" style="width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;margin-top:2px"/>
+      <div class="feed-body">
+        <div class="feed-meta"><span class="feed-name">${name}</span><span class="feed-time">${now()}</span></div>
+        <div class="feed-text">${escHtml(text)}</div>
+      </div>`;
+    feed.appendChild(row);
+    feed.scrollTop=feed.scrollHeight;
+  }
+
+  function addChannelBotResponse(text, toolCalls){
+    const feed=document.getElementById('channelFeed');
+    const row=document.createElement('div');
+    row.className='feed-msg';
+    const toolCount=toolCalls&&toolCalls.length?`<span style="font-size:11px;color:#6b6f76;margin-left:4px">(${toolCalls.length} tool${toolCalls.length>1?'s':''} called)</span>`:'';
+    row.innerHTML=`
+      <div class="feed-avatar" style="background:linear-gradient(135deg,#e50914,#ff6b35);color:#fff">ml</div>
+      <div class="feed-body">
+        <div class="feed-meta"><span class="feed-name">mlctl</span><span class="feed-app">APP</span>${toolCount}<span class="feed-time">${now()}</span></div>
+        <div class="feed-text">${formatText(text)}</div>
+      </div>`;
+    feed.appendChild(row);
+    feed.scrollTop=feed.scrollHeight;
+  }
+
+  // ── Slackbot panel ──
+  function sendBot(text, fromChannel=false){
+    if(!fromChannel){
+      // show user message in right panel
+      addBotUserMsg(text);
+    }
+    addBotTyping();
+    document.getElementById('botInput').value='';
+
+    fetch('/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text,provider:cfg.provider,model:cfg.model,api_key:cfg.apiKey})
+    }).then(r=>r.json()).then(data=>{
+      removeBotTyping();
+      addBotResponse(data.response,data.tool_calls);
+      // echo summary in channel feed
+      addChannelBotResponse(data.response.slice(0,200)+(data.response.length>200?'…':''),data.tool_calls);
+    }).catch(()=>{
+      removeBotTyping();
+      addBotResponse('⚠️ Something went wrong. Check the server is running.',[]);
+    });
+  }
+
+  function sendBotMessage(){
+    const text=document.getElementById('botInput').value.trim();
+    if(!text)return;
+    document.getElementById('botInput').style.height='auto';
+    sendBot(text);
+  }
+
+  function addBotUserMsg(text){
+    const msgs=document.getElementById('rpMessages');
+    const el=document.createElement('div');
+    el.className='rp-user-msg';
+    el.innerHTML=`
+      <div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:6px">
+        <div class="rp-user-bubble">${escHtml(text)}</div>
+        <img src="/static/me.jpg" onerror="this.outerHTML='<div style=\'width:24px;height:24px;border-radius:6px;background:#4a154b;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:700\'>S</div>'" style="width:24px;height:24px;border-radius:6px;object-fit:cover;flex-shrink:0"/>
+      </div>
+      <div class="rp-user-meta">${now()}</div>`;
+    msgs.appendChild(el);
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  // ── Chart helpers ──
+  const CHART_COLORS=['#e50914','#1164a3','#26a268','#f5a623','#e01e5a','#1d9bd1','#7c3085'];
+  let _chartCount=0;
+
+  function extractChartData(toolCalls){
+    let experiments=[], models=[], pipelines=[];
+    for(const c of (toolCalls||[])){
+      const r=c.result;
+      if(!r) continue;
+      // list_experiments returns array directly; compare_runs returns {experiments:[...]}
+      let rows=Array.isArray(r)?r:(r.rows||r.experiments||r.models||r.pipelines||[]);
+      // compare_runs also nests under experiments key
+      if(r.experiments&&Array.isArray(r.experiments)) rows=r.experiments;
+      if(!rows.length) continue;
+      const first=rows[0];
+      if('accuracy' in first||'loss' in first||'run_id' in first) experiments.push(...rows);
+      else if('stage' in first&&('framework' in first||'model_name' in first)) models.push(...rows);
+      else if('last_run' in first||('status' in first&&'name' in first&&!('accuracy' in first))) pipelines.push(...rows);
+    }
+    return {experiments, models, pipelines};
+  }
+
+  function buildExperimentCharts(experiments, containerId){
+    const wrap=document.getElementById(containerId);
+    if(!wrap||!experiments.length) return;
+
+    // Prepare data
+    const labels=experiments.map(e=>e.run_id||e.name||'run');
+    const accuracy=experiments.map(e=>parseFloat(e.accuracy||e.val_accuracy||0));
+    const loss=experiments.map(e=>parseFloat(e.loss||e.val_loss||0));
+    const f1=experiments.map(e=>parseFloat(e.f1||e.f1_score||0));
+    const hasF1=experiments.some(e=>e.f1||e.f1_score);
+    const hasDuration=experiments.some(e=>e.duration_s||e.duration_mins);
+    const duration=experiments.map(e=>parseFloat((e.duration_s||0)/60||(e.duration_mins||0)));
+
+    const chartDefs=[
+      {key:'acc', label:'Accuracy', icon:'📊', type:'bar',
+       data:accuracy, yLabel:'Accuracy'},
+      {key:'loss', label:'Loss', icon:'📉', type:'bar',
+       data:loss, yLabel:'Loss'},
+    ];
+    if(hasF1) chartDefs.push({key:'f1', label:'F1', icon:'🎯', type:'bar', data:f1, yLabel:'F1 Score'});
+    if(hasDuration) chartDefs.push({key:'dur', label:'Duration', icon:'⏱', type:'bar', data:duration, yLabel:'Minutes'});
+
+    // Tabs + canvases
+    const tabs=chartDefs.map((d,i)=>`<div class="rp-chart-tab${i===0?' active':''}" onclick="switchChart('${containerId}','${d.key}')">${d.icon} ${d.label}</div>`).join('');
+    wrap.innerHTML=`<div class="rp-chart-title">📈 Experiment Analytics · ${experiments.length} runs</div>
+      <div class="rp-chart-tabs">${tabs}</div>
+      ${chartDefs.map(d=>`<div class="rp-chart-canvas-wrap" id="${containerId}-${d.key}" style="display:${d===chartDefs[0]?'block':'none'}"><canvas id="${containerId}-${d.key}-canvas"></canvas></div>`).join('')}`;
+
+    chartDefs.forEach((d,i)=>{
+      const ctx=document.getElementById(`${containerId}-${d.key}-canvas`).getContext('2d');
+      new Chart(ctx,{
+        type:d.type,
+        data:{
+          labels,
+          datasets:[{
+            label:d.label,
+            data:d.data,
+            backgroundColor:labels.map((_,j)=>CHART_COLORS[j%CHART_COLORS.length]+'cc'),
+            borderColor:labels.map((_,j)=>CHART_COLORS[j%CHART_COLORS.length]),
+            borderWidth:1.5,
+            borderRadius:4,
+          }]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(4)}`}}},
+          scales:{
+            x:{ticks:{color:'#9b9ea4',font:{size:10}},grid:{color:'#2d2f33'}},
+            y:{ticks:{color:'#9b9ea4',font:{size:10}},grid:{color:'#2d2f33'},title:{display:true,text:d.yLabel,color:'#6b6f76',font:{size:10}}}
+          }
+        }
+      });
+    });
+  }
+
+  function buildModelChart(models, containerId){
+    const wrap=document.getElementById(containerId);
+    if(!wrap||!models.length) return;
+    const stageCounts={staging:0,production:0,archived:0};
+    models.forEach(m=>{ const s=m.stage||'staging'; stageCounts[s]=(stageCounts[s]||0)+1; });
+    wrap.innerHTML=`<div class="rp-chart-title">📦 Model Registry · ${models.length} models</div>
+      <div class="rp-chart-canvas-wrap"><canvas id="${containerId}-canvas"></canvas></div>`;
+    const ctx=document.getElementById(`${containerId}-canvas`).getContext('2d');
+    new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:Object.keys(stageCounts),
+        datasets:[{data:Object.values(stageCounts),backgroundColor:['#1164a3cc','#26a268cc','#6b6f76cc'],borderColor:['#1164a3','#26a268','#6b6f76'],borderWidth:1.5}]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom',labels:{color:'#9b9ea4',font:{size:11},boxWidth:12}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}`}}}
+      }
+    });
+  }
+
+  function buildPipelineChart(pipelines, containerId){
+    const wrap=document.getElementById(containerId);
+    if(!wrap||!pipelines.length) return;
+    const labels=pipelines.map(p=>p.name||p.pipeline_name||'pipeline');
+    const statusColors=pipelines.map(p=>p.status==='running'?'#26a268cc':p.status==='failed'?'#e50914cc':'#1164a3cc');
+    wrap.innerHTML=`<div class="rp-chart-title">⚙️ Pipeline Status · ${pipelines.length} pipelines</div>
+      <div class="rp-chart-canvas-wrap"><canvas id="${containerId}-canvas"></canvas></div>`;
+    const ctx=document.getElementById(`${containerId}-canvas`).getContext('2d');
+    new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels,
+        datasets:[{
+          label:'Run count',
+          data:pipelines.map(p=>p.run_count||1),
+          backgroundColor:statusColors,borderColor:statusColors.map(c=>c.replace('cc','')),borderWidth:1.5,borderRadius:4
+        }]
+      },
+      options:{
+        indexAxis:'y',responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#9b9ea4',font:{size:10}},grid:{color:'#2d2f33'}},y:{ticks:{color:'#9b9ea4',font:{size:10}},grid:{color:'#2d2f33'}}}
+      }
+    });
+  }
+
+  function switchChart(containerId, key){
+    const wrap=document.getElementById(containerId);
+    wrap.querySelectorAll('.rp-chart-canvas-wrap').forEach(el=>el.style.display='none');
+    const active=document.getElementById(`${containerId}-${key}`);
+    if(active) active.style.display='block';
+    wrap.querySelectorAll('.rp-chart-tab').forEach(t=>{
+      // each tab has onclick="switchChart(id,'key')" — match by extracting key from onclick attr
+      const match=t.getAttribute('onclick').match(/'([^']+)'\)$/);
+      t.classList.toggle('active', match&&match[1]===key);
+    });
+  }
+
+  function addBotResponse(text,toolCalls){
+    const msgs=document.getElementById('rpMessages');
+    const el=document.createElement('div');
+    el.className='rp-bot-msg';
+    const toolHtml=(toolCalls||[]).map(c=>{
+      const sql=c.result&&c.result.sql?`<div class="rp-tool-sql">SQL → ${escHtml(c.result.sql)}</div>`:'';
+      const res=JSON.stringify(c.result,null,2).slice(0,150);
+      return `<div class="rp-tool">
+        <div class="rp-tool-header"><span class="rp-tool-name">🔧 ${c.tool}</span><span class="rp-tool-ok">✓ done</span></div>
+        ${sql}<div class="rp-tool-result">${escHtml(res)}…</div>
+      </div>`;
+    }).join('');
+
+    const chartId='chart-'+(_chartCount++);
+    el.innerHTML=`
+      <div class="rp-bot-meta">
+        <div style="width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff">ml</div>
+        <span class="rp-bot-name">mlctl</span>
+        <span class="rp-bot-badge">APP</span>
+        <span class="rp-bot-time">${now()}</span>
+      </div>
+      ${toolHtml}
+      <div class="rp-bot-bubble">${formatText(text)}</div>
+      <div class="rp-chart-wrap" id="${chartId}" style="display:none"></div>`;
+    msgs.appendChild(el);
+
+    // Build chart after DOM is ready
+    requestAnimationFrame(()=>{
+      const {experiments,models,pipelines}=extractChartData(toolCalls);
+      if(experiments.length>=2){
+        document.getElementById(chartId).style.display='block';
+        buildExperimentCharts(experiments,chartId);
+      } else if(models.length){
+        document.getElementById(chartId).style.display='block';
+        buildModelChart(models,chartId);
+      } else if(pipelines.length){
+        document.getElementById(chartId).style.display='block';
+        buildPipelineChart(pipelines,chartId);
+      }
+    });
+
+    msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  function addBotTyping(){
+    const msgs=document.getElementById('rpMessages');
+    const el=document.createElement('div');
+    el.className='rp-typing';el.id='rpTyping';
+    el.innerHTML=`<div class="rp-typing-avatar">ml</div><span>mlctl is thinking</span><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+  }
+
+  function removeBotTyping(){const t=document.getElementById('rpTyping');if(t)t.remove();}
+
+  function formatText(t){
+    return String(t)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/\n/g,'<br>');
+  }
+
+  function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  // ── Right panel drag-to-resize ──
+  (function(){
+    const handle=document.getElementById('rpResizeHandle');
+    const panel=document.getElementById('rightPanel');
+    let startX,startW;
+    handle.addEventListener('mousedown',e=>{
+      startX=e.clientX;
+      startW=panel.offsetWidth;
+      handle.classList.add('dragging');
+      document.body.style.cursor='ew-resize';
+      document.body.style.userSelect='none';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove',e=>{
+      if(!handle.classList.contains('dragging'))return;
+      const delta=startX-e.clientX; // dragging left = wider
+      const newW=Math.min(720,Math.max(280,startW+delta));
+      panel.style.width=newW+'px';
+    });
+    document.addEventListener('mouseup',()=>{
+      if(!handle.classList.contains('dragging'))return;
+      handle.classList.remove('dragging');
+      document.body.style.cursor='';
+      document.body.style.userSelect='';
+    });
+  })();
+
+  function toggleRightPanel(){
+    const rp=document.getElementById('rightPanel');
+    const visible=rp.style.display!=='none';
+    rp.style.display=visible?'none':'flex';
+    document.getElementById('slackbotToggleBtn').style.background=visible?'':'#1164a3';
+    document.getElementById('slackbotToggleBtn').style.color=visible?'':'#fff';
+  }
+
+  function toggleSection(id, header){
+    const body=document.getElementById(id);
+    const arrow=header.querySelector('.arrow');
+    const isOpen=body.getAttribute('data-open')!=='false';
+    if(isOpen){
+      body.style.display='none';
+      body.setAttribute('data-open','false');
+      arrow.style.transform='rotate(-90deg)';
+    } else {
+      body.style.display='block';
+      body.setAttribute('data-open','true');
+      arrow.style.transform='rotate(0deg)';
+    }
+  }
+
+  function showSouravProfile(){
+    const t=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'});
+    document.getElementById('souravTime').textContent=t+' ET';
+    document.getElementById('souravProfile').style.display='flex';
+  }
+
+  document.getElementById('souravProfile').addEventListener('click',function(e){
+    if(e.target===this)this.style.display='none';
+  });
+
+  function showHanProfile(){
+    // update her local time (PT)
+    const pt = new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/Los_Angeles'});
+    document.getElementById('hanTime').textContent = pt + ' PT';
+    document.getElementById('hanProfile').style.display='flex';
+  }
+
+  function openDmWithHan(){
+    document.getElementById('hanProfile').style.display='none';
+    // open right panel with a welcome message from Han's perspective
+    document.getElementById('rpMessages').innerHTML='';
+    addBotResponse("👋 Hi! I'm reviewing the **mlctl** PoC — impressive work on the model-agnostic MCP architecture. The Text-to-SQL tool and the Slackbot integration are exactly the kind of developer experience improvements we're building for the AI Platform. Let's talk.", [], );
+  }
+
+  // close profile on backdrop click
+  document.getElementById('hanProfile').addEventListener('click', function(e){
+    if(e.target===this) this.style.display='none';
+  });
+</script>
+</body>
+</html>

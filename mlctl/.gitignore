@@ -1,0 +1,14 @@
+.env
+db/mlctl.db
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+.venv/
+venv/
+env/
+web/static/han.jpg
+web/static/me.jpg
