@@ -390,32 +390,47 @@ All charts use Netflix's dark palette (near-black background, red accent `#E5091
 
 ## Local Quick Start
 
+> **Prerequisites:** Python 3.11+ and a terminal. You need either an OpenAI API key **or** Ollama installed (free). Pick one option in step 5.
+
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/isouravsengupta/MCP
 cd MCP/mlctl
 
-# Create and activate a virtual environment
-python -m venv .venv && source .venv/bin/activate
+# 2. Create and activate a virtual environment
+python -m venv .venv
+source .venv/bin/activate        # Mac / Linux
+# .venv\Scripts\activate         # Windows
 
-# Install dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# Seed the demo SQLite database
+# 4. Seed the demo database
 python db/setup.py
+```
 
-# Configure the LLM (choose one):
-#   Option A — local model via Ollama (no API key needed)
+**5. Configure your LLM — pick one:**
+
+**Option A — OpenAI** *(recommended if you have an API key)*
+```bash
+echo "OPENAI_API_KEY=sk-your-key-here" > .env
+```
+In the UI, select **OpenAI** and paste your key in the API key field.
+
+**Option B — Ollama (free, no API key needed)**
+```bash
+# Install Ollama from https://ollama.com then run:
 ollama pull llama3.2
+ollama serve          # keep this terminal open
+```
+The UI defaults to Ollama — no key needed.
 
-#   Option B — OpenAI
-#   Create a .env file:  OPENAI_API_KEY=sk-...  MODEL_NAME=gpt-4o
-
-# Start the server
+```bash
+# 6. Start the server
 uvicorn web.app:app --reload --port 8000
 ```
 
-Open [http://localhost:8000](http://localhost:8000) — you'll see the Slack-clone UI. Send a message to `@mlctl` in the demo workspace.
+Open [http://localhost:8000](http://localhost:8000) in your browser — you'll see the Slack-clone UI.
 
 **Try these prompts to explore the full lifecycle:**
 
