@@ -349,17 +349,20 @@
 <div class="rightpanel" id="rightPanel">
   <div class="rp-resize-handle" id="rpResizeHandle"></div>
 
+  <!-- Slackbot top header — matches real Slack Slackbot DM header -->
   <div class="rp-header">
     <div class="rp-title">
-      <div class="rp-bot-icon">ml</div>
+      <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#e8b4e8,#7ec8e3,#ffd700,#ff6b6b);display:flex;align-items:center;justify-content:center;font-size:14px">🤖</div>
       Slackbot
     </div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <div style="font-size:13px;color:#9b9ea4;cursor:pointer;background:#2d2f33;border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px" onclick="toggleModelDropdown()">
-        <span style="color:#26a268">●</span>
+    <div style="display:flex;align-items:center;gap:6px">
+      <svg style="width:18px;height:18px;fill:#9b9ea4;cursor:pointer" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM2 8a2 2 0 114 0A2 2 0 012 8zm-.5 8a9.5 9.5 0 0119 0H1.5z"/></svg>
+      <svg style="width:18px;height:18px;fill:#9b9ea4;cursor:pointer" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+      <div style="font-size:12px;color:#9b9ea4;cursor:pointer;background:#2d2f33;border-radius:20px;padding:3px 10px;display:flex;align-items:center;gap:5px" onclick="toggleModelDropdown()">
+        <span style="color:#26a268;font-size:8px">●</span>
         <span id="rpProvider">Ollama</span>
         <span style="color:#6b6f76" id="rpModel">llama3.2</span>
-        <span style="color:#4a4e57">▾</span>
+        <span style="color:#4a4e57;font-size:10px">▾</span>
       </div>
       <span class="rp-close" onclick="document.querySelector('.rightpanel').style.display='none'">✕</span>
     </div>
@@ -390,61 +393,125 @@
     <button class="md-apply" onclick="applyConfig()">Apply model →</button>
   </div>
 
+  <!-- Tabs — matches Slack Slackbot tab bar exactly -->
   <div class="rp-tabs">
-    <div class="rp-tab active">Messages</div>
-    <div class="rp-tab">History</div>
-    <div class="rp-tab">Skills</div>
-    <div class="rp-tab">Tasks</div>
-    <div class="rp-tab">Files &amp; links</div>
+    <div class="rp-tab active" onclick="switchRpTab('messages',this)">Messages</div>
+    <div class="rp-tab" onclick="switchRpTab('history',this)">History</div>
+    <div class="rp-tab" onclick="switchRpTab('skills',this)">Skills</div>
+    <div class="rp-tab" onclick="switchRpTab('tasks',this)">Tasks</div>
+    <div class="rp-tab" onclick="switchRpTab('untitled',this)">Untitled</div>
+    <div class="rp-tab" onclick="switchRpTab('files',this)">Files &amp; links</div>
+    <div class="rp-tab" style="padding:10px 8px;font-size:16px;color:#6b6f76">+</div>
   </div>
 
-  <div class="rp-messages" id="rpMessages">
-    <!-- Welcome -->
-    <div class="rp-welcome">
-      <div class="rp-welcome-icon">ml</div>
-      <h3>Good afternoon, Sourav!</h3>
-      <p>I'm <strong>mlctl</strong> — your Netflix AI Platform agent. Ask me to run experiments, deploy models, query the platform, or orchestrate the full ML lifecycle.</p>
+  <!-- Messages tab (default) -->
+  <div id="rpTab-messages" class="rp-messages">
+
+    <!-- Slack-style greeting -->
+    <div style="text-align:center;padding:32px 20px 8px">
+      <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#e8b4e8,#7ec8e3,#ffd700,#ff6b6b);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:32px">🤖</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:6px">Good afternoon, Sourav!</div>
+      <div style="font-size:14px;color:#9b9ea4">What's on your mind?</div>
     </div>
-    <div class="rp-card" onclick="sendBot('Show me all recent experiments with their accuracy metrics')">
-      <div class="rp-card-icon">🧪</div>
-      <div class="rp-card-text">
-        <div class="rp-card-title">Explore experiments</div>
-        <div class="rp-card-desc">List recent training runs with metrics</div>
+
+    <!-- "Get the most out of mlctl" card -->
+    <div style="margin:12px 12px 0;background:#222529;border:1px solid #2d2f33;border-radius:10px;padding:14px 16px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#2d2f33'" onmouseout="this.style.background='#222529'" onclick="document.getElementById('rpTab-messages').querySelector('.rp-apps-section').scrollIntoView({behavior:'smooth'})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#1164a3,#0b4d8a);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📋</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:2px">Get the most out of mlctl</div>
+          <div style="font-size:12px;color:#9b9ea4">Prompts, skills and integrations to help you get your work done</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#1164a3;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg style="width:14px;height:14px;fill:#fff" viewBox="0 0 20 20"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 010-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        </div>
       </div>
-      <div class="rp-card-arrow">›</div>
     </div>
-    <div class="rp-card" onclick="sendBot('Compare all experiments, find the best one by accuracy, register it as netflix_recommender and deploy it to staging')">
-      <div class="rp-card-icon">🚀</div>
-      <div class="rp-card-text">
-        <div class="rp-card-title">Full ML lifecycle</div>
-        <div class="rp-card-desc">Compare → register → deploy in one shot</div>
+
+    <!-- "Automate something" card -->
+    <div style="margin:8px 12px 0;background:#222529;border:1px solid #2d2f33;border-radius:10px;padding:14px 16px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#2d2f33'" onmouseout="this.style.background='#222529'" onclick="sendBot('What pipelines are available and which ones can I automate?')">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#26a268,#1a7a4a);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚡</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:2px">Automate something</div>
+          <div style="font-size:12px;color:#9b9ea4">Set up an ML workflow in seconds</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#26a268;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg style="width:14px;height:14px;fill:#fff" viewBox="0 0 20 20"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 010-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        </div>
       </div>
-      <div class="rp-card-arrow">›</div>
     </div>
-    <div class="rp-card" onclick="sendBot('Use natural_language_query to find all experiments with accuracy above 0.92. Show me the SQL that was generated.')">
-      <div class="rp-card-icon">🔍</div>
-      <div class="rp-card-text">
-        <div class="rp-card-title">Text-to-SQL query</div>
-        <div class="rp-card-desc">Natural language → real SQL → results</div>
+
+    <!-- Active apps section — mlctl selected by default -->
+    <div class="rp-apps-section" style="margin:16px 12px 0">
+      <div style="font-size:12px;color:#9b9ea4;margin-bottom:8px">1/5 active apps</div>
+      <!-- mlctl — selected/highlighted -->
+      <div style="background:#1c3a5e;border:1px solid #1164a3;border-radius:8px;padding:10px 12px;margin-bottom:4px;cursor:pointer" onclick="focusMlctl()">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#e50914,#ff6b35);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0">ml</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#fff">mlctl</div>
+            <div style="font-size:11px;color:#9b9ea4">Netflix AI Platform</div>
+          </div>
+          <div style="width:6px;height:6px;border-radius:50%;background:#26a268"></div>
+        </div>
+        <!-- Action buttons -->
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <button onclick="event.stopPropagation();sendBot('Show me all recent experiments with their accuracy metrics')" style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;color:#d1d2d3;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#3d4046'" onmouseout="this.style.background='#2d2f33'">🧪 Explore experiments</button>
+          <button onclick="event.stopPropagation();sendBot('Compare all experiments, find the best one by accuracy, register it as netflix_recommender and deploy it to staging')" style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;color:#d1d2d3;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#3d4046'" onmouseout="this.style.background='#2d2f33'">🚀 Full ML lifecycle</button>
+          <button onclick="event.stopPropagation();sendBot('Use natural_language_query to find all experiments with accuracy above 0.92. Show me the SQL that was generated.')" style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;color:#d1d2d3;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#3d4046'" onmouseout="this.style.background='#2d2f33'">🔍 Text-to-SQL</button>
+          <button onclick="event.stopPropagation();sendBot('What models are currently deployed and are any ready for production?')" style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;color:#d1d2d3;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#3d4046'" onmouseout="this.style.background='#2d2f33'">📦 Model status</button>
+          <button onclick="event.stopPropagation();sendBot('List all pipelines and their last run status')" style="background:#2d2f33;border:1px solid #3d4046;border-radius:6px;padding:5px 10px;color:#d1d2d3;font-size:12px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#3d4046'" onmouseout="this.style.background='#2d2f33'">⚙️ Pipelines</button>
+        </div>
       </div>
-      <div class="rp-card-arrow">›</div>
-    </div>
-    <div class="rp-card" onclick="sendBot('What models are currently deployed and are any ready for production?')">
-      <div class="rp-card-icon">📦</div>
-      <div class="rp-card-text">
-        <div class="rp-card-title">Model status</div>
-        <div class="rp-card-desc">Check deployments and registry</div>
+      <!-- Other placeholder apps (greyed out) -->
+      <div style="background:#1a1d21;border:1px solid #2d2f33;border-radius:8px;padding:9px 12px;margin-bottom:4px;opacity:.55;cursor:not-allowed">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#2d2f33;display:flex;align-items:center;justify-content:center;font-size:14px">📊</div>
+            <div><div style="font-size:13px;color:#9b9ea4">Metaflow Experiments</div><div style="font-size:11px;color:#6b6f76">Netflix</div></div>
+          </div>
+        </div>
       </div>
-      <div class="rp-card-arrow">›</div>
+      <div style="background:#1a1d21;border:1px solid #2d2f33;border-radius:8px;padding:9px 12px;margin-bottom:4px;opacity:.55;cursor:not-allowed">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#2d2f33;display:flex;align-items:center;justify-content:center;font-size:14px">🗄️</div>
+            <div><div style="font-size:13px;color:#9b9ea4">MLflow Registry</div><div style="font-size:11px;color:#6b6f76">Netflix</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#1a1d21;border:1px solid #2d2f33;border-radius:8px;padding:9px 12px;margin-bottom:4px;opacity:.55;cursor:not-allowed">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#2d2f33;display:flex;align-items:center;justify-content:center;font-size:14px">🔁</div>
+            <div><div style="font-size:13px;color:#9b9ea4">Airflow Pipelines</div><div style="font-size:11px;color:#6b6f76">Netflix</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:6px;padding:8px 4px;cursor:pointer;color:#9b9ea4;font-size:13px" onmouseover="this.style.color='#d1d2d3'" onmouseout="this.style.color='#9b9ea4'">
+        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        Manage apps
+      </div>
     </div>
+
+    <!-- Chat messages appear below this line -->
+    <div id="rpChatMessages" style="padding:4px 0"></div>
   </div>
+
+  <!-- Other tab placeholders -->
+  <div id="rpTab-history" style="display:none;flex:1;overflow-y:auto;padding:24px 16px;color:#9b9ea4;font-size:13px;text-align:center">No history yet.</div>
+  <div id="rpTab-skills" style="display:none;flex:1;overflow-y:auto;padding:24px 16px;color:#9b9ea4;font-size:13px;text-align:center">Skills coming soon.</div>
+  <div id="rpTab-tasks" style="display:none;flex:1;overflow-y:auto;padding:24px 16px;color:#9b9ea4;font-size:13px;text-align:center">No tasks yet.</div>
+  <div id="rpTab-untitled" style="display:none;flex:1;overflow-y:auto;padding:24px 16px;color:#9b9ea4;font-size:13px;text-align:center">Untitled tab.</div>
+  <div id="rpTab-files" style="display:none;flex:1;overflow-y:auto;padding:24px 16px;color:#9b9ea4;font-size:13px;text-align:center">No files or links shared yet.</div>
 
   <div class="rp-input-area">
     <div class="rp-input-box">
       <div class="rp-toolbar">
-        <button class="tb-btn">𝐁</button><button class="tb-btn">𝐼</button><button class="tb-btn">⌨</button>
+        <button class="tb-btn" title="Bold">𝐁</button><button class="tb-btn" title="Italic">𝐼</button><button class="tb-btn" title="Code">⌨</button>
         <div class="tb-divider"></div>
-        <button class="tb-btn">📎</button>
+        <button class="tb-btn" title="Attach">📎</button><button class="tb-btn" title="Mention" onclick="document.getElementById('botInput').value+='@mlctl ';document.getElementById('botInput').focus()">@</button>
       </div>
       <div class="rp-input-row">
         <textarea id="botInput" placeholder="Ask mlctl anything about your ML platform…" rows="1" onkeydown="handleBotKey(event)" oninput="autoResize(this)"></textarea>
@@ -683,7 +750,7 @@
   }
 
   function addBotUserMsg(text){
-    const msgs=document.getElementById('rpMessages');
+    const msgs=document.getElementById('rpChatMessages');
     const el=document.createElement('div');
     el.className='rp-user-msg';
     el.innerHTML=`
@@ -833,7 +900,7 @@
   }
 
   function addBotResponse(text,toolCalls){
-    const msgs=document.getElementById('rpMessages');
+    const msgs=document.getElementById('rpChatMessages');
     const el=document.createElement('div');
     el.className='rp-bot-msg';
     const toolHtml=(toolCalls||[]).map(c=>{
@@ -877,7 +944,7 @@
   }
 
   function addBotTyping(){
-    const msgs=document.getElementById('rpMessages');
+    const msgs=document.getElementById('rpChatMessages');
     const el=document.createElement('div');
     el.className='rp-typing';el.id='rpTyping';
     el.innerHTML=`<div class="rp-typing-avatar">ml</div><span>mlctl is thinking</span><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
@@ -923,6 +990,20 @@
     });
   })();
 
+  function switchRpTab(name, btn){
+    ['messages','history','skills','tasks','untitled','files'].forEach(t=>{
+      const el=document.getElementById('rpTab-'+t);
+      if(el) el.style.display= t===name ? (t==='messages'?'block':'flex') : 'none';
+    });
+    document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+  }
+
+  function focusMlctl(){
+    document.getElementById('botInput').focus();
+    document.getElementById('rpChatMessages').scrollIntoView({behavior:'smooth'});
+  }
+
   function toggleRightPanel(){
     const rp=document.getElementById('rightPanel');
     const visible=rp.style.display!=='none';
@@ -966,7 +1047,7 @@
   function openDmWithHan(){
     document.getElementById('hanProfile').style.display='none';
     // open right panel with a welcome message from Han's perspective
-    document.getElementById('rpMessages').innerHTML='';
+    document.getElementById('rpChatMessages').innerHTML='';
     addBotResponse("👋 Hi! I'm reviewing the **mlctl** PoC — impressive work on the model-agnostic MCP architecture. The Text-to-SQL tool and the Slackbot integration are exactly the kind of developer experience improvements we're building for the AI Platform. Let's talk.", [], );
   }
 
