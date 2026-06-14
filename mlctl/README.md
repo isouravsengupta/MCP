@@ -39,7 +39,7 @@ The **Model Context Protocol** is an open standard — analogous to REST for web
 
 ---
 
-### Diagram A — Full AWS Production Architecture (text)
+### Diagram A — Full Production Architecture (text)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
