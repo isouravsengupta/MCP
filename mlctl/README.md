@@ -31,11 +31,11 @@ The **Model Context Protocol** is an open standard — analogous to REST for web
 
 ### High-Level Architecture
 
-![High-Level Architecture](docs/architecture-high-level.svg)
+![High-Level Architecture](https://raw.githubusercontent.com/isouravsengupta/MCP/main/mlctl/docs/architecture-high-level.svg)
 
 ### MCP Server — Low-Level Design
 
-![MCP Low-Level Design](docs/architecture-mcp-lowlevel.svg)
+![MCP Low-Level Design](https://raw.githubusercontent.com/isouravsengupta/MCP/main/mlctl/docs/architecture-mcp-lowlevel.svg)
 
 ---
 
