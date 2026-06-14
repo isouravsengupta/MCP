@@ -1,153 +1,143 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" font-family="'Segoe UI',Arial,sans-serif">
-  <rect width="1100" height="720" fill="#0d1117"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" font-family="'Segoe UI', Arial, sans-serif">
+  <rect width="1200" height="780" fill="#0d1117"/>
 
   <!-- Title -->
-  <text x="550" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">mlctl — High-Level Architecture</text>
-  <text x="550" y="58" text-anchor="middle" font-size="12" fill="#6b6f76">How Netflix engineers interact with the ML Platform through mlctl</text>
+  <text x="600" y="48" text-anchor="middle" font-size="26" font-weight="700" fill="#ffffff">mlctl — Architecture of Flow</text>
+  <text x="600" y="72" text-anchor="middle" font-size="14" fill="#8b949e">High-Level: From engineer intent to ML platform action</text>
 
-  <!-- ── Layer 1: Users ── -->
-  <rect x="30" y="80" width="1040" height="100" rx="10" fill="#161b22" stroke="#30363d"/>
-  <text x="55" y="103" font-size="11" font-weight="700" fill="#8b949e" letter-spacing="1">USERS</text>
+  <!-- ═══════════════ ROW 1: CLIENTS ═══════════════ -->
+  <rect x="40" y="100" width="1120" height="120" rx="12" fill="#161b22" stroke="#30363d" stroke-width="1.5"/>
+  <text x="70" y="126" font-size="13" font-weight="700" fill="#6b6f76" letter-spacing="1.5">CLIENTS</text>
 
-  <!-- Slack user -->
-  <rect x="80" y="112" width="130" height="52" rx="8" fill="#1c2128" stroke="#4ecdc4" stroke-width="1.5"/>
-  <text x="145" y="133" text-anchor="middle" font-size="20">💬</text>
-  <text x="145" y="153" text-anchor="middle" font-size="11" fill="#c9d1d9">Netflix Engineer</text>
-  <text x="145" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">via Slack DM</text>
-
-  <!-- CLI user -->
-  <rect x="250" y="112" width="130" height="52" rx="8" fill="#1c2128" stroke="#f0883e" stroke-width="1.5"/>
-  <text x="315" y="133" text-anchor="middle" font-size="20">⌨️</text>
-  <text x="315" y="153" text-anchor="middle" font-size="11" fill="#c9d1d9">Data Scientist</text>
-  <text x="315" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">via CLI / demo.py</text>
-
-  <!-- Claude Desktop user -->
-  <rect x="420" y="112" width="130" height="52" rx="8" fill="#1c2128" stroke="#a371f7" stroke-width="1.5"/>
-  <text x="485" y="133" text-anchor="middle" font-size="20">🤖</text>
-  <text x="485" y="153" text-anchor="middle" font-size="11" fill="#c9d1d9">Claude Desktop</text>
-  <text x="485" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">MCP client</text>
-
-  <!-- VS Code user -->
-  <rect x="590" y="112" width="130" height="52" rx="8" fill="#1c2128" stroke="#58a6ff" stroke-width="1.5"/>
-  <text x="655" y="133" text-anchor="middle" font-size="20">🖥️</text>
-  <text x="655" y="153" text-anchor="middle" font-size="11" fill="#c9d1d9">VS Code</text>
-  <text x="655" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">Copilot + MCP</text>
+  <!-- Slack -->
+  <rect x="80" y="136" width="180" height="66" rx="10" fill="#1c2128" stroke="#4ecdc4" stroke-width="2"/>
+  <text x="170" y="162" text-anchor="middle" font-size="26">💬</text>
+  <text x="170" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Netflix Slack</text>
+  <text x="170" y="200" text-anchor="middle" font-size="11" fill="#6b6f76">DM to @mlctl</text>
 
   <!-- Web UI -->
-  <rect x="760" y="112" width="130" height="52" rx="8" fill="#1c2128" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="825" y="133" text-anchor="middle" font-size="20">🌐</text>
-  <text x="825" y="153" text-anchor="middle" font-size="11" fill="#c9d1d9">Slack-clone Web UI</text>
-  <text x="825" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">localhost:8000</text>
+  <rect x="290" y="136" width="180" height="66" rx="10" fill="#1c2128" stroke="#3fb950" stroke-width="2"/>
+  <text x="380" y="162" text-anchor="middle" font-size="26">🌐</text>
+  <text x="380" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Web UI</text>
+  <text x="380" y="200" text-anchor="middle" font-size="11" fill="#6b6f76">Slack-clone · localhost:8000</text>
 
-  <!-- Arrows down from users -->
-  <line x1="145" y1="164" x2="145" y2="210" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <line x1="315" y1="164" x2="315" y2="210" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <line x1="485" y1="164" x2="485" y2="210" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <line x1="655" y1="164" x2="655" y2="210" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <line x1="825" y1="164" x2="825" y2="210" stroke="#30363d" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- Claude Desktop -->
+  <rect x="500" y="136" width="180" height="66" rx="10" fill="#1c2128" stroke="#a371f7" stroke-width="2"/>
+  <text x="590" y="162" text-anchor="middle" font-size="26">🤖</text>
+  <text x="590" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">Claude Desktop</text>
+  <text x="590" y="200" text-anchor="middle" font-size="11" fill="#6b6f76">MCP stdio client</text>
 
-  <!-- ── Layer 2: MCP Interface ── -->
-  <rect x="30" y="210" width="1040" height="80" rx="10" fill="#161b22" stroke="#1f6feb"/>
-  <text x="55" y="233" font-size="11" font-weight="700" fill="#58a6ff" letter-spacing="1">MCP INTERFACE  (Model Context Protocol — open standard by Anthropic)</text>
-  <rect x="80" y="242" width="180" height="36" rx="6" fill="#1c2128" stroke="#1f6feb"/>
-  <text x="170" y="256" text-anchor="middle" font-size="11" fill="#c9d1d9">Slack Events API</text>
-  <text x="170" y="271" text-anchor="middle" font-size="10" fill="#6b6f76">AWS API Gateway → Lambda</text>
-  <rect x="300" y="242" width="160" height="36" rx="6" fill="#1c2128" stroke="#1f6feb"/>
-  <text x="380" y="256" text-anchor="middle" font-size="11" fill="#c9d1d9">MCP stdio/HTTP</text>
-  <text x="380" y="271" text-anchor="middle" font-size="10" fill="#6b6f76">Claude Desktop / VS Code</text>
-  <rect x="500" y="242" width="160" height="36" rx="6" fill="#1c2128" stroke="#1f6feb"/>
-  <text x="580" y="256" text-anchor="middle" font-size="11" fill="#c9d1d9">FastAPI /chat</text>
-  <text x="580" y="271" text-anchor="middle" font-size="10" fill="#6b6f76">Web UI → REST</text>
-  <rect x="700" y="242" width="180" height="36" rx="6" fill="#1c2128" stroke="#1f6feb"/>
-  <text x="790" y="256" text-anchor="middle" font-size="11" fill="#c9d1d9">Auth: Netflix SSO</text>
-  <text x="790" y="271" text-anchor="middle" font-size="10" fill="#6b6f76">Okta JWT in Slack context</text>
+  <!-- VS Code -->
+  <rect x="710" y="136" width="180" height="66" rx="10" fill="#1c2128" stroke="#58a6ff" stroke-width="2"/>
+  <text x="800" y="162" text-anchor="middle" font-size="26">🖥️</text>
+  <text x="800" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">VS Code</text>
+  <text x="800" y="200" text-anchor="middle" font-size="11" fill="#6b6f76">Copilot + MCP</text>
 
-  <!-- Arrow down -->
-  <line x1="550" y1="290" x2="550" y2="330" stroke="#58a6ff" stroke-width="2"/>
-  <polygon points="545,326 555,326 550,334" fill="#58a6ff"/>
+  <!-- CLI -->
+  <rect x="920" y="136" width="200" height="66" rx="10" fill="#1c2128" stroke="#f0883e" stroke-width="2"/>
+  <text x="1020" y="162" text-anchor="middle" font-size="26">⌨️</text>
+  <text x="1020" y="184" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">CLI / demo.py</text>
+  <text x="1020" y="200" text-anchor="middle" font-size="11" fill="#6b6f76">Direct Python API</text>
 
-  <!-- ── Layer 3: mlctl Core ── -->
-  <rect x="30" y="334" width="1040" height="140" rx="10" fill="#161b22" stroke="#e50914"/>
-  <text x="55" y="357" font-size="11" font-weight="700" fill="#ff7b72" letter-spacing="1">mlctl CORE  (ECS Fargate · Private VPC · mlctl/agent/orchestrator.py)</text>
+  <!-- Down arrows row 1→2 -->
+  <line x1="170" y1="202" x2="170" y2="250" stroke="#4ecdc4" stroke-width="2"/>
+  <polygon points="165,248 175,248 170,256" fill="#4ecdc4"/>
+  <line x1="380" y1="202" x2="380" y2="250" stroke="#3fb950" stroke-width="2"/>
+  <polygon points="375,248 385,248 380,256" fill="#3fb950"/>
+  <line x1="590" y1="202" x2="590" y2="250" stroke="#a371f7" stroke-width="2"/>
+  <polygon points="585,248 595,248 590,256" fill="#a371f7"/>
+  <line x1="800" y1="202" x2="800" y2="250" stroke="#58a6ff" stroke-width="2"/>
+  <polygon points="795,248 805,248 800,256" fill="#58a6ff"/>
+  <line x1="1020" y1="202" x2="1020" y2="250" stroke="#f0883e" stroke-width="2"/>
+  <polygon points="1015,248 1025,248 1020,256" fill="#f0883e"/>
 
-  <!-- Orchestrator box -->
-  <rect x="60" y="366" width="260" height="90" rx="8" fill="#1c2128" stroke="#e50914" stroke-width="1.5"/>
-  <text x="190" y="385" text-anchor="middle" font-size="12" font-weight="700" fill="#ff7b72">MLOrchestrator</text>
-  <text x="190" y="402" text-anchor="middle" font-size="10" fill="#8b949e">• Multi-step reasoning loop</text>
-  <text x="190" y="416" text-anchor="middle" font-size="10" fill="#8b949e">• Conversational guard (_is_conversational)</text>
-  <text x="190" y="430" text-anchor="middle" font-size="10" fill="#8b949e">• Tool dispatch + history management</text>
-  <text x="190" y="444" text-anchor="middle" font-size="10" fill="#8b949e">• Synthesis nudge (no-loop fix)</text>
+  <!-- ═══════════════ ROW 2: MCP INTERFACE ═══════════════ -->
+  <rect x="40" y="256" width="1120" height="90" rx="12" fill="#161b22" stroke="#1f6feb" stroke-width="2"/>
+  <text x="70" y="282" font-size="13" font-weight="700" fill="#58a6ff" letter-spacing="1.5">MCP INTERFACE</text>
+  <text x="600" y="300" text-anchor="middle" font-size="15" font-weight="600" fill="#c9d1d9">Model Context Protocol — open standard (Anthropic) for connecting LLMs to tools</text>
+  <text x="600" y="324" text-anchor="middle" font-size="13" fill="#8b949e">Slack → AWS API Gateway → Lambda  ·  Web UI → FastAPI /chat  ·  Claude/VS Code → MCP stdio  ·  Auth: Netflix SSO (Okta JWT)</text>
+
+  <!-- Down arrow row 2→3 -->
+  <line x1="600" y1="346" x2="600" y2="390" stroke="#1f6feb" stroke-width="2.5"/>
+  <polygon points="594,387 606,387 600,395" fill="#1f6feb"/>
+
+  <!-- ═══════════════ ROW 3: mlctl CORE ═══════════════ -->
+  <rect x="40" y="396" width="1120" height="160" rx="12" fill="#161b22" stroke="#e50914" stroke-width="2"/>
+  <text x="70" y="422" font-size="13" font-weight="700" fill="#ff7b72" letter-spacing="1.5">mlctl CORE  (ECS Fargate · Private VPC)</text>
+
+  <!-- Orchestrator -->
+  <rect x="70" y="432" width="310" height="106" rx="10" fill="#1c2128" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="225" y="455" text-anchor="middle" font-size="14" font-weight="700" fill="#ff7b72">MLOrchestrator</text>
+  <text x="225" y="476" text-anchor="middle" font-size="12" fill="#8b949e">Multi-step reasoning loop</text>
+  <text x="225" y="494" text-anchor="middle" font-size="12" fill="#8b949e">Conversational guard (no tools on greetings)</text>
+  <text x="225" y="512" text-anchor="middle" font-size="12" fill="#8b949e">Tool dispatch + history management</text>
+  <text x="225" y="530" text-anchor="middle" font-size="12" fill="#8b949e">Synthesis nudge (prevents tool loops)</text>
 
   <!-- LLM Adapter -->
-  <rect x="360" y="366" width="230" height="90" rx="8" fill="#1c2128" stroke="#a371f7" stroke-width="1.5"/>
-  <text x="475" y="385" text-anchor="middle" font-size="12" font-weight="700" fill="#a371f7">LLM Adapter</text>
-  <text x="475" y="402" text-anchor="middle" font-size="10" fill="#8b949e">BaseModelAdapter (ABC)</text>
-  <text x="475" y="416" text-anchor="middle" font-size="10" fill="#8b949e">LiteLLMAdapter → OpenAI/Anthropic</text>
-  <text x="475" y="430" text-anchor="middle" font-size="10" fill="#8b949e">                → Ollama / Azure / Bedrock</text>
-  <text x="475" y="444" text-anchor="middle" font-size="10" fill="#8b949e">NetflixModelAdapter (stub, plug-in)</text>
+  <rect x="420" y="432" width="310" height="106" rx="10" fill="#1c2128" stroke="#a371f7" stroke-width="1.5"/>
+  <text x="575" y="455" text-anchor="middle" font-size="14" font-weight="700" fill="#a371f7">LLM Adapter (swappable)</text>
+  <text x="575" y="476" text-anchor="middle" font-size="12" fill="#8b949e">BaseModelAdapter ABC</text>
+  <text x="575" y="494" text-anchor="middle" font-size="12" fill="#8b949e">LiteLLMAdapter → OpenAI · Anthropic · Ollama</text>
+  <text x="575" y="512" text-anchor="middle" font-size="12" fill="#8b949e">                   Azure · AWS Bedrock</text>
+  <text x="575" y="530" text-anchor="middle" font-size="12" fill="#a371f7">NetflixModelAdapter (plug-in stub)</text>
 
   <!-- Tools -->
-  <rect x="630" y="366" width="400" height="90" rx="8" fill="#1c2128" stroke="#3fb950" stroke-width="1.5"/>
-  <text x="830" y="385" text-anchor="middle" font-size="12" font-weight="700" fill="#3fb950">10 Registered MCP Tools</text>
-  <text x="700" y="402" text-anchor="middle" font-size="10" fill="#8b949e">list_experiments</text>
-  <text x="700" y="416" text-anchor="middle" font-size="10" fill="#8b949e">compare_runs</text>
-  <text x="700" y="430" text-anchor="middle" font-size="10" fill="#8b949e">run_experiment</text>
-  <text x="700" y="444" text-anchor="middle" font-size="10" fill="#8b949e">register_model</text>
-  <text x="830" y="402" text-anchor="middle" font-size="10" fill="#8b949e">deploy_model</text>
-  <text x="830" y="416" text-anchor="middle" font-size="10" fill="#8b949e">get_model_status</text>
-  <text x="830" y="430" text-anchor="middle" font-size="10" fill="#8b949e">rollback_model</text>
-  <text x="960" y="402" text-anchor="middle" font-size="10" fill="#8b949e">trigger_pipeline</text>
-  <text x="960" y="416" text-anchor="middle" font-size="10" fill="#8b949e">list_pipelines</text>
-  <text x="960" y="430" text-anchor="middle" font-size="10" fill="#8b949e">natural_language_query</text>
+  <rect x="770" y="432" width="360" height="106" rx="10" fill="#1c2128" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="950" y="455" text-anchor="middle" font-size="14" font-weight="700" fill="#3fb950">10 MCP Tools</text>
+  <text x="870" y="476" text-anchor="middle" font-size="12" fill="#8b949e">list_experiments</text>
+  <text x="870" y="494" text-anchor="middle" font-size="12" fill="#8b949e">compare_runs</text>
+  <text x="870" y="512" text-anchor="middle" font-size="12" fill="#8b949e">run_experiment</text>
+  <text x="870" y="530" text-anchor="middle" font-size="12" fill="#8b949e">register_model</text>
+  <text x="990" y="476" text-anchor="middle" font-size="12" fill="#8b949e">deploy_model</text>
+  <text x="990" y="494" text-anchor="middle" font-size="12" fill="#8b949e">get_model_status</text>
+  <text x="990" y="512" text-anchor="middle" font-size="12" fill="#8b949e">trigger_pipeline</text>
+  <text x="1090" y="476" text-anchor="middle" font-size="12" fill="#8b949e">list_pipelines</text>
+  <text x="1090" y="494" text-anchor="middle" font-size="12" fill="#8b949e">rollback_model</text>
+  <text x="1090" y="512" text-anchor="middle" font-size="12" fill="#8b949e">nl_query</text>
 
-  <!-- Arrow down from core -->
-  <line x1="550" y1="474" x2="550" y2="510" stroke="#3fb950" stroke-width="2"/>
-  <polygon points="545,506 555,506 550,514" fill="#3fb950"/>
+  <!-- Down arrow row 3→4 -->
+  <line x1="600" y1="556" x2="600" y2="600" stroke="#3fb950" stroke-width="2.5"/>
+  <polygon points="594,597 606,597 600,605" fill="#3fb950"/>
 
-  <!-- ── Layer 4: Data Sources ── -->
-  <rect x="30" y="514" width="1040" height="150" rx="10" fill="#161b22" stroke="#f0883e"/>
-  <text x="55" y="537" font-size="11" font-weight="700" fill="#f0883e" letter-spacing="1">DATA SOURCES  (Production: AWS · Demo: SQLite)</text>
+  <!-- ═══════════════ ROW 4: DATA SOURCES ═══════════════ -->
+  <rect x="40" y="606" width="1120" height="130" rx="12" fill="#161b22" stroke="#f0883e" stroke-width="2"/>
+  <text x="70" y="632" font-size="13" font-weight="700" fill="#f0883e" letter-spacing="1.5">DATA SOURCES  (Production: AWS  ·  Demo: SQLite)</text>
 
-  <!-- DS boxes -->
-  <rect x="55" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#4ecdc4"/>
-  <text x="115" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#4ecdc4">Metaflow</text>
-  <text x="115" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Experiments</text>
-  <text x="115" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">RDS PostgreSQL</text>
+  <rect x="70" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#4ecdc4" stroke-width="1.5"/>
+  <text x="144" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#4ecdc4">Metaflow</text>
+  <text x="144" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Experiments</text>
+  <text x="144" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">RDS PostgreSQL</text>
 
-  <rect x="195" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#4ecdc4"/>
-  <text x="255" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#4ecdc4">MLflow</text>
-  <text x="255" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Model Registry</text>
-  <text x="255" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">RDS PostgreSQL</text>
+  <rect x="234" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#4ecdc4" stroke-width="1.5"/>
+  <text x="308" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#4ecdc4">MLflow Registry</text>
+  <text x="308" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Model versions</text>
+  <text x="308" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">RDS PostgreSQL</text>
 
-  <rect x="335" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#f0883e"/>
-  <text x="395" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#f0883e">SageMaker</text>
-  <text x="395" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Training Jobs</text>
-  <text x="395" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">+ Endpoints</text>
+  <rect x="398" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="472" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#f0883e">SageMaker</text>
+  <text x="472" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Training + Endpoints</text>
+  <text x="472" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">Deploy / Status</text>
 
-  <rect x="475" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#f0883e"/>
-  <text x="535" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#f0883e">Airflow</text>
-  <text x="535" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Pipelines / DAGs</text>
-  <text x="535" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">REST API</text>
+  <rect x="562" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="636" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#f0883e">Airflow</text>
+  <text x="636" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Pipelines / DAGs</text>
+  <text x="636" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">REST API</text>
 
-  <rect x="615" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#a371f7"/>
-  <text x="675" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#a371f7">Feature Store</text>
-  <text x="675" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Netflix Feast</text>
-  <text x="675" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">DynamoDB + S3</text>
+  <rect x="726" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#a371f7" stroke-width="1.5"/>
+  <text x="800" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#a371f7">Feature Store</text>
+  <text x="800" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Netflix Feast</text>
+  <text x="800" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">DynamoDB + S3</text>
 
-  <rect x="755" y="548" width="120" height="50" rx="6" fill="#1c2128" stroke="#58a6ff"/>
-  <text x="815" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#58a6ff">Athena</text>
-  <text x="815" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">Text-to-SQL</text>
-  <text x="815" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">S3 Data Lake</text>
+  <rect x="890" y="644" width="148" height="72" rx="8" fill="#1c2128" stroke="#58a6ff" stroke-width="1.5"/>
+  <text x="964" y="668" text-anchor="middle" font-size="13" font-weight="600" fill="#58a6ff">Athena + S3</text>
+  <text x="964" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Text-to-SQL</text>
+  <text x="964" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">Data Lake queries</text>
 
-  <rect x="895" y="548" width="155" height="50" rx="6" fill="#1c2128" stroke="#3fb950"/>
-  <text x="972" y="565" text-anchor="middle" font-size="11" font-weight="600" fill="#3fb950">Monitoring</text>
-  <text x="972" y="580" text-anchor="middle" font-size="10" fill="#6b6f76">CloudWatch</text>
-  <text x="972" y="592" text-anchor="middle" font-size="10" fill="#6b6f76">Prometheus/Grafana</text>
-
-  <!-- Demo SQLite note -->
-  <rect x="300" y="618" width="500" height="28" rx="6" fill="#21262d" stroke="#30363d"/>
-  <text x="550" y="637" text-anchor="middle" font-size="11" fill="#8b949e">📦 Demo: all data served from SQLite (db/mlctl.db) — seeded with 7 experiments, 3 models, 4 pipelines</text>
+  <rect x="1054" y="644" width="86" height="72" rx="8" fill="#1c2128" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="1097" y="668" text-anchor="middle" font-size="12" font-weight="600" fill="#3fb950">CloudWatch</text>
+  <text x="1097" y="686" text-anchor="middle" font-size="11" fill="#8b949e">Monitoring</text>
+  <text x="1097" y="702" text-anchor="middle" font-size="11" fill="#6b6f76">Alerts</text>
 
   <!-- Footer -->
-  <text x="550" y="710" text-anchor="middle" font-size="10" fill="#484f58">github.com/isouravsengupta/MCP/mlctl · Built by Sourav Sengupta · Software Engineer 5, AI Platform · Netflix</text>
+  <text x="600" y="762" text-anchor="middle" font-size="11" fill="#484f58">📦 Demo replaces all sources with SQLite (db/mlctl.db) — seeded with 7 experiments · 3 models · 4 pipelines</text>
 </svg>
