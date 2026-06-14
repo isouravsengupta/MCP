@@ -289,7 +289,14 @@ class MLOrchestrator:
                 })
 
             else:
-                final_response = response.content
+                final_response = (response.content or "").strip()
+                # llama3.2 sometimes returns bare {} or empty — nudge it once
+                if final_response in ("{}", "[]", "", "null"):
+                    self.history.append({
+                        "role": "user",
+                        "content": "Please respond in plain text with a clear summary. Do not return JSON."
+                    })
+                    continue
                 self.history.append({"role": "assistant", "content": final_response})
                 if verbose:
                     print(f"\n🤖 mlctl: {final_response}\n")

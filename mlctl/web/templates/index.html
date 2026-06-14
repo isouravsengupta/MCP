@@ -793,9 +793,25 @@
       body:JSON.stringify({message:text,provider:cfg.provider,model:cfg.model,api_key:cfg.apiKey})
     }).then(r=>r.json()).then(data=>{
       removeBotTyping();
-      addBotResponse(data.response,data.tool_calls);
+      const resp = data.response || '';
+      // llama3.2 sometimes returns bare "{}" — retry once with a reset
+      if(resp.trim()==='{}'||resp.trim()===''||resp.trim()==='[]'){
+        fetch('/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'',provider:cfg.provider,model:cfg.model})})
+          .then(()=>{
+            addBotTyping();
+            fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({message:text,provider:cfg.provider,model:cfg.model,api_key:cfg.apiKey})
+            }).then(r=>r.json()).then(d=>{
+              removeBotTyping();
+              addBotResponse(d.response,d.tool_calls);
+              addChannelBotResponse((d.response||'').slice(0,200)+((d.response||'').length>200?'…':''),d.tool_calls);
+            }).catch(()=>{removeBotTyping();addBotResponse('⚠️ Something went wrong. Check the server is running.',[]);});
+          });
+        return;
+      }
+      addBotResponse(resp, data.tool_calls);
       // echo summary in channel feed
-      addChannelBotResponse(data.response.slice(0,200)+(data.response.length>200?'…':''),data.tool_calls);
+      addChannelBotResponse(resp.slice(0,200)+(resp.length>200?'…':''),data.tool_calls);
     }).catch(()=>{
       removeBotTyping();
       addBotResponse('⚠️ Something went wrong. Check the server is running.',[]);
