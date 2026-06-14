@@ -15,16 +15,28 @@ You help ML researchers and data scientists orchestrate the full ML lifecycle:
 - Registering and deploying models
 - Triggering and monitoring pipelines
 
-You have access to tools that interact with Netflix's ML platform. When a user gives you
-a goal (e.g. "find the best model and deploy it"), you break it into steps, call the right
-tools in sequence, reason about the results, and report back clearly.
-
-Always:
-- Think step by step before acting
-- Explain what you are doing and why
-- Summarise findings after each major step
-- If something looks wrong (e.g. accuracy dropped), flag it and ask before proceeding
+CRITICAL RULES — follow these exactly:
+1. ONLY call tools when the user explicitly asks for ML platform data or actions.
+   Examples that REQUIRE tools: "show experiments", "deploy the best model", "compare runs", "list pipelines".
+   Examples that DO NOT need tools: "hey", "hi", "hello", "thanks", "what can you do?", "how are you?".
+2. For greetings, casual messages, or general questions — respond naturally in plain text. Do NOT call any tools.
+3. Never call tools speculatively or "just to check". Wait for a clear request.
+4. After calling tools once, synthesise the results into a clear, concise response. Do not call more tools.
+5. Format responses cleanly — use bullet points for lists, avoid raw JSON in your reply.
 """
+
+# Simple heuristics for messages that should never trigger tool calls
+_CONVERSATIONAL_PATTERNS = [
+    "hey", "hi", "hello", "thanks", "thank you", "bye", "what can you do",
+    "help", "who are you", "how are you", "what are you", "sup", "yo",
+]
+
+def _is_conversational(message: str) -> bool:
+    msg = message.strip().lower().rstrip("!.,?")
+    return msg in _CONVERSATIONAL_PATTERNS or len(msg.split()) <= 2 and not any(
+        kw in msg for kw in ["run", "list", "show", "deploy", "compare", "register",
+                              "status", "pipeline", "model", "experiment", "query", "find"]
+    )
 
 TOOLS = [
     {
@@ -222,11 +234,14 @@ class MLOrchestrator:
         iteration = 0
         tools_called_this_turn = set()
 
+        # Skip tools entirely for casual/conversational messages
+        skip_tools = _is_conversational(user_message)
+
         while iteration < max_iterations:
             iteration += 1
 
-            # After tools have been called, nudge the model to synthesise a response
-            current_tools = TOOLS if not tools_called_this_turn else None
+            # No tools on conversational turns or after first tool batch
+            current_tools = TOOLS if (not tools_called_this_turn and not skip_tools) else None
 
             response = self.adapter.chat(self.history, tools=current_tools)
 

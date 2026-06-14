@@ -956,8 +956,22 @@
   function formatText(t){
     return String(t)
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      // code blocks (``` ... ```)
+      .replace(/```[\w]*\n?([\s\S]*?)```/g,'<pre style="background:#0d1117;border-radius:6px;padding:8px 10px;margin:6px 0;overflow-x:auto;font-size:11px;color:#79c0ff;font-family:\'SF Mono\',monospace;white-space:pre-wrap">$1</pre>')
+      // headers
+      .replace(/^### (.+)$/gm,'<div style="font-size:13px;font-weight:700;color:#fff;margin:10px 0 4px">$1</div>')
+      .replace(/^## (.+)$/gm,'<div style="font-size:14px;font-weight:700;color:#fff;margin:10px 0 4px">$1</div>')
+      .replace(/^# (.+)$/gm,'<div style="font-size:15px;font-weight:800;color:#fff;margin:10px 0 4px">$1</div>')
+      // bold / italic / inline code
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g,'<em>$1</em>')
+      .replace(/`([^`]+)`/g,'<code style="background:#1a1d21;border-radius:3px;padding:1px 5px;font-family:\'SF Mono\',monospace;font-size:11px;color:#e8912d">$1</code>')
+      // bullet lists (- item or * item)
+      .replace(/^[\-\*] (.+)$/gm,'<div style="display:flex;gap:6px;margin:2px 0"><span style="color:#9b9ea4;flex-shrink:0">•</span><span>$1</span></div>')
+      // numbered lists
+      .replace(/^\d+\. (.+)$/gm,'<div style="display:flex;gap:6px;margin:2px 0"><span style="color:#9b9ea4;flex-shrink:0">›</span><span>$1</span></div>')
+      // line breaks
+      .replace(/\n{2,}/g,'<div style="height:6px"></div>')
       .replace(/\n/g,'<br>');
   }
 
