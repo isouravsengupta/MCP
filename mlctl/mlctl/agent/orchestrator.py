@@ -220,7 +220,7 @@ class MLOrchestrator:
     def _dispatch_tool(self, tool_name: str, args: dict) -> str:
         dispatch = {
             "run_experiment": lambda a: self.experiments.run_experiment(a["name"], a["params"]),
-            "list_experiments": lambda a: self.experiments.list_experiments(int(a.get("limit", 5))),
+            "list_experiments": lambda a: self.experiments.list_experiments(int(a.get("limit") or 5)),
             "compare_runs": lambda a: self.experiments.compare_runs(a["run_ids"]),
             "register_model": lambda a: self.models.register_model(a["run_id"], a["model_name"], a.get("stage", "staging")),
             "deploy_model": lambda a: self.models.deploy_model(a["model_name"], a["version"], a["environment"]),

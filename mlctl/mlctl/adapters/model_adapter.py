@@ -77,8 +77,9 @@ class LiteLLMAdapter(BaseModelAdapter):
         kwargs = {
             "model": self.model,
             "messages": messages,
-            "api_key": self.api_key,
         }
+        if self.api_key:
+            kwargs["api_key"] = self.api_key
         if tools:
             kwargs["tools"] = tools
             kwargs["tool_choice"] = "auto"

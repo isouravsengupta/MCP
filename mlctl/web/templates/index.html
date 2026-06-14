@@ -511,7 +511,20 @@
       <div class="rp-toolbar">
         <button class="tb-btn" title="Bold">𝐁</button><button class="tb-btn" title="Italic">𝐼</button><button class="tb-btn" title="Code">⌨</button>
         <div class="tb-divider"></div>
-        <button class="tb-btn" title="Attach">📎</button><button class="tb-btn" title="Mention" onclick="document.getElementById('botInput').value+='@mlctl ';document.getElementById('botInput').focus()">@</button>
+        <button class="tb-btn" title="Attach .py model file" onclick="document.getElementById('modelFileInput').click()">📎</button><button class="tb-btn" title="Mention" onclick="document.getElementById('botInput').value+='@mlctl ';document.getElementById('botInput').focus()">@</button>
+        <input type="file" id="modelFileInput" accept=".py" style="display:none" onchange="handleModelFileUpload(this)"/>
+      </div>
+      <!-- deploy file preview bar -->
+      <div id="filePreviewBar" style="display:none;align-items:center;gap:8px;padding:6px 10px;background:#1a1d21;border-top:1px solid #2d2f33;font-size:12px;color:#9b9ea4">
+        <span>📄</span><span id="filePreviewName" style="color:#d1d2d3;font-weight:600"></span>
+        <span style="color:#6b6f76;font-size:11px" id="filePreviewSize"></span>
+        <input id="deployModelName" placeholder="Model name (e.g. recommender_v3)" style="flex:1;background:#2d2f33;border:1px solid #3d4046;border-radius:4px;padding:4px 8px;color:#d1d2d3;font-size:12px"/>
+        <select id="deployEnv" style="background:#2d2f33;border:1px solid #3d4046;border-radius:4px;padding:4px 6px;color:#d1d2d3;font-size:12px">
+          <option value="staging">staging</option>
+          <option value="production">production</option>
+        </select>
+        <button onclick="submitModelDeploy()" style="background:#007a5a;border:none;border-radius:4px;padding:4px 10px;color:#fff;font-size:12px;cursor:pointer;font-weight:600">Deploy</button>
+        <button onclick="cancelFileDeploy()" style="background:none;border:none;color:#9b9ea4;font-size:14px;cursor:pointer;margin-left:2px">✕</button>
       </div>
       <div class="rp-input-row">
         <textarea id="botInput" placeholder="Ask mlctl anything about your ML platform…" rows="1" onkeydown="handleBotKey(event)" oninput="autoResize(this)"></textarea>
@@ -675,6 +688,53 @@
 
   function handleChannelKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChannelMessage();}}
   function handleBotKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendBotMessage();}}
+
+  let _pendingFile=null;
+  function handleModelFileUpload(input){
+    const file=input.files[0];
+    if(!file)return;
+    _pendingFile=file;
+    document.getElementById('filePreviewName').textContent=file.name;
+    document.getElementById('filePreviewSize').textContent='('+Math.round(file.size/1024*10)/10+' KB)';
+    document.getElementById('deployModelName').value=file.name.replace(/\.py$/,'').replace(/_/g,'-');
+    document.getElementById('filePreviewBar').style.display='flex';
+    input.value='';
+  }
+
+  function cancelFileDeploy(){
+    _pendingFile=null;
+    document.getElementById('filePreviewBar').style.display='none';
+  }
+
+  function submitModelDeploy(){
+    if(!_pendingFile)return;
+    const modelName=document.getElementById('deployModelName').value.trim()||_pendingFile.name.replace(/\.py$/,'');
+    const env=document.getElementById('deployEnv').value;
+    const userMsg=`📎 Deploying \`${_pendingFile.name}\` as **${modelName}** → ${env}`;
+    addBotUserMsg(userMsg);
+    addBotTyping();
+    cancelFileDeploy();
+
+    const fd=new FormData();
+    fd.append('file',_pendingFile);
+    fd.append('model_name',modelName);
+    fd.append('environment',env);
+    fd.append('provider',cfg.provider);
+    fd.append('model',cfg.model);
+    fd.append('api_key',cfg.apiKey||'');
+
+    fetch('/deploy-model',{method:'POST',body:fd})
+      .then(r=>r.json())
+      .then(data=>{
+        removeBotTyping();
+        addBotResponse(data.response,data.tool_calls);
+        addChannelBotResponse(data.response.slice(0,200)+(data.response.length>200?'…':''),data.tool_calls);
+      })
+      .catch(()=>{
+        removeBotTyping();
+        addBotResponse('⚠️ Deploy failed. Check the server is running.',[]);
+      });
+  }
 
   function sendChannelMessage(){
     const ta=document.getElementById('channelInput');
