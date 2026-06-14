@@ -390,6 +390,20 @@ All charts use Netflix's dark palette (near-black background, red accent `#E5091
 
 ## Local Quick Start
 
+> **One command — that is all.** The script checks for Python, installs Ollama, pulls the model, seeds the database, and opens the browser automatically.
+
+```bash
+git clone https://github.com/isouravsengupta/MCP
+cd MCP/mlctl
+bash setup_and_run.sh
+```
+
+The browser opens at **http://localhost:8000** when the server is ready. The UI defaults to Ollama (free, local, no API key). If you have an OpenAI or Anthropic key you can switch provider in the model selector inside the UI.
+
+---
+
+## Manual Quick Start (advanced)
+
 > **Prerequisites:** Python 3.11+ and a terminal. You need either an OpenAI API key **or** Ollama installed (free). Pick one option in step 5.
 
 ```bash
