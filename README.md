@@ -44,4 +44,4 @@ Composite SKU management with LLM evaluator, feedback learning loop, and present
 
 ---
 
-Built by [Sourav Sengupta](https://github.com/isouravsengupta) · Software Engineer 5, Model Development and Management, AI Platform
+Built by [Sourav Sengupta](https://github.com/isouravsengupta)

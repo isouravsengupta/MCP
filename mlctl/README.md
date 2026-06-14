@@ -526,5 +526,5 @@ MCP changes that calculus. By exposing each platform capability as a named, type
 
 ---
 
-Built by **Sourav Sengupta** — Software Engineer 5, Model Development and Management, AI Platform.  
+Built by **Sourav Sengupta**  
 PoC demonstrating MCP-native ML platform tooling and agentic developer experience.
