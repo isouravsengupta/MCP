@@ -29,7 +29,17 @@ The **Model Context Protocol** is an open standard — analogous to REST for web
 
 ## Architecture
 
-### Diagram A — Full AWS Production Architecture
+### High-Level Architecture
+
+![High-Level Architecture](docs/architecture-high-level.svg)
+
+### MCP Server — Low-Level Design
+
+![MCP Low-Level Design](docs/architecture-mcp-lowlevel.svg)
+
+---
+
+### Diagram A — Full AWS Production Architecture (text)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

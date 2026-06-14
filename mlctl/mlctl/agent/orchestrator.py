@@ -25,18 +25,31 @@ CRITICAL RULES — follow these exactly:
 5. Format responses cleanly — use bullet points for lists, avoid raw JSON in your reply.
 """
 
-# Simple heuristics for messages that should never trigger tool calls
-_CONVERSATIONAL_PATTERNS = [
-    "hey", "hi", "hello", "thanks", "thank you", "bye", "what can you do",
-    "help", "who are you", "how are you", "what are you", "sup", "yo",
-]
+# Keywords that indicate the user wants ML platform actions
+_ACTION_KEYWORDS = {
+    "run", "list", "show", "deploy", "compare", "register", "status",
+    "pipeline", "model", "experiment", "query", "find", "trigger",
+    "rollback", "check", "get", "what", "which", "how many", "accuracy",
+    "training", "metrics", "staging", "production", "sql",
+}
+
+_CONVERSATIONAL_PATTERNS = {
+    "hey", "hi", "hello", "thanks", "thank you", "bye", "goodbye",
+    "what can you do", "help", "who are you", "how are you", "what are you",
+    "sup", "yo", "ok", "okay", "cool", "nice", "great", "awesome", "got it",
+    "sounds good", "perfect", "yes", "no", "sure", "please", "cheers",
+}
 
 def _is_conversational(message: str) -> bool:
-    msg = message.strip().lower().rstrip("!.,?")
-    return msg in _CONVERSATIONAL_PATTERNS or len(msg.split()) <= 2 and not any(
-        kw in msg for kw in ["run", "list", "show", "deploy", "compare", "register",
-                              "status", "pipeline", "model", "experiment", "query", "find"]
-    )
+    msg = message.strip().lower().rstrip("!.,? ")
+    # Exact match against known conversational phrases
+    if msg in _CONVERSATIONAL_PATTERNS:
+        return True
+    # Short message with no action keywords → treat as conversational
+    words = msg.split()
+    if len(words) <= 3:
+        return not any(kw in msg for kw in _ACTION_KEYWORDS)
+    return False
 
 TOOLS = [
     {

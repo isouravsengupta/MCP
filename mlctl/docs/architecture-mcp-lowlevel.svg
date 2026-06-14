@@ -1,0 +1,217 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 900" font-family="'Segoe UI',Arial,sans-serif">
+  <rect width="1100" height="900" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="550" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">mlctl MCP Server — Low-Level Design</text>
+  <text x="550" y="56" text-anchor="middle" font-size="12" fill="#6b6f76">Internal request flow: Slack DM → MCP Server → Tools → Data Sources → Response</text>
+
+  <!-- Step numbers helper -->
+  <!-- ①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬ -->
+
+  <!-- ── COLUMN A: Slack / Client ── -->
+  <rect x="20" y="80" width="180" height="740" rx="10" fill="#161b22" stroke="#4ecdc4" stroke-width="1.5"/>
+  <text x="110" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#4ecdc4">SLACK / CLIENT</text>
+
+  <rect x="40" y="118" width="140" height="55" rx="7" fill="#1c2128" stroke="#4ecdc4"/>
+  <text x="110" y="138" text-anchor="middle" font-size="20">💬</text>
+  <text x="110" y="157" text-anchor="middle" font-size="11" fill="#c9d1d9">Engineer sends DM</text>
+  <text x="110" y="171" text-anchor="middle" font-size="10" fill="#6b6f76">"show experiments"</text>
+
+  <text x="110" y="202" text-anchor="middle" font-size="11" fill="#8b949e">① Slack Events API</text>
+  <text x="110" y="216" text-anchor="middle" font-size="10" fill="#6b6f76">POST /slack/events</text>
+  <text x="110" y="230" text-anchor="middle" font-size="10" fill="#6b6f76">AWS API Gateway</text>
+
+  <rect x="40" y="244" width="140" height="45" rx="7" fill="#1c2128" stroke="#f0883e"/>
+  <text x="110" y="261" text-anchor="middle" font-size="11" fill="#c9d1d9">② Lambda</text>
+  <text x="110" y="275" text-anchor="middle" font-size="10" fill="#6b6f76">Validates signature</text>
+  <text x="110" y="288" text-anchor="middle" font-size="10" fill="#6b6f76">Extracts JWT</text>
+
+  <text x="110" y="318" text-anchor="middle" font-size="20">⬇</text>
+  <text x="110" y="338" text-anchor="middle" font-size="10" fill="#6b6f76">③ POST /chat</text>
+  <text x="110" y="352" text-anchor="middle" font-size="10" fill="#6b6f76">{message, user_id}</text>
+
+  <!-- Response path -->
+  <rect x="40" y="720" width="140" height="55" rx="7" fill="#1c2128" stroke="#3fb950"/>
+  <text x="110" y="740" text-anchor="middle" font-size="11" fill="#3fb950">⑬ Slack posts</text>
+  <text x="110" y="754" text-anchor="middle" font-size="10" fill="#c9d1d9">Rich message</text>
+  <text x="110" y="768" text-anchor="middle" font-size="10" fill="#6b6f76">with Chart.js charts</text>
+
+  <!-- ── COLUMN B: mlctl MCP Server ── -->
+  <rect x="220" y="80" width="280" height="740" rx="10" fill="#161b22" stroke="#e50914" stroke-width="1.5"/>
+  <text x="360" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#ff7b72">mlctl MCP SERVER  (FastAPI · ECS Fargate)</text>
+
+  <!-- FastAPI -->
+  <rect x="240" y="118" width="240" height="50" rx="7" fill="#1c2128" stroke="#e50914"/>
+  <text x="360" y="137" text-anchor="middle" font-size="12" font-weight="600" fill="#ff7b72">④ FastAPI  web/app.py</text>
+  <text x="360" y="154" text-anchor="middle" font-size="10" fill="#8b949e">POST /chat  ·  GET /providers  ·  POST /reset</text>
+  <text x="360" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">Static files: Chart.js, images</text>
+
+  <!-- Orchestrator -->
+  <rect x="240" y="200" width="240" height="130" rx="7" fill="#1c2128" stroke="#ff7b72" stroke-width="1.5"/>
+  <text x="360" y="220" text-anchor="middle" font-size="12" font-weight="600" fill="#ff7b72">⑤ MLOrchestrator</text>
+  <text x="360" y="238" text-anchor="middle" font-size="10" fill="#8b949e">mlctl/agent/orchestrator.py</text>
+  <line x1="240" y1="245" x2="480" y2="245" stroke="#30363d"/>
+  <text x="260" y="262" font-size="10" fill="#8b949e">history = [system, user, tool, ...]</text>
+  <text x="260" y="278" font-size="10" fill="#8b949e">skip_tools = _is_conversational(msg)</text>
+  <text x="260" y="294" font-size="10" fill="#8b949e">tools = TOOLS if not skip_tools else None</text>
+  <text x="260" y="310" font-size="10" fill="#8b949e">max_iterations = 10</text>
+  <text x="260" y="318" font-size="10" fill="#3fb950">  → tool_calls_this_turn set</text>
+
+  <!-- LLM Adapter -->
+  <rect x="240" y="355" width="240" height="100" rx="7" fill="#1c2128" stroke="#a371f7"/>
+  <text x="360" y="374" text-anchor="middle" font-size="12" font-weight="600" fill="#a371f7">⑥ LLM Adapter</text>
+  <text x="360" y="390" text-anchor="middle" font-size="10" fill="#8b949e">BaseModelAdapter (ABC)</text>
+  <line x1="240" y1="396" x2="480" y2="396" stroke="#30363d"/>
+  <text x="260" y="413" font-size="10" fill="#8b949e">LiteLLMAdapter</text>
+  <text x="260" y="428" font-size="10" fill="#6b6f76">  OpenAI · Anthropic · Azure</text>
+  <text x="260" y="443" font-size="10" fill="#6b6f76">  Ollama (local) · Bedrock</text>
+  <text x="260" y="452" font-size="10" fill="#a371f7">NetflixModelAdapter (stub)</text>
+
+  <!-- Tool Dispatch -->
+  <rect x="240" y="480" width="240" height="110" rx="7" fill="#1c2128" stroke="#3fb950"/>
+  <text x="360" y="499" text-anchor="middle" font-size="12" font-weight="600" fill="#3fb950">⑧ Tool Dispatch</text>
+  <text x="360" y="515" text-anchor="middle" font-size="10" fill="#8b949e">_dispatch_tool(name, args)</text>
+  <line x1="240" y1="521" x2="480" y2="521" stroke="#30363d"/>
+  <text x="260" y="538" font-size="10" fill="#8b949e">ExperimentTools</text>
+  <text x="260" y="553" font-size="10" fill="#8b949e">ModelTools</text>
+  <text x="260" y="568" font-size="10" fill="#8b949e">PipelineTools</text>
+  <text x="260" y="583" font-size="10" fill="#8b949e">text_to_sql (NL→SQL→DB)</text>
+
+  <!-- Synthesis -->
+  <rect x="240" y="620" width="240" height="80" rx="7" fill="#1c2128" stroke="#f0883e"/>
+  <text x="360" y="639" text-anchor="middle" font-size="12" font-weight="600" fill="#f0883e">⑫ Synthesis</text>
+  <line x1="240" y1="645" x2="480" y2="645" stroke="#30363d"/>
+  <text x="260" y="662" font-size="10" fill="#8b949e">Nudge: "summarise results,</text>
+  <text x="260" y="677" font-size="10" fill="#8b949e">  do not call more tools"</text>
+  <text x="260" y="692" font-size="10" fill="#8b949e">LLM → final text response</text>
+
+  <!-- Response box -->
+  <rect x="240" y="724" width="240" height="50" rx="7" fill="#1c2128" stroke="#3fb950"/>
+  <text x="360" y="743" text-anchor="middle" font-size="11" fill="#3fb950">⑬ {response, tool_calls}</text>
+  <text x="360" y="758" text-anchor="middle" font-size="10" fill="#6b6f76">JSON back to Lambda / Web UI</text>
+
+  <!-- Internal arrows in column B -->
+  <line x1="360" y1="168" x2="360" y2="200" stroke="#ff7b72" stroke-width="1.5"/>
+  <polygon points="356,197 364,197 360,204" fill="#ff7b72"/>
+  <line x1="360" y1="330" x2="360" y2="355" stroke="#a371f7" stroke-width="1.5"/>
+  <polygon points="356,352 364,352 360,359" fill="#a371f7"/>
+  <line x1="360" y1="455" x2="360" y2="480" stroke="#3fb950" stroke-width="1.5"/>
+  <polygon points="356,477 364,477 360,484" fill="#3fb950"/>
+  <line x1="360" y1="590" x2="360" y2="620" stroke="#f0883e" stroke-width="1.5"/>
+  <polygon points="356,617 364,617 360,624" fill="#f0883e"/>
+  <line x1="360" y1="700" x2="360" y2="724" stroke="#3fb950" stroke-width="1.5"/>
+  <polygon points="356,721 364,721 360,728" fill="#3fb950"/>
+
+  <!-- ── COLUMN C: LLM ── -->
+  <rect x="520" y="80" width="180" height="380" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5"/>
+  <text x="610" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#a371f7">LLM PROVIDERS</text>
+
+  <rect x="540" y="118" width="140" height="48" rx="7" fill="#1c2128" stroke="#a371f7"/>
+  <text x="610" y="137" text-anchor="middle" font-size="11" font-weight="600" fill="#c9d1d9">Netflix Internal LLM</text>
+  <text x="610" y="153" text-anchor="middle" font-size="10" fill="#6b6f76">Primary (Netflix SSO)</text>
+  <text x="610" y="165" text-anchor="middle" font-size="10" fill="#a371f7">NetflixModelAdapter</text>
+
+  <rect x="540" y="186" width="140" height="40" rx="7" fill="#1c2128" stroke="#6e7681"/>
+  <text x="610" y="202" text-anchor="middle" font-size="11" fill="#c9d1d9">OpenAI gpt-4o</text>
+  <text x="610" y="217" text-anchor="middle" font-size="10" fill="#6b6f76">LiteLLMAdapter</text>
+
+  <rect x="540" y="238" width="140" height="40" rx="7" fill="#1c2128" stroke="#6e7681"/>
+  <text x="610" y="254" text-anchor="middle" font-size="11" fill="#c9d1d9">Anthropic Claude</text>
+  <text x="610" y="269" text-anchor="middle" font-size="10" fill="#6b6f76">LiteLLMAdapter</text>
+
+  <rect x="540" y="290" width="140" height="40" rx="7" fill="#1c2128" stroke="#6e7681"/>
+  <text x="610" y="306" text-anchor="middle" font-size="11" fill="#c9d1d9">Ollama llama3.2</text>
+  <text x="610" y="321" text-anchor="middle" font-size="10" fill="#3fb950">Local · no API key</text>
+
+  <rect x="540" y="342" width="140" height="40" rx="7" fill="#1c2128" stroke="#6e7681"/>
+  <text x="610" y="358" text-anchor="middle" font-size="11" fill="#c9d1d9">Azure / AWS Bedrock</text>
+  <text x="610" y="373" text-anchor="middle" font-size="10" fill="#6b6f76">Enterprise options</text>
+
+  <!-- ⑥ → LLM arrows -->
+  <line x1="480" y1="390" x2="540" y2="265" stroke="#a371f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="508" y="340" font-size="10" fill="#a371f7">⑥ chat()</text>
+  <!-- ⑦ response back -->
+  <line x1="540" y1="290" x2="480" y2="370" stroke="#a371f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="490" y="280" font-size="10" fill="#a371f7">⑦ tool_calls</text>
+
+  <!-- ── COLUMN D: Data Sources ── -->
+  <rect x="720" y="80" width="360" height="740" rx="10" fill="#161b22" stroke="#f0883e" stroke-width="1.5"/>
+  <text x="900" y="104" text-anchor="middle" font-size="11" font-weight="700" fill="#f0883e">DATA SOURCES</text>
+
+  <!-- DS items -->
+  <rect x="740" y="118" width="155" height="55" rx="7" fill="#1c2128" stroke="#4ecdc4"/>
+  <text x="817" y="138" text-anchor="middle" font-size="11" font-weight="600" fill="#4ecdc4">Metaflow</text>
+  <text x="817" y="153" text-anchor="middle" font-size="10" fill="#8b949e">list_experiments</text>
+  <text x="817" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">compare_runs</text>
+
+  <rect x="905" y="118" width="155" height="55" rx="7" fill="#1c2128" stroke="#4ecdc4"/>
+  <text x="982" y="138" text-anchor="middle" font-size="11" font-weight="600" fill="#4ecdc4">MLflow Registry</text>
+  <text x="982" y="153" text-anchor="middle" font-size="10" fill="#8b949e">register_model</text>
+  <text x="982" y="167" text-anchor="middle" font-size="10" fill="#6b6f76">deploy_model</text>
+
+  <rect x="740" y="196" width="155" height="55" rx="7" fill="#1c2128" stroke="#f0883e"/>
+  <text x="817" y="216" text-anchor="middle" font-size="11" font-weight="600" fill="#f0883e">SageMaker</text>
+  <text x="817" y="231" text-anchor="middle" font-size="10" fill="#8b949e">Training Jobs</text>
+  <text x="817" y="245" text-anchor="middle" font-size="10" fill="#6b6f76">Endpoints (deploy/status)</text>
+
+  <rect x="905" y="196" width="155" height="55" rx="7" fill="#1c2128" stroke="#f0883e"/>
+  <text x="982" y="216" text-anchor="middle" font-size="11" font-weight="600" fill="#f0883e">Airflow</text>
+  <text x="982" y="231" text-anchor="middle" font-size="10" fill="#8b949e">trigger_pipeline</text>
+  <text x="982" y="245" text-anchor="middle" font-size="10" fill="#6b6f76">list_pipelines</text>
+
+  <rect x="740" y="274" width="155" height="55" rx="7" fill="#1c2128" stroke="#a371f7"/>
+  <text x="817" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#a371f7">Feature Store</text>
+  <text x="817" y="309" text-anchor="middle" font-size="10" fill="#8b949e">Netflix Feast</text>
+  <text x="817" y="323" text-anchor="middle" font-size="10" fill="#6b6f76">DynamoDB + S3</text>
+
+  <rect x="905" y="274" width="155" height="55" rx="7" fill="#1c2128" stroke="#58a6ff"/>
+  <text x="982" y="294" text-anchor="middle" font-size="11" font-weight="600" fill="#58a6ff">Athena + S3</text>
+  <text x="982" y="309" text-anchor="middle" font-size="10" fill="#8b949e">natural_language_query</text>
+  <text x="982" y="323" text-anchor="middle" font-size="10" fill="#6b6f76">NL → SQL → results</text>
+
+  <rect x="740" y="352" width="155" height="55" rx="7" fill="#1c2128" stroke="#3fb950"/>
+  <text x="817" y="372" text-anchor="middle" font-size="11" font-weight="600" fill="#3fb950">CloudWatch</text>
+  <text x="817" y="387" text-anchor="middle" font-size="10" fill="#8b949e">get_model_status</text>
+  <text x="817" y="401" text-anchor="middle" font-size="10" fill="#6b6f76">Metrics + alarms</text>
+
+  <rect x="905" y="352" width="155" height="55" rx="7" fill="#1c2128" stroke="#3fb950"/>
+  <text x="982" y="372" text-anchor="middle" font-size="11" font-weight="600" fill="#3fb950">Monitoring</text>
+  <text x="982" y="387" text-anchor="middle" font-size="10" fill="#8b949e">rollback_model</text>
+  <text x="982" y="401" text-anchor="middle" font-size="10" fill="#6b6f76">Grafana / Prometheus</text>
+
+  <!-- SQLite demo box -->
+  <rect x="740" y="432" width="320" height="60" rx="7" fill="#21262d" stroke="#30363d" stroke-dasharray="6,3"/>
+  <text x="900" y="454" text-anchor="middle" font-size="11" font-weight="700" fill="#8b949e">📦 Demo: SQLite  db/mlctl.db</text>
+  <text x="900" y="470" text-anchor="middle" font-size="10" fill="#6b6f76">experiments · models · pipelines tables</text>
+  <text x="900" y="484" text-anchor="middle" font-size="10" fill="#6b6f76">Seeded: 7 runs · 3 models · 4 pipelines</text>
+
+  <!-- ⑨ arrows from tool dispatch to data sources -->
+  <line x1="480" y1="530" x2="740" y2="325" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="580" y="445" font-size="10" fill="#3fb950">⑨ queries</text>
+  <!-- ⑩ results back -->
+  <line x1="740" y1="350" x2="480" y2="555" stroke="#f0883e" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="590" y="490" font-size="10" fill="#f0883e">⑩ results</text>
+
+  <!-- ── Flow annotations on left of diagram ── -->
+  <!-- Arrows between columns A and B -->
+  <line x1="200" y1="290" x2="220" y2="250" stroke="#4ecdc4" stroke-width="1.5"/>
+  <polygon points="216,251 224,246 222,255" fill="#4ecdc4"/>
+
+  <line x1="220" y1="748" x2="200" y2="748" stroke="#3fb950" stroke-width="1.5"/>
+  <polygon points="203,744 200,748 203,752" fill="#3fb950"/>
+
+  <!-- ── Legend ── -->
+  <rect x="20" y="840" width="1060" height="44" rx="8" fill="#161b22" stroke="#30363d"/>
+  <rect x="40" y="857" width="10" height="10" fill="#4ecdc4" rx="2"/>
+  <text x="56" y="867" font-size="10" fill="#8b949e">Experiment / Model data</text>
+  <rect x="200" y="857" width="10" height="10" fill="#f0883e" rx="2"/>
+  <text x="216" y="867" font-size="10" fill="#8b949e">Compute / Pipeline</text>
+  <rect x="360" y="857" width="10" height="10" fill="#a371f7" rx="2"/>
+  <text x="376" y="867" font-size="10" fill="#8b949e">LLM / AI</text>
+  <rect x="460" y="857" width="10" height="10" fill="#3fb950" rx="2"/>
+  <text x="476" y="867" font-size="10" fill="#8b949e">Success / Response path</text>
+  <rect x="640" y="857" width="10" height="10" fill="#58a6ff" rx="2"/>
+  <text x="656" y="867" font-size="10" fill="#8b949e">Text-to-SQL / Query</text>
+  <rect x="800" y="857" width="10" height="10" rx="2" fill="none" stroke="#30363d" stroke-dasharray="3,2"/>
+  <text x="816" y="867" font-size="10" fill="#8b949e">Demo only (SQLite replaces prod)</text>
+</svg>
