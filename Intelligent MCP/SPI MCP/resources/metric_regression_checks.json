@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "checks": [
+    {
+      "metric_id": "spm_pipegen_cloud_fy27_q1",
+      "expected_columns": ["CLOUD_AMT", "Y/Y", "PY_CLOUD_AMT"],
+      "numeric_ranges": {
+        "CLOUD_AMT": { "min": 5000000000, "max": 7000000000 },
+        "PY_CLOUD_AMT": { "min": 1000000000, "max": 9000000000 }
+      }
+    },
+    {
+      "metric_id": "spm_pipegen_forecast_fy27_q1",
+      "expected_columns": ["FORECAST_AMT", "Y/Y", "PY_FORECAST_AMT"],
+      "numeric_ranges": {
+        "FORECAST_AMT": { "min": 3000000000, "max": 5000000000 },
+        "PY_FORECAST_AMT": { "min": 1000000000, "max": 9000000000 }
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "metrics": [
+    {
+      "id": "spm_forecast_attainment",
+      "name": "SPM Forecast Attainment",
+      "description": "CRMA-equivalent attainment: SUM(max pipegen cloud by GDSO) / SUM(forecast amt excluding Pipe Progression).",
+      "params": ["fiscal_year", "fiscal_quarter", "months"],
+      "sql_template": "WITH SPM_PG AS ( SELECT GDSO_ID, MAX(CLOUD_AMT) AS CLOUD_AMT FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN WHERE SNAP_YEAR_STATUS='CY' AND FISCAL_FLIP_YEAR = ? AND FISCAL_FLIP_QTR = ? AND STG_2_FLG_DT_MONTH IN ({{MONTH_BINDS}}) GROUP BY GDSO_ID ), SPM_FRCST AS ( SELECT FORECAST_AMT FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST WHERE PROGRAM_TYPE <> 'Pipe Progression' AND FORECAST_TYPE = 'Pipe' AND FISCAL_CMPGN_STRT_YEAR = ? AND FISCAL_CMPGN_STRT_QTR = ? ) SELECT CASE WHEN COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0)=0 THEN NULL ELSE COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0)/COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0) END AS ATTAINMENT, COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0) AS PIPEGEN_CLOUD_AMT, COALESCE((SELECT SUM(FORECAST_AMT) FROM SPM_FRCST),0) AS FORECAST_AMT"
+    },
+    {
+      "id": "spm_pg_contribution",
+      "name": "SPM PG Contribution",
+      "description": "CRMA-equivalent PG contribution %: SUM(max SPM PG cloud by GDSO) / SUM(total PG cloud).",
+      "params": ["fiscal_year", "fiscal_quarter", "months"],
+      "sql_template": "WITH SPM_PG AS ( SELECT GDSO_ID, MAX(CLOUD_AMT) AS CLOUD_AMT FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN WHERE SNAP_YEAR_STATUS='CY' AND PRODUCT_MATCH='Product Match' AND PROGRAM_TEAM='Sales Program' AND FISCAL_FLIP_YEAR = ? AND FISCAL_FLIP_QTR = ? GROUP BY GDSO_ID ), TOTAL_PG AS ( SELECT CLOUD_AMT FROM SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN WHERE SNAP_YEAR_STATUS='CY' AND FISCAL_FLIP_YEAR = ? AND FISCAL_FLIP_QTR = ? ) SELECT CASE WHEN COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0)=0 THEN NULL ELSE COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0)/COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0) END AS PG_CONTRIBUTION, COALESCE((SELECT SUM(CLOUD_AMT) FROM SPM_PG),0) AS SPM_PG_CLOUD_AMT, COALESCE((SELECT SUM(CLOUD_AMT) FROM TOTAL_PG),0) AS TOTAL_PG_CLOUD_AMT"
+    },
+    {
+      "id": "spm_most_used_sales_play_programs",
+      "name": "SPM Most Used Sales Play Tagged In Number Of Programs",
+      "description": "CRMA-equivalent weighted sales play usage by number of tagged programs with weighted ACV and weighted PG.",
+      "params": ["fiscal_year", "fiscal_quarter", "months", "top_n"],
+      "sql_template": "SELECT 1 AS PLACEHOLDER"
+    }
+  ]
+}

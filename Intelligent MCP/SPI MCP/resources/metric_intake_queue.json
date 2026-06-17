@@ -1,0 +1,4185 @@
+{
+  "generated_at_utc": "2026-06-11T20:18:39.928Z",
+  "sources": {
+    "dashboard_lens_catalog": "resources/dashboard_lens_catalog.json",
+    "metric_mappings": "resources/metric_mappings.json",
+    "dashboard_dataset_registry": "resources/dashboard_dataset_registry.json",
+    "metric_scenarios": "resources/metric_scenarios.json"
+  },
+  "counts": {
+    "lenses_total": 297,
+    "datasets_discovered": 31,
+    "metric_definitions_total": 4,
+    "formula_metrics_total": 2,
+    "intake_candidates": 297,
+    "scenarios_missing": 0
+  },
+  "intake_candidates": [
+    {
+      "candidate_metric_id": "lens_acct_lvl_2_usr_nm_1",
+      "source_step": "ACCT_LVL_2_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_104"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_3_usr_nm_1",
+      "source_step": "ACCT_LVL_3_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_105"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_4_usr_nm_1",
+      "source_step": "ACCT_LVL_4_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_106"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_5_usr_nm_1",
+      "source_step": "ACCT_LVL_5_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_119"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_6_usr_nm_1",
+      "source_step": "ACCT_LVL_6_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_121"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_7_usr_nm_1",
+      "source_step": "ACCT_LVL_7_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_122"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_8_usr_nm_1",
+      "source_step": "ACCT_LVL_8_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_123"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acct_lvl_9_usr_nm_1",
+      "source_step": "ACCT_LVL_9_USR_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_124"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_activity_type_1",
+      "source_step": "ACTIVITY_TYPE_1",
+      "label": "ACTIVITY_TYPE_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "PG = load \"gsp_spm_pg\";\nPG = filter PG by SNAP_YEAR_STATUS == \"CY\";\nPG = filter PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nPG = filter PG by {{column(FixMonth_1.result, [\"Quarter",
+      "widgets": [
+        "chart_5"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_activity_type_2",
+      "source_step": "ACTIVITY_TYPE_2",
+      "label": "ACTIVITY_TYPE_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acvtypechart_1",
+      "source_step": "ACVTypeChart_1",
+      "label": "all_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gsp_spm_nnaov",
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "ACV = load \"gsp_spm_acv\";\nACV = filter ACV by {{column(ECS_OWNED_2.selection, [\"OPTY_SRC_NM\"]).asEquality(\"OPTY_SRC_NM\")}};\nACV = filter ACV by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nAC",
+      "widgets": [
+        "chart_18"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_acvtypetoggle_1",
+      "source_step": "ACVTypeToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_5"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_aio_l1_1",
+      "source_step": "AIO_L1_1",
+      "label": "AIO_L1_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by SNAP_YEAR_STATUS == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asE",
+      "widgets": [
+        "chart_9"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_aio_l1_2",
+      "source_step": "AIO_L1_2",
+      "label": "AIO_L1_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by SNAP_YEAR_STATUS == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asE",
+      "widgets": [
+        "chart_10"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_1_3",
+      "source_step": "all_1_3",
+      "label": "all_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gdso_crt_acv",
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "ACV = load \"gsp_spm_acv\";\nACV = filter ACV by {{column(ECS_OWNED_2.selection, [\"OPTY_SRC_NM\"]).asEquality(\"OPTY_SRC_NM\")}};\n\nACV_CY = filter ACV by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}}",
+      "widgets": [
+        "number_12",
+        "number_21",
+        "number_27"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_10",
+      "source_step": "all_10",
+      "label": "all_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "CC = load \"gsp_spm_pg\";\nCC = filter CC by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nCC = filter CC by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG_2_FLG_DT_Month')}};",
+      "widgets": [
+        "number_18",
+        "number_13"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_10_1",
+      "source_step": "all_10_1",
+      "label": "all_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_plays"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "CC = load \"gsp_spm_pg\";\nCC = filter CC by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nCC = filter CC by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG_2_FLG_DT_Month')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_12",
+      "source_step": "all_12",
+      "label": "all_12",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by !('OPTY_STG_NM' like \"%08%\");\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, ",
+      "widgets": [
+        "number_17",
+        "number_15"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_14_1",
+      "source_step": "all_14_1",
+      "label": "all_14",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "number_6"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_14_2",
+      "source_step": "all_14_2",
+      "label": "all_14",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "number_4"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_15",
+      "source_step": "all_15",
+      "label": "all_15",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "number_22"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_2_2",
+      "source_step": "all_2_2",
+      "label": "all_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG",
+      "widgets": [
+        "number_5"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_2_3",
+      "source_step": "all_2_3",
+      "label": "all_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG",
+      "widgets": [
+        "number_26"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_5",
+      "source_step": "all_5",
+      "label": "all_5",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "q = load \"gsp_spm_forecast\";\nq = filter q by PROGRAM_TYPE != \"Pipe Progression\";\nq = filter q by 'FORECAST_TYPE' == \"Pipe\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('FISCAL_QUARTER_FORECAST')}}",
+      "widgets": [
+        "number_19",
+        "number_2"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_5_1",
+      "source_step": "all_5_1",
+      "label": "all_5",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "q = load \"gsp_spm_forecast\";\nq = filter q by 'FORECAST_TYPE' == \"ACV\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('FISCAL_QUARTER_FORECAST')}};\nCY = filter q by {{column(FixYear_1.result, [\"Year\"",
+      "widgets": [
+        "number_20"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_6",
+      "source_step": "all_6",
+      "label": "all_6",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "q = load \"gsp_spm_forecast\";\nq = filter q by PROGRAM_TYPE != \"Pipe Progression\";\nq = filter q by 'FORECAST_TYPE' == \"Pipe\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('FISCAL_QUARTER_FORECAST')}}",
+      "widgets": [
+        "number_1",
+        "number_7"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_7",
+      "source_step": "all_7",
+      "label": "all_7",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "PG = load \"gsp_spm_pg\";\nPG = filter PG by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nPG = filter PG by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG_2_FLG_DT_Month')}};",
+      "widgets": [
+        "number_10",
+        "number_16"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_7_1",
+      "source_step": "all_7_1",
+      "label": "all_7",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_plays"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "PG = load \"gsp_spm_pg\";\nPG = filter PG by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FLG_DT_Quarter_Fiscal')}};\nPG = filter PG by {{column(FixMonth_1.result, [\"Month\"]).asEquality('STG_2_FLG_DT_Month')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_8",
+      "source_step": "all_8",
+      "label": "all_8",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "ACV = load \"gsp_spm_acv\";\nACV = filter ACV by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('CLSD_DT_Quarter_Fiscal')}};\nACV = filter ACV by {{column(FixMonth_1.result, [\"Month\"]).asEquality('CLSD_DT_Month')}};\nACV",
+      "widgets": [
+        "number_11",
+        "number_9"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_8_1",
+      "source_step": "all_8_1",
+      "label": "all_8",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gdso_crt_plays"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "ACV = load \"gsp_spm_acv\";\nACV = filter ACV by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('CLSD_DT_Quarter_Fiscal')}};\nACV = filter ACV by {{column(FixMonth_1.result, [\"Month\"]).asEquality('CLSD_DT_Month')}};\nACV",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_9",
+      "source_step": "all_9",
+      "label": "all_9",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(",
+      "widgets": [
+        "chart_7"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_9_1",
+      "source_step": "all_9_1",
+      "label": "all_9",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(",
+      "widgets": [
+        "chart_21"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_all_9_2",
+      "source_step": "all_9_2",
+      "label": "all_9",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gsp_spm_progression",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "ACV = load \"gsp_spm_acv\";\nACV = filter ACV by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nACV = filter ACV by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('CLSD_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "chart_16"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l1_1",
+      "source_step": "APM_L1_1",
+      "label": "APM_L1_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L1\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L1\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [
+        "listselector_7"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l1_1_1",
+      "source_step": "APM_L1_1_1",
+      "label": "APM_L1_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L1\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L1\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l1_1_2",
+      "source_step": "APM_L1_1_2",
+      "label": "APM_L1_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by 'L1_BUS_LN';\nq = foreach q generate 'L1_BUS_LN' as 'L1_BUS_LN', count() as 'count';\nq = order q by 'L1_BUS_LN' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_36"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l2_1",
+      "source_step": "APM_L2_1",
+      "label": "APM_L2_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L2\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L2\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [
+        "listselector_8"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l2_1_1",
+      "source_step": "APM_L2_1_1",
+      "label": "APM_L2_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L2\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L2\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l2_1_2",
+      "source_step": "APM_L2_1_2",
+      "label": "APM_L2_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by 'L2_PROD_LN';\nq = foreach q generate 'L2_PROD_LN' as 'L2_PROD_LN', count() as 'count';\nq = order q by 'L2_PROD_LN' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_48"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l3_1",
+      "source_step": "APM_L3_1",
+      "label": "APM_L3_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L3\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L3\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [
+        "listselector_25"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l3_1_1",
+      "source_step": "APM_L3_1_1",
+      "label": "APM_L3_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by '{{cell(ProductFilterToggle_1.selection,0,\"L3\").asObject()}}';\nq = foreach q generate '{{cell(ProductFilterToggle_1.selection,0,\"L3\").asObject()}}' as '{{cell(ProductFilterToggle_1",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_apm_l3_1_2",
+      "source_step": "APM_L3_1_2",
+      "label": "APM_L3_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_ACV",
+      "query_preview": "q = load \"gdso_crt_acv\";\nq = group q by 'L3_PROD_FAMILY';\nq = foreach q generate 'L3_PROD_FAMILY' as 'L3_PROD_FAMILY', count() as 'count';\nq = order q by 'L3_PROD_FAMILY' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_58"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_business_focus_1",
+      "source_step": "BUSINESS_FOCUS_1",
+      "label": "BUSINESS_FOCUS_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'BUSINESS_FOCUS';\nq = foreach q generate 'BUSINESS_FOCUS' as 'BUSINESS_FOCUS', count() as 'count';\nq = order q by 'BUSINESS_FOCUS' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_32",
+        "listselector_115"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_business_focus_1_1",
+      "source_step": "BUSINESS_FOCUS_1_1",
+      "label": "BUSINESS_FOCUS_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'BUSINESS_FOCUS';\nq = foreach q generate 'BUSINESS_FOCUS' as 'BUSINESS_FOCUS', count() as 'count';\nq = order q by 'BUSINESS_FOCUS' asc;\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_chartgroup_1",
+      "source_step": "ChartGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_15"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_chartsubgroup_1",
+      "source_step": "ChartSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_16"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_cloud_amt_1_1",
+      "source_step": "CLOUD_AMT_1_1",
+      "label": "CLOUD_AMT_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).a",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_creationgraph_1",
+      "source_step": "CreationGraph_1",
+      "label": "LandingGraph_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by SNAP_YEAR_STATUS == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asE",
+      "widgets": [
+        "chart_15"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_creationtoggle_1",
+      "source_step": "CreationToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_16"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_dealbands_detailed_1",
+      "source_step": "DEALBANDS_DETAILED_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_30"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_donutlefttoggle_1",
+      "source_step": "DonutLeftToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_21"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_donutrighttoggle_1",
+      "source_step": "DonutRightToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_22"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ecs_owned_1",
+      "source_step": "ECS_OWNED_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_47"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ecs_owned_2",
+      "source_step": "ECS_OWNED_2",
+      "label": "ECS_OWNED_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = group q by 'OPTY_SRC_NM';\nq = foreach q generate 'OPTY_SRC_NM' as 'OPTY_SRC_NM', count() as 'count';\nq = order q by 'OPTY_SRC_NM' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_20"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ecs_owned_2_1",
+      "source_step": "ECS_OWNED_2_1",
+      "label": "ECS_OWNED_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = group q by 'BUSINESS_UNIT';\nq = foreach q generate 'BUSINESS_UNIT' as 'BUSINESS_UNIT', count() as 'count';\nq = order q by 'BUSINESS_UNIT' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_35"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ecs_owned_2_2",
+      "source_step": "ECS_OWNED_2_2",
+      "label": "ECS_OWNED_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = group q by 'BUSINESS_UNIT';\nq = foreach q generate 'BUSINESS_UNIT' as 'BUSINESS_UNIT', count() as 'count';\nq = order q by 'BUSINESS_UNIT' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_84"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_engagementfilter_1",
+      "source_step": "EngagementFilter_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_engagementfilterfora_1",
+      "source_step": "EngagementFilterForA_1",
+      "label": "EngagementFilterForActivityMetrics",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_23"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fixmonth_1",
+      "source_step": "FixMonth_1",
+      "label": "FixMonth_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FixMonth\";\nq = foreach q generate 'End_date' as 'End_date', 'FQ_Quarter' as 'FQ_Quarter', 'Month' as 'Month', 'Month_Short' as 'Month_Short', 'Month_full' as 'Month_full', 'Month_txt' as 'Month_txt', 'Quarter' ",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fixyear_1",
+      "source_step": "FixYear_1",
+      "label": "FixYear_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FiscalYearFix\";\nq = foreach q generate 'FY_Year' as 'FY_Year', 'FY_Year_1' as 'FY_Year_1', 'FY_Year_2' as 'FY_Year_2', 'FY_Year_4' as 'FY_Year_4', 'Year' as 'Year', 'Year_1' as 'Year_1', 'Year_2' as 'Year_2', n",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecast_amt_1",
+      "source_step": "FORECAST_AMT_1",
+      "label": "FORECAST_AMT_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "q = load \"gsp_spm_forecast\";\nq = filter q by FORECAST_TYPE == \"Pipe\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).as",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecast_amt_1_1",
+      "source_step": "FORECAST_AMT_1_1",
+      "label": "FORECAST_AMT_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "q = load \"gsp_spm_forecast\";\nq = filter q by FORECAST_TYPE == \"Pipe\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).as",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecastsplitmetrics_1",
+      "source_step": "ForecastSplitMetrics_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_103"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecastsplitorder_1",
+      "source_step": "ForecastSplitOrder_1",
+      "label": "ForecastSplitOrder",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_98"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecastsplitorder_1_1",
+      "source_step": "ForecastSplitOrder_1_1",
+      "label": "ForecastSplitOrder_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_forecastsplittoggle_1",
+      "source_step": "ForecastSplitToggle_1",
+      "label": "ForecastSplitToggle",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_11"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fq_quarter_1",
+      "source_step": "FQ_Quarter_1",
+      "label": "FQ_Quarter_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FixMonth\";\nq = group q by 'FQ_Quarter';\nq = foreach q generate 'FQ_Quarter' as 'FQ_Quarter', count() as 'count';\nq = order q by 'FQ_Quarter' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_79",
+        "listselector_6"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fq_quarter_1_1",
+      "source_step": "FQ_Quarter_1_1",
+      "label": "FQ_Quarter_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FixMonth\";\nq = group q by 'FQ_Quarter';\nq = foreach q generate 'FQ_Quarter' as 'FQ_Quarter', count() as 'count';\nq = order q by 'FQ_Quarter' asc;\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fq_quarter_2",
+      "source_step": "FQ_Quarter_2",
+      "label": "FQ_Quarter_1",
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fy_year_1",
+      "source_step": "FY_Year_1",
+      "label": "FY_Year_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FiscalYearFix\";\nq = filter q by FY_Year in [\"FY 2023\", \"FY 2024\", \"FY 2025\", \"FY 2026\",\"FY 2027\"];\nq = group q by 'FY_Year';\nq = foreach q generate 'FY_Year' as 'FY_Year', count() as 'count';\nq = order q by 'FY",
+      "widgets": [
+        "listselector_67",
+        "listselector_4"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fy_year_1_1",
+      "source_step": "FY_Year_1_1",
+      "label": "FY_Year_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FiscalYearFix\";\nq = filter q by FY_Year in [\"FY 2023\", \"FY 2024\", \"FY 2025\", \"FY 2026\", \"FY 2027\"];\nq = group q by 'FY_Year';\nq = foreach q generate 'FY_Year' as 'FY_Year', count() as 'count';\nq = order q by 'F",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fy_year_1_2",
+      "source_step": "FY_Year_1_2",
+      "label": "FY_Year_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FiscalYearFix\";\nq = filter q by FY_Year in [\"FY 2023\", \"FY 2024\", \"FY 2025\", \"FY 2026\", \"FY 2027\"];\nq = group q by 'FY_Year';\nq = foreach q generate 'FY_Year' as 'FY_Year', count() as 'count';\nq = order q by 'F",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fy_year_1_3",
+      "source_step": "FY_Year_1_3",
+      "label": "FY_Year_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"FiscalYearFix\";\nq = filter q by FY_Year in [\"FY 2023\", \"FY 2024\", \"FY 2025\", \"FY 2026\", \"FY 2027\"];\nq = group q by 'FY_Year';\nq = foreach q generate 'FY_Year' as 'FY_Year', count() as 'count';\nq = order q by 'F",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_fy_year_2",
+      "source_step": "FY_Year_2",
+      "label": "FY_Year_2",
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "FiscalYearFix"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_group_by_engagement_1",
+      "source_step": "Group_By_Engagement__1",
+      "label": "Group By Engagement By Seller",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_80"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_group_by_seller_acti_1",
+      "source_step": "Group_By_Seller_Acti_1",
+      "label": "Group By Seller Activity Metrics",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_group_by_seller_acti_2",
+      "source_step": "Group_By_Seller_Acti_2",
+      "label": "Group By Seller Activity Metrics",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_85"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_inspection_acv_1",
+      "source_step": "Inspection_ACV_1",
+      "label": "Inspection_ACV",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\n--q = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\n--q = filter q by {{column(FixMonth_1.result, [\"Month\"]).asEquality('START_DT_Month')}};",
+      "widgets": [
+        "number_8"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_kpi_qtr_progress_1",
+      "source_step": "KPI_Qtr_Progress_1",
+      "label": "KPI_Qtr_Progress",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_all_users"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_ALL_USERS",
+      "query_preview": "q = load \"gdso_all_users\";\nq = group q by all;\nq = foreach q generate (daysBetween(fiscal_quarter_first_day(now()), now())+1) / (daysBetween(fiscal_quarter_first_day(now()), fiscal_quarter_last_day(now()))) as '% Elapsed",
+      "widgets": [
+        "chart_14"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_kpi_qtr_progress_2",
+      "source_step": "KPI_Qtr_Progress_2",
+      "label": "KPI_Qtr_Progress",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_all_users"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_ALL_USERS",
+      "query_preview": "q = load \"gdso_all_users\";\nq = group q by all;\nq = foreach q generate (daysBetween(fiscal_quarter_first_day(now()), now())+1) / (daysBetween(fiscal_quarter_first_day(now()), fiscal_quarter_last_day(now()))) as '% Elapsed",
+      "widgets": [
+        "chart_19"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_landinggraph_1",
+      "source_step": "LandingGraph_1",
+      "label": "LandingGraph_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by SNAP_YEAR_STATUS == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asE",
+      "widgets": [
+        "chart_6"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_landingtoggle_1",
+      "source_step": "LandingToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_4"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_latestrefresh_1",
+      "source_step": "LatestRefresh_1",
+      "label": "LatestRefresh_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'LATEST_CAMPAIGN_INF_REFRESH';\nq = foreach q generate substr(LATEST_CAMPAIGN_INF_REFRESH,1,len(LATEST_CAMPAIGN_INF_REFRESH)-8) as 'LATEST_CAMPAIGN_INF_REFRESH', count(q) as 'A';",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_leaderforecastgroup_1",
+      "source_step": "LeaderForecastGroup__1",
+      "label": "LeaderForecastGroup_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_leaderforecastgroup_2",
+      "source_step": "LeaderForecastGroup__2",
+      "label": "LeaderForecastGroup_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_leaderforecastgroup_1",
+      "source_step": "LeaderForecastGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_24"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1",
+      "source_step": "lens_1",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program",
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_forecast",
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "SPM_PROG = load \"gsp_spm_program\";\nSPM_PROG = filter SPM_PROG by 'PROGRAM_STATUS' == \"Planned\";\nSPM_PROG = filter SPM_PROG by 'PROGRAM_TYPE' not in [\"Operational Excellence\", \"Pipeline Council\", \"Template\"];\nSPM_PROG = f",
+      "widgets": [
+        "table_1"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1_1",
+      "source_step": "lens_1_1",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1_2",
+      "source_step": "lens_1_2",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "q = load \"gsp_spm_pg\";\nq = filter q by SNAP_YEAR_STATUS == \"CY\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asE",
+      "widgets": [
+        "table_3"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1_3",
+      "source_step": "lens_1_3",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_close_rates",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_DEAD = filter SPM_PG by OPTY_STG_SUMMARY == \"Dead\";\nSPM_DEAD = filter SPM_DEAD by SNAP_YEAR_STATUS == \"CY\";\nSPM_DEAD = filter SPM_DEAD by {{column(FixYear_1.result, [\"Year\"]).asEquality('C",
+      "widgets": [
+        "table_4"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1_4",
+      "source_step": "lens_1_4",
+      "label": "lens_4",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "table_13"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_1_6",
+      "source_step": "lens_1_6",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "table_7"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10",
+      "source_step": "lens_10",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_plays",
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "Gsp_spm_pg = load \"gsp_spm_pg\";\n\npyp = load \"gdso_crt_plays\";\n{{cell(TopPlaysToggle_1.selection,0,\"value\").asString()}}pyp = filter pyp by 'PLAY_LIBRARY_ID' in [\"aA50M000000CaUB\", \"aA50M000000CaUL\", \"aA50M000000XZgC\", \"a",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10_1",
+      "source_step": "lens_10_1",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Month\"]).asEquality('START_DT_Month')}};\nsta",
+      "widgets": [
+        "number_3"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10_2",
+      "source_step": "lens_10_2",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen",
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "PG = load \"gdso_crt_pipegen\";\nPG = filter PG by SNAP_YEAR_STATUS == \"CY\";\nPG = filter PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nPG = filter PG by {{column(FixMonth_1.result, [\"Q",
+      "widgets": [
+        "chart_17"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10_5",
+      "source_step": "lens_10_5",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(",
+      "widgets": [
+        "number_23"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10_6",
+      "source_step": "lens_10_6",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(",
+      "widgets": [
+        "number_24"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_10_8",
+      "source_step": "lens_10_8",
+      "label": "lens_10",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Month\"]).asEquality('START_DT_Month')}};\nsta",
+      "widgets": [
+        "number_14",
+        "number_28"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_11",
+      "source_step": "lens_11",
+      "label": "lens_11",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_plays",
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "Gsp_spm_pg = load \"gsp_spm_pg\";\n\npyp = load \"gdso_crt_plays\";\n{{cell(TopPlaysToggle_1.selection,0,\"value\").asString()}}pyp = filter pyp by 'PLAY_LIBRARY_ID' in [\"aA50M000000CaUB\", \"aA50M000000CaUL\", \"aA50M000000XZgC\", \"a",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_12",
+      "source_step": "lens_12",
+      "label": "lens_12",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by !({{cell(SalesPersonToggle_1.selection,0,\"value\").asObject()}} like \"(__)\");\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(Fi",
+      "widgets": [
+        "chart_13"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_13",
+      "source_step": "lens_13",
+      "label": "lens_13",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gdso_crt_plays",
+        "gdso_crt_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "Gsp_spm_acv = load \"gsp_spm_acv\";\npyp = load \"gdso_crt_plays\";\n{{cell(TopPlaysToggle_1.selection,0,\"value\").asString()}}pyp = filter pyp by 'PLAY_LIBRARY_ID' in [\"aA50M000000CaUB\", \"aA50M000000CaUL\", \"aA50M000000XZgC\", \"",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_14",
+      "source_step": "lens_14",
+      "label": "lens_14",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "chart_3"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_15",
+      "source_step": "lens_15",
+      "label": "lens_15",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "chart_11"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_15_1",
+      "source_step": "lens_15_1",
+      "label": "lens_15",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "chart_22"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_16",
+      "source_step": "lens_16",
+      "label": "lens_16",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_close_rates",
+        "gsp_spm_forecast_by_product_directs"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_DEAD = filter SPM_PG by OPTY_STG_SUMMARY == \"Dead\";\nSPM_DEAD = filter SPM_DEAD by SNAP_YEAR_STATUS == \"CY\";\nSPM_DEAD = filter SPM_DEAD by {{column(FixYear_1.result, [\"Year\"]).asEquality('C",
+      "widgets": [
+        "table_17"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_16_1",
+      "source_step": "lens_16_1",
+      "label": "lens_16",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_program_resource"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "-- pg = load \"gsp_spm_pg\";\n-- acv = load \"gsp_spm_acv\";\n-- q = cogroup pg by ({{coalesce(cell(static_14.selection, 0,\"group\")).asObject()}},SALES_PLAY_NAME) full, acv by ({{coalesce(cell(static_14.selection, 0,\"group\")).",
+      "widgets": [
+        "table_15"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_17",
+      "source_step": "lens_17",
+      "label": "lens_17",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast",
+        "gdso_crt_plays"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
+      "query_preview": "plays = load \"gsp_spm_forecast\";\nGdso_crt_plays = load \"gdso_crt_plays\";\nplays = filter plays by FORECAST_TYPE == \"Pipe\";\nplays = filter plays by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_18",
+      "source_step": "lens_18",
+      "label": "lens_18",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "PRG = load \"gsp_spm_program\";\nPRG = filter PRG by 'PROGRAM_STATUS' == \"Planned\";\nPRG = filter PRG by TOP_PLAY_FLG == \"Y\";\nPRG = filter PRG by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nPRG",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_18_1",
+      "source_step": "lens_18_1",
+      "label": "lens_18",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_program_resource"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "\npg = load \"gsp_spm_pg\";\n-- SPM_FRCST = filter SPM_FRCST by TOP_PLAY_FLG == \"Y\";\n-- SPM_FRCST = filter SPM_FRCST by FORECAST_TYPE == \"Pipe\";\npg = filter pg by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FL",
+      "widgets": [
+        "chart_2"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_19",
+      "source_step": "lens_19",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_19_1",
+      "source_step": "lens_19_1",
+      "label": "lens_19",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_program_resource",
+        "gsp_spm_trgt_acct",
+        "gsp_spm_close_rates"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "-- pg = load \"gsp_spm_pg\";\n-- acv = load \"gsp_spm_acv\";\n-- q = cogroup pg by ({{coalesce(cell(static_13.selection, 0,\"group\")).asObject()}},SALES_PLAY_NAME) full, acv by ({{coalesce(cell(static_13.selection, 0,\"group\")).",
+      "widgets": [
+        "table_14"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_2",
+      "source_step": "lens_2",
+      "label": "lens_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by !({{cell(SalesPersonToggle_1.selection,0,\"value\").asObject()}} like \"(__)\");\nSPM_PG = filter SPM_PG by SNAP_YEAR_STATUS == \"CY\";\nSPM_PG = filter SPM_PG by {{column(Fi",
+      "widgets": [
+        "number_30"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_20",
+      "source_step": "lens_20",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Month\"]).asEquality('START_DT_Month')}};\nsta",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_21",
+      "source_step": "lens_21",
+      "label": "lens_21",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq= filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality(",
+      "widgets": [
+        "number_29"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_3",
+      "source_step": "lens_3",
+      "label": "lens_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_planning_product_programs"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_PLANNING_PRODUCT_PROGRAMS",
+      "query_preview": "q = load \"gsp_planning_product_programs\";\n-- q = group q by all;\nq = foreach q generate PROGRAM_NAME,ASSIGNEE_COUNT,AE_OPENED_NUM,AE_NOT_OPENED_NUM,OPEN_PERCENT as 'Open Rate %',CTR as 'CTR %',CTOR as 'CTOR %',MILESTONE_",
+      "widgets": [
+        "table_10"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_3_1",
+      "source_step": "lens_3_1",
+      "label": "lens_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq =",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_4",
+      "source_step": "lens_4",
+      "label": "lens_4",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_planning_product_assignees"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_PLANNING_PRODUCT_ASSIGNEES",
+      "query_preview": "q = load \"gsp_planning_product_assignees\";\nq = foreach q generate  q.'ASSIGNEE_NAME' as 'ASSIGNEE_NAME',q.'ASSIGNEE_ID' as 'ASSIGNEE_ID', q.'ALL_PPROG' as 'ALL_PPROG',q.'ACTIVE_PROGRAM_COUNT' as 'ACTIVE_PROGRAM_COUNT' ,q",
+      "widgets": [
+        "table_11"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_5",
+      "source_step": "lens_5",
+      "label": "lens_5",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_6",
+      "source_step": "lens_6",
+      "label": "lens_6",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_7",
+      "source_step": "lens_7",
+      "label": "lens_15",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "chart_1"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_8",
+      "source_step": "lens_8",
+      "label": "lens_8",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by {{column(FixYear_1.result, [\"Year\"]).asEquality('STG_2_FLG_DT_Year_Fiscal')}};\nSPM_PG = filter SPM_PG by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('STG_2_FL",
+      "widgets": [
+        "table_5"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_lens_9",
+      "source_step": "lens_9",
+      "label": "lens_9",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_metrictoggle_1",
+      "source_step": "MetricToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_2"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt2_1",
+      "source_step": "MGMT2_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_17"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt3_1",
+      "source_step": "MGMT3_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_23"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt4_1",
+      "source_step": "MGMT4_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_38"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt5_1",
+      "source_step": "MGMT5_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_55"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt6_1",
+      "source_step": "MGMT6_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_56"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt7_1",
+      "source_step": "MGMT7_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_57"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_mgmt8_1",
+      "source_step": "MGMT8_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_69"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_month_short_1",
+      "source_step": "Month_Short_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_1",
+        "listselector_97"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_month_short_2",
+      "source_step": "Month_Short_2",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_month_short_3",
+      "source_step": "Month_Short_3",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "FixMonth"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_order_by_for_program_1",
+      "source_step": "Order_By_For_Program_1",
+      "label": "Order By For Program Participation Table",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_75"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_02_usr_nm_1",
+      "source_step": "OVA_LVL_02_USR_NM_1",
+      "label": "OVA_LVL_02_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by '{{cell(OwnerToggle_1.selection,0,\"Level_2\").asObject()}}';\nq = foreach q generate '{{cell(OwnerToggle_1.selection,0,\"Level_2\").asObject()}}', count() as 'count';\nq = limit q 2",
+      "widgets": [
+        "listselector_5"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_03_usr_nm_1",
+      "source_step": "OVA_LVL_03_USR_NM_1",
+      "label": "OVA_LVL_03_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by '{{cell(OwnerToggle_1.selection,0,\"Level_3\").asObject()}}';\nq = foreach q generate {{cell(OwnerToggle_1.selection,0,\"Level_3\").asObject()}}, count() as 'count';\nq = limit q 200",
+      "widgets": [
+        "listselector_3"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_04_usr_nm_1",
+      "source_step": "OVA_LVL_04_USR_NM_1",
+      "label": "OVA_LVL_04_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by '{{cell(OwnerToggle_1.selection,0,\"Level_4\").asObject()}}';\nq = foreach q generate {{cell(OwnerToggle_1.selection,0,\"Level_4\").asObject()}}, count() as 'count';\nq = limit q 200",
+      "widgets": [
+        "listselector_2"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_05_usr_nm_1",
+      "source_step": "OVA_LVL_05_USR_NM_1",
+      "label": "OVA_LVL_05_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by '{{cell(OwnerToggle_1.selection,0,\"Level_5\").asObject()}}';\nq = foreach q generate {{cell(OwnerToggle_1.selection,0,\"Level_5\").asObject()}}, count() as 'count';\nq = limit q 200",
+      "widgets": [
+        "listselector_14"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_06_usr_nm_1",
+      "source_step": "OVA_LVL_06_USR_NM_1",
+      "label": "OVA_LVL_06_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by '{{cell(OwnerToggle_1.selection,0,\"Level_6\").asObject()}}';\nq = foreach q generate {{cell(OwnerToggle_1.selection,0,\"Level_6\").asObject()}}, count() as 'count';\nq = limit q 200",
+      "widgets": [
+        "listselector_12"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_06_usr_nm_1_1",
+      "source_step": "OVA_LVL_06_USR_NM_1_1",
+      "label": "OVA_LVL_06_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by 'OVA_LVL_07_USR_NM';\nq = foreach q generate OVA_LVL_07_USR_NM, count() as 'count';\nq = limit q 2000;",
+      "widgets": [
+        "listselector_19"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ova_lvl_06_usr_nm_1_2",
+      "source_step": "OVA_LVL_06_USR_NM_1_2",
+      "label": "OVA_LVL_06_USR_NM_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_crt_pipegen"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
+      "query_preview": "q = load \"gdso_crt_pipegen\";\nq = group q by 'OVA_LVL_08_USR_NM';\nq = foreach q generate OVA_LVL_08_USR_NM, count() as 'count';\nq = limit q 2000;",
+      "widgets": [
+        "listselector_54"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ownertoggle_1",
+      "source_step": "OwnerToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_1"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_participationgroup_1",
+      "source_step": "ParticipationGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_participationorder_1",
+      "source_step": "ParticipationOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_participationsorttoggle_1",
+      "source_step": "ParticipationSortToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_participationsubgroup_1",
+      "source_step": "ParticipationSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_partner_lead_1",
+      "source_step": "PARTNER_LEAD_1",
+      "label": "Partner Sourced",
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_pg"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_83",
+        "listselector_91",
+        "listselector_90",
+        "listselector_88",
+        "listselector_87"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_performancegroup_1",
+      "source_step": "PerformanceGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_18"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_performancemetrics_1",
+      "source_step": "PerformanceMetrics_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_44"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_performancesubgroup_1",
+      "source_step": "PerformanceSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_41"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pgdetailsorder_1",
+      "source_step": "PGDetailsOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_27"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pgdetailssorttoggle_1",
+      "source_step": "PGDetailsSortToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_3"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pipegen_by_forecast_1",
+      "source_step": "Pipegen_by_Forecast__1",
+      "label": "Pipegen by Forecast Split",
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "dev_gsp_spm_pg",
+        "dev_gsp_spm_acv",
+        "dev_gsp_spm_close_rates",
+        "gsp_spm_forecast_by_product_directs"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.DEV_GSP_SPM_PG",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pipegenforecastsplit_1",
+      "source_step": "PipegenForecastSplit_1",
+      "label": "PipegenForecastSplitGroup_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_100"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pipegenforecastsplit_2",
+      "source_step": "PipegenForecastSplit_2",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_102"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pipequalitygroup_1",
+      "source_step": "PipeQualityGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_52"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_pipequalitysubgroup_1",
+      "source_step": "PipeQualitySubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_53"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_playperformancegroup_1",
+      "source_step": "PlayPerformanceGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_playperformanceorder_1",
+      "source_step": "PlayPerformanceOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_playperformancesubgroup_1",
+      "source_step": "PlayPerformanceSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_playperformancetable_1",
+      "source_step": "PlayPerformanceTable_1",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_plays",
+        "gsp_spm_acv",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_OP = load \"gsp_spm_pg\";\nSPM_OP = filter SPM_OP by OPTY_STG_SUMMARY == \"Open\";\n{{cell(TopPlaysToggle_1.selection,0,\"value\").asString()}}SPM_OP = filter SPM_OP by TOP_PLAY_FLG == \"Y\";\nSPM_OP = filter SPM_OP by SNAP_YEA",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_playsorttoggle_1",
+      "source_step": "PlaySortToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ppdetailsgroup_1",
+      "source_step": "PPDetailsGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_29"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ppdetailsorder_1",
+      "source_step": "PPDetailsOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_28"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ppdetailssorttoggle_1",
+      "source_step": "PPDetailsSortToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_6"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_ppdetailssubgroup_1",
+      "source_step": "PPDetailsSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_43"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_prod_nm_1",
+      "source_step": "PROD_NM_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": null,
+      "widgets": [
+        "listselector_62"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_prod_nm_2",
+      "source_step": "PROD_NM_2",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_prod_nm_3",
+      "source_step": "PROD_NM_3",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_product_contribution_1",
+      "source_step": "Product_Contribution_1",
+      "label": "Product Contribution",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast_by_product_directs"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST_BY_PRODUCT_DIRECTS",
+      "query_preview": "q = load \"gsp_spm_forecast_by_product_directs\";\nq = filter q by PROGRAM_STATUS == \"Planned\";\nq = filter q by 'FORECAST_TYPE' == \"Pipe\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fisca",
+      "widgets": [
+        "chart_8"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_product_match_1",
+      "source_step": "PRODUCT_MATCH_1",
+      "label": "PRODUCT_MATCH_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "q = load \"gsp_spm_acv\";\nq = group q by 'PRODUCT_MATCH';\nq = foreach q generate 'PRODUCT_MATCH' as 'PRODUCT_MATCH', count() as 'count';\nq = order q by 'PRODUCT_MATCH' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_11"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_product_match_1_1",
+      "source_step": "PRODUCT_MATCH_1_1",
+      "label": "PRODUCT_MATCH_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "q = load \"gsp_spm_acv\";\nq = group q by 'PRODUCT_MATCH';\nq = foreach q generate 'PRODUCT_MATCH' as 'PRODUCT_MATCH', count() as 'count';\nq = order q by 'PRODUCT_MATCH' asc;\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_product_usage_by_lea_1",
+      "source_step": "Product_Usage_By_Lea_1",
+      "label": "Product Usage By Leader",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_forecast_by_product_directs"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST_BY_PRODUCT_DIRECTS",
+      "query_preview": "q = load \"gsp_spm_forecast_by_product_directs\";\nq = filter q by PROGRAM_STATUS == \"Planned\";\nq = filter q by 'FORECAST_TYPE' == \"Pipe\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fisca",
+      "widgets": [
+        "chart_4"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_productfiltertoggle_1",
+      "source_step": "ProductFilterToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_18"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_productforecastgroup_1",
+      "source_step": "ProductForecastGroup_1",
+      "label": "ProductForecastGroup_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_95"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_productforecastgroup_2",
+      "source_step": "ProductForecastGroup_2",
+      "label": "ProductForecastGroup_1",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_name_3",
+      "source_step": "PROGRAM_NAME_3",
+      "label": "PROGRAM_NAME_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = filter q by PROGRAM_STATUS != \"Cancelled\";\nq = group q by ('PARENT_PROGRAM_NAME');\nq = foreach q generate 'PARENT_PROGRAM_NAME' as 'PARENT_PROGRAM_NAME', first(START_DT) as START_DT, count",
+      "widgets": [
+        "listselector_34",
+        "listselector_116"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_name_3_1",
+      "source_step": "PROGRAM_NAME_3_1",
+      "label": "PROGRAM_NAME_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = filter q by PROGRAM_STATUS != \"Cancelled\";\nq = group q by ('PROGRAM_NAME', START_DT);\nq = foreach q generate 'PROGRAM_NAME' as 'PROGRAM_NAME', START_DT, count() as 'count';\nq = order q by ",
+      "widgets": [
+        "listselector_59",
+        "listselector_118"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_name_3_2",
+      "source_step": "PROGRAM_NAME_3_2",
+      "label": "PROGRAM_NAME_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = filter q by PROGRAM_STATUS != \"Cancelled\";\nq = filter q by START_DT_Year_Fiscal in [\"2024\", \"2025\"];\nq = group q by ('PARENT_PROGRAM_NAME');\nq = foreach q generate 'PARENT_PROGRAM_NAME' as",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_name_3_3",
+      "source_step": "PROGRAM_NAME_3_3",
+      "label": "PROGRAM_NAME_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = filter q by PROGRAM_STATUS != \"Cancelled\";\nq = filter q by START_DT_Year_Fiscal in [\"2024\", \"2025\"];\nq = group q by ('PROGRAM_NAME', START_DT);\nq = foreach q generate 'PROGRAM_NAME' as 'PR",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_owner_name_1",
+      "source_step": "PROGRAM_OWNER_NAME_1",
+      "label": "PROGRAM_OWNER_NAME_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_OWNER_NAME';\nq = foreach q generate 'PROGRAM_OWNER_NAME' as 'PROGRAM_OWNER_NAME', count() as 'count';\nq = order q by 'count' desc;\nq = limit q 20000;",
+      "widgets": [
+        "listselector_33",
+        "listselector_112"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_owner_name_1_1",
+      "source_step": "PROGRAM_OWNER_NAME_1_1",
+      "label": "PROGRAM_OWNER_NAME_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_OWNER_NAME';\nq = foreach q generate 'PROGRAM_OWNER_NAME' as 'PROGRAM_OWNER_NAME', count() as 'count';\nq = order q by 'count' desc;\nq = limit q 20000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_participatio_1",
+      "source_step": "Program_Participatio_1",
+      "label": "Program Participation Sort",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_12"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_selling_part_1",
+      "source_step": "Program_Selling_Part_1",
+      "label": "lens_24",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program",
+        "gsp_planning_product_programs",
+        "gsp_spm_trgt_acct",
+        "gsp_spm_program_attendance",
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_activity"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "prog = load \"gsp_spm_program\";\nprog = filter prog by 'PROGRAM_STATUS' == \"Planned\";\nprog = filter prog by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nprog = filter prog by {{column(FixMonth",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_team_2",
+      "source_step": "PROGRAM_TEAM_2",
+      "label": "PROGRAM_TEAM_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_TEAM';\nq = foreach q generate 'PROGRAM_TEAM' as 'PROGRAM_TEAM', count() as 'count';\nq = order q by 'PROGRAM_TEAM' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_51",
+        "listselector_113"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_team_2_1",
+      "source_step": "PROGRAM_TEAM_2_1",
+      "label": "PROGRAM_TEAM_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_TEAM';\nq = foreach q generate 'PROGRAM_TEAM' as 'PROGRAM_TEAM', count() as 'count';\nq = order q by 'PROGRAM_TEAM' asc;\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_type_1",
+      "source_step": "PROGRAM_TYPE_1",
+      "label": "PROGRAM_TYPE_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_TYPE';\nq = foreach q generate 'PROGRAM_TYPE' as 'PROGRAM_TYPE', count() as 'count';\nq = order q by 'PROGRAM_TYPE' asc;\nq = limit q 2000;",
+      "widgets": [
+        "listselector_31",
+        "listselector_114"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_program_type_1_1",
+      "source_step": "PROGRAM_TYPE_1_1",
+      "label": "PROGRAM_TYPE_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\nq = group q by 'PROGRAM_TYPE';\nq = foreach q generate 'PROGRAM_TYPE' as 'PROGRAM_TYPE', count() as 'count';\nq = order q by 'PROGRAM_TYPE' asc;\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_programleaderforecas_1",
+      "source_step": "ProgramLeaderForecas_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_93"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_programparticipation_1",
+      "source_step": "ProgramParticipation_1",
+      "label": "ProgramParticipation_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_trgt_acct",
+        "gsp_spm_activity",
+        "gdso_all_users",
+        "gsp_spm_program_attendance",
+        "gsp_spm_pg",
+        "gsp_spm_acv"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      "query_preview": "TARGET = load \"gsp_spm_trgt_acct\";\nGsp_spm_activity = load \"gsp_spm_activity\";\nTARGET = filter TARGET by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nTARGET = filter TARGET by {{column(FixMo",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_programproductforeca_1",
+      "source_step": "ProgramProductForeca_1",
+      "label": "ProgramProductForecast",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_96"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_programproductforeca_2",
+      "source_step": "ProgramProductForeca_2",
+      "label": "ProgramProductForecast",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_progression_rate_1",
+      "source_step": "Progression_Rate_1",
+      "label": "Progression_Rate",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};",
+      "widgets": [
+        "table_16"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_progression_rate_2",
+      "source_step": "Progression_Rate_2",
+      "label": "Progression_Rate_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\n\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}}",
+      "widgets": [
+        "table_12"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_progressionchartgroup_1",
+      "source_step": "ProgressionChartGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_progressionchartsubgroup_1",
+      "source_step": "ProgressionChartSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultforecastsplitg_1",
+      "source_step": "ResultForecastSplitG_1",
+      "label": "ResultForecastSplitGroup",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PipegenForecastSplit_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(PipegenFore",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultforecastsplits_1",
+      "source_step": "ResultForecastSplitS_1",
+      "label": "ResultForecastSplitSubgroup",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PipegenForecastSplit_2.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(Pipege",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultleadergroup_1",
+      "source_step": "ResultLeaderGroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(SalesLeaderGroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(SalesLeaderGrou",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultleadersubgroup_1",
+      "source_step": "ResultLeaderSubgroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(SalesLeaderSubgroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(SalesLe",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultpipegengroup_1",
+      "source_step": "ResultPipegenGroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PerformanceGroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(PerformanceGrou",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultpipegensubgroup_1",
+      "source_step": "ResultPipegenSubgroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PerformanceSubgroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(Perform",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultpipequalitygroup_1",
+      "source_step": "ResultPipeQualityGroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PipeQualityGroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(PipeQualityGrou",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultpipequalitysubgroup_1",
+      "source_step": "ResultPipeQualitySubgroup_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PipeQualitySubgroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(PipeQua",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultppdetailsgroup_1",
+      "source_step": "ResultPPDetailsGroup_1",
+      "label": "ResultPPDetailsGroup_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PPDetailsGroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(PPDetailsGroup_1.",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultppdetailsgroup_2",
+      "source_step": "ResultPPDetailsGroup_2",
+      "label": "ResultPPDetailsGroup_2",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(static_10.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(static_10.selection,0,\"l",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultppdetailsgroup_3",
+      "source_step": "ResultPPDetailsGroup_3",
+      "label": "ResultPPDetailsGroup_3",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(static_10.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \"{{cell(OwnerToggle_1.selection,0,cell(static_10.selection,0,\"l",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultppdetailssubgr_1",
+      "source_step": "ResultPPDetailsSubgr_1",
+      "label": "ResultPPDetailsSubgr_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(static_11.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(static_11.selection",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_resultppdetailssubgroup_1",
+      "source_step": "ResultPPDetailsSubgroup_1",
+      "label": "ResultPPDetailsSubgroup_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(PPDetailsSubgroup_1.selection,0,\"Display\").asObject()}}\" matches \"Leader\" then \", \"+\"{{cell(OwnerToggle_1.selection,0,cell(PPDetails",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sales_play_name_1",
+      "source_step": "SALES_PLAY_NAME_1",
+      "label": "SALES_PLAY_NAME_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_sales_plays"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SALES_PLAYS",
+      "query_preview": "q = load \"gsp_sales_plays\";\nq = group q by 'PLY_LIB_NM';\nq = foreach q generate 'PLY_LIB_NM' as 'PLY_LIB_NM', count() as 'count';\nq = order q by 'count' desc;\nq = limit q 20000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sales_play_name_2",
+      "source_step": "SALES_PLAY_NAME_2",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_program_resource"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM_RESOURCE",
+      "query_preview": null,
+      "widgets": [
+        "listselector_63"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sales_play_name_3",
+      "source_step": "SALES_PLAY_NAME_3",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_program_resource"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM_RESOURCE",
+      "query_preview": null,
+      "widgets": [
+        "listselector_92"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_salesleadergroup_1",
+      "source_step": "SalesLeaderGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_10"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_salesleadermetrics_1",
+      "source_step": "SalesLeaderMetrics_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_45"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_salesleadersubgroup_1",
+      "source_step": "SalesLeaderSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_40"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_salespersontoggle_1",
+      "source_step": "SalesPersonToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_9"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_seller_activity_1",
+      "source_step": "seller_activity_1",
+      "label": "seller_activity",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_trgt_acct",
+        "gsp_spm_activity",
+        "gdso_all_users",
+        "gsp_spm_program_attendance",
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "ae_participation_apm_details"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      "query_preview": "TARGETS = load \"gsp_spm_trgt_acct\";\nGsp_spm_activity = load \"gsp_spm_activity\";\nTARGETS = filter TARGETS by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nTARGETS = filter TARGETS by {{column(",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_seller_activity_2",
+      "source_step": "seller_activity_2",
+      "label": "seller_activity",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_seller_type_automation"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_SELLER_TYPE_AUTOMATION_VW",
+      "query_preview": "q = load \"gsp_spm_seller_type_automation\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_",
+      "widgets": [
+        "table_21"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_seller_type_automati_1",
+      "source_step": "Seller_Type_Automati_1",
+      "label": "Seller Type Automation View 1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_seller_type_automation"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_SELLER_TYPE_AUTOMATION_VW",
+      "query_preview": "q = load \"gsp_spm_seller_type_automation\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_",
+      "widgets": [
+        "table_18"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_seller_type_automati_2",
+      "source_step": "Seller_Type_Automati_2",
+      "label": "Seller Type Automation View 2",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_seller_type_automation"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_SELLER_TYPE_AUTOMATION_VW",
+      "query_preview": "q = load \"gsp_spm_seller_type_automation\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_",
+      "widgets": [
+        "table_20"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellergroupingtoggle_1",
+      "source_step": "SellerGroupingToggle_1",
+      "label": "SellerGroupingToggle",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_68"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellerpartcipationsort_1",
+      "source_step": "SellerPartcipationSort_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellerparticipation_1",
+      "source_step": "SellerParticipation_1",
+      "label": "SellerParticipation_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_trgt_acct",
+        "gdso_all_users",
+        "gsp_spm_program_attendance",
+        "gsp_spm_pg",
+        "gsp_spm_acv",
+        "gsp_spm_activity",
+        "ae_participation_apm_details"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
+      "query_preview": "TARGETS = load \"gsp_spm_trgt_acct\";\nTARGETS = filter TARGETS by {{column(FixYear_1.result, [\"Year\"]).asEquality('START_DT_Year_Fiscal')}};\nTARGETS = filter TARGETS by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellerparticipationorder_1",
+      "source_step": "SellerParticipationOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellerparticipationsubgroup_1",
+      "source_step": "SellerParticipationSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_sellertoggle_1",
+      "source_step": "SellerToggle_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_specialist_coverage_1",
+      "source_step": "SPECIALIST_COVERAGE_1",
+      "label": "SPECIALIST_COVERAGE_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_acv",
+        "gsp_spm_pg",
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_ACV",
+      "query_preview": "q = load \"gsp_spm_acv\";\nq = group q by SPECIALIST_COVERAGE;\nq = foreach q generate  SPECIALIST_COVERAGE;\nq1 = load \"gsp_spm_pg\";\nq1 = group q1 by SPECIALIST_COVERAGE;\nq1 = foreach q1 generate  SPECIALIST_COVERAGE;\nq2 = l",
+      "widgets": [
+        "listselector_86"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_filter",
+      "source_step": "SPM_HIER_FILTER",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "gdso_all_users"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GDSO_ALL_USERS",
+      "query_preview": "q = load \"gdso_all_users\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(SPM_L5.selection,0, \"SPM_HIER_LVL_5\").asObject()}}\" != \"\" or \"{{cell(SPM_L6.selection,0, \"SPM_HIER_LVL_6\").asObject()}}\" != \"\" or \"{",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_level_5_1",
+      "source_step": "SPM_HIER_LEVEL_5_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_lvl_5_1_1",
+      "source_step": "SPM_HIER_LVL_5_1_1",
+      "label": "SPM_HIER_LVL_5_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_lvl_6_1_1",
+      "source_step": "SPM_HIER_LVL_6_1_1",
+      "label": "SPM_HIER_LVL_6_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_lvl_7_1_1",
+      "source_step": "SPM_HIER_LVL_7_1_1",
+      "label": "SPM_HIER_LVL_7_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_lvl_8_1_2",
+      "source_step": "SPM_HIER_LVL_8_1_2",
+      "label": "SPM_HIER_LVL_8_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_hier_lvl_9_1_1",
+      "source_step": "SPM_HIER_LVL_9_1_1",
+      "label": "SPM_HIER_LVL_9_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_l5",
+      "source_step": "SPM_L5",
+      "label": "SPM_HIER_LVL_5_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [
+        "listselector_71",
+        "listselector_107"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_l6",
+      "source_step": "SPM_L6",
+      "label": "SPM_HIER_LVL_6_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [
+        "listselector_72",
+        "listselector_108"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_l7",
+      "source_step": "SPM_L7",
+      "label": "SPM_HIER_LVL_7_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [
+        "listselector_73",
+        "listselector_109"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_l8",
+      "source_step": "SPM_L8",
+      "label": "SPM_HIER_LVL_8_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [
+        "listselector_74",
+        "listselector_110"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spm_l9",
+      "source_step": "SPM_L9",
+      "label": "SPM_HIER_LVL_9_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": "q = load \"gsp_spm_program\";\n-- q = filter q by 'SNAP_YEAR_STATUS' == \"CY\";\nq = filter q by date('START_DT_Year', 'START_DT_Month', 'START_DT_Day') in [\"2 fiscal_quarter ago\"..\"current fiscal_year\"];\nq = group q by 'SPM_H",
+      "widgets": [
+        "listselector_61",
+        "listselector_111"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmcontribution_1",
+      "source_step": "SPMContribution_1",
+      "label": "lens_1",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_pg",
+        "gdso_crt_pipegen",
+        "gdso_crt_pipegen_targets",
+        "gdso_crt_d1op_targets",
+        "gsp_spm_acv",
+        "gdso_crt_acv",
+        "gdso_crt_openpipe",
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "query_preview": "SPM_PG = load \"gsp_spm_pg\";\nSPM_PG = filter SPM_PG by {{column(ECS_OWNED_2.selection, [\"OPTY_SRC_NM\"]).asEquality(\"OPTY_SRC_NM\")}};\nSPM_OP = filter SPM_PG by OPTY_STG_SUMMARY == \"Open\";\nSPM_OP = filter SPM_OP by SNAP_YEA",
+      "widgets": [
+        "table_2"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmcontributionorder_1",
+      "source_step": "SPMContributionOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_60"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmcontributionsort_1",
+      "source_step": "SPMContributionSort_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_13"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmperformancegroup_1",
+      "source_step": "SPMPerformanceGroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_9"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmperformancemetrics_1",
+      "source_step": "SPMPerformanceMetrics_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_46"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmperformanceorder_1",
+      "source_step": "SPMPerformanceOrder_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_37"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmperformancesort_1",
+      "source_step": "SPMPerformanceSort_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_14"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_spmperformancesubgroup_1",
+      "source_step": "SPMPerformanceSubgroup_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_42"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_1",
+      "source_step": "static_1",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_8"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_10",
+      "source_step": "static_10",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_49"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_11",
+      "source_step": "static_11",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_50"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_12",
+      "source_step": "static_12",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_20"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_13",
+      "source_step": "static_13",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_64"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_14",
+      "source_step": "static_14",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_65"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_15",
+      "source_step": "static_15",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_66"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_16",
+      "source_step": "static_16",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_17",
+      "source_step": "static_17",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_21"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_18",
+      "source_step": "static_18",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_82"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_19",
+      "source_step": "static_19",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_22"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_2",
+      "source_step": "static_2",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_20",
+      "source_step": "static_20",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_13"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_21",
+      "source_step": "static_21",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_39"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_22",
+      "source_step": "static_22",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_89"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_23",
+      "source_step": "static_23",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_94"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_3",
+      "source_step": "static_3",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_4",
+      "source_step": "static_4",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_5",
+      "source_step": "static_5",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_6",
+      "source_step": "static_6",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_7",
+      "source_step": "static_7",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_8",
+      "source_step": "static_8",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_9",
+      "source_step": "static_9",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_19"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_css_account_status",
+      "source_step": "static_css_account_status",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "pillbox_7"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_css_leader_impact",
+      "source_step": "static_css_leader_impact",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_static_css_program_impact",
+      "source_step": "static_css_program_impact",
+      "label": "",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [
+        "listselector_99"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_account_breakdown",
+      "source_step": "step_aov_account_breakdown",
+      "label": "AOV Account Breakdown",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('RENEWAL_CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('RENEWAL_CLSD_DT_Quarter_Fis",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_attrition",
+      "source_step": "step_aov_attrition",
+      "label": "Attrition",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq= filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality(",
+      "widgets": [
+        "number_aov_attrition"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_contribution_pct",
+      "source_step": "step_aov_contribution_pct",
+      "label": "SPM AOV Protection %",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq= filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality(",
+      "widgets": [
+        "number_aov_contribution_pct"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_enrolled_risk",
+      "source_step": "step_aov_enrolled_risk",
+      "label": "Enrolled Prior Annual Contract Value $",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq= filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality(",
+      "widgets": [
+        "number_aov_enrolled_risk"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_iacv",
+      "source_step": "step_aov_iacv",
+      "label": "SPM iACV",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('RENEWAL_CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('RENEWAL_CLSD_DT_Quarter_Fis",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_impact",
+      "source_step": "step_aov_impact",
+      "label": "SPM AOV Impact",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('RENEWAL_CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('RENEWAL_CLSD_DT_Quarter_Fis",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_leader_contribution",
+      "source_step": "step_aov_leader_contribution",
+      "label": "AOV Leader Contribution Table",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality",
+      "widgets": [
+        "table_aov_leader_contribution"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_opportunity_details",
+      "source_step": "step_aov_opportunity_details",
+      "label": "AOV Opportunity Details",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by STATUS != \"Cancelled\";\n\n/* Apply Bindings for Date Filters */\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(F",
+      "widgets": [
+        "table_aov_opportunity_details"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_performance",
+      "source_step": "step_aov_performance",
+      "label": "AOV Performance Table",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov",
+        "gsp_spm_forecast"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by STATUS != \"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquali",
+      "widgets": [
+        "table_aov_performance"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_protected",
+      "source_step": "step_aov_protected",
+      "label": "SPM AOV Protected",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq= filter q by STATUS!=\"Cancelled\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality(",
+      "widgets": [
+        "number_aov_protected"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_aov_protection_pct",
+      "source_step": "step_aov_protection_pct",
+      "label": "SPM AOV Protection %",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_nnaov"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_NNAOV_PERM",
+      "query_preview": "q = load \"gsp_spm_nnaov\";\nq = filter q by {{column(FixYear_1.result, [\"Year\"]).asEquality('RENEWAL_CLSD_DT_Year_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('RENEWAL_CLSD_DT_Quarter_Fis",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_account_details",
+      "source_step": "step_css_account_details",
+      "label": "Customer Health Account-Level Details",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    ACCT_NAME as ACCT_NAME,\n    ACCT_ID as ACCT_ID,\n    PROGRAM_ID as PROGRAM_ID,\n    coalesce(CSS_START_SCORE,0) as CSS_S",
+      "widgets": [
+        "table_css_account_details"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_avg_end",
+      "source_step": "step_css_avg_end",
+      "label": "CSS Avg End",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    ACCT_ID as ACCT_ID,\n    coalesce(CSS_END_SCORE, 0) as CSS_END_SCORE;\nq = group q by ACCT_ID;\nq = foreach q generate\n  ",
+      "widgets": [
+        "number_css_avg_end"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_avg_start",
+      "source_step": "step_css_avg_start",
+      "label": "CSS Avg Start",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    ACCT_ID as ACCT_ID,\n    coalesce(CSS_START_SCORE, 0) as CSS_START_SCORE;\nq = group q by ACCT_ID;\nq = foreach q generat",
+      "widgets": [
+        "number_css_avg_start"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_exec_summary",
+      "source_step": "step_css_exec_summary",
+      "label": "CSS Executive Summary",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    ACCT_ID as ACCT_ID,\n    PROGRAM_ID as PROGRAM_ID,\n    coalesce(CSS_START_SCORE, 0) as CSS_START_SCORE,\n    coalesce(CS",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_leader_contribution",
+      "source_step": "step_css_leader_contribution",
+      "label": "Customer Health Sales Leader Contribution",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    {{coalesce(cell(static_22.selection, 0, \"Group\")).asObject()}} as 'Sales Leader',\n    ACCT_ID,\n    PROGRAM_ID,\n    coa",
+      "widgets": [
+        "table_css_leader_contribution"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_pct_improved",
+      "source_step": "step_css_pct_improved",
+      "label": "CSS Percent Improved",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    ACCT_ID as ACCT_ID,\n    PROGRAM_ID as PROGRAM_ID,\n    (case when coalesce(CSS_END_SCORE, 0) > coalesce(CSS_START_SCORE",
+      "widgets": [
+        "number_css_pct_improved"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_positive_programs",
+      "source_step": "step_css_positive_programs",
+      "label": "CSS Positive Programs",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    PROGRAM_ID as PROGRAM_ID,\n    coalesce(PROG_CSS_SCORE_IMPACT, 0) as PROG_CSS_SCORE_IMPACT;\nq = group q by PROGRAM_ID;\n",
+      "widgets": [
+        "number_css_positive_programs"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_program_details",
+      "source_step": "step_css_program_details",
+      "label": "Customer Health Program Details",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = foreach q generate\n    {{coalesce(cell(static_23.selection,0,\"group\")).asObject()}} as Group_1,\n    upper(trim({{coalesce(cell(static_23.sele",
+      "widgets": [
+        "table_css_program_details"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_step_css_total_accounts",
+      "source_step": "step_css_total_accounts",
+      "label": "CSS Total Accounts",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_css"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_CSS_PERM",
+      "query_preview": "q = load \"gsp_spm_css\";\nq = filter q by PROGRAM_TYPE == \"Customer Health\";\nq = group q by 'ACCT_ID';\nq = foreach q generate 'ACCT_ID' as ACCT_ID;\nq = group q by all;\nq = foreach q generate count() as 'Total Accounts Enro",
+      "widgets": [
+        "number_css_total_accounts"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_target_ou_1",
+      "source_step": "TARGET_OU_1",
+      "label": null,
+      "type": "aggregateflex",
+      "dataset_candidates": [
+        "gsp_spm_program"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRAM",
+      "query_preview": null,
+      "widgets": [
+        "listselector_70",
+        "listselector_81",
+        "listselector_78",
+        "listselector_77",
+        "listselector_76",
+        "listselector_26"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_topplaystoggle_1",
+      "source_step": "TopPlaysToggle_1",
+      "label": "TopPlays_Toggle",
+      "type": "staticflex",
+      "dataset_candidates": [],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": null,
+      "widgets": [],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_total_acv_1",
+      "source_step": "Total_ACV_1",
+      "label": "Total_ACV",
+      "type": "saql",
+      "dataset_candidates": [
+        "gsp_spm_progression"
+      ],
+      "inferred_source_table": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PROGRESSION",
+      "query_preview": "q = load \"gsp_spm_progression\";\nq = filter q by {{column(FixMonth_1.result, [\"Quarter\"]).asEquality('START_DT_Quarter_Fiscal')}};\nq = filter q by {{column(FixMonth_1.result, [\"Month\"]).asEquality('START_DT_Month')}};\nsta",
+      "widgets": [
+        "number_25"
+      ],
+      "status": "needs_metric_definition"
+    },
+    {
+      "candidate_metric_id": "lens_vizselector_1",
+      "source_step": "VizSelector_1",
+      "label": null,
+      "type": "saql",
+      "dataset_candidates": [
+        "INTL_USRSET_SS"
+      ],
+      "inferred_source_table": "UNKNOWN",
+      "query_preview": "q = load \"INTL_USRSET_SS\";\nq = group q by all;\nq = foreach q generate case when \"{{cell(ChartSubgroup_1.selection, 0, \"Display\").asObject()}}\" matches \"None\" then \"hbar\" else \"stackhbar\" end as 'Chart';\nq = limit q 2000;",
+      "widgets": [],
+      "status": "needs_metric_definition"
+    }
+  ],
+  "scenario_backlog": []
+}

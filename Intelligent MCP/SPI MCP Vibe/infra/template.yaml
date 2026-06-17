@@ -1,0 +1,149 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SPI MCP Vibe — TypeScript MCP server on AWS Lambda + HTTP API Gateway.
+  Exposes Snowflake sales data (SPM Performance dashboard) to Slack via JSON-RPC.
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+
+  SnowflakeAccount:
+    Type: String
+    Default: "sfdc_dp_prd"
+
+  SnowflakeUsername:
+    Type: String
+    Default: "SVC_SSE_GDSO_CT_AIRFLOW_WRITE"
+
+  SnowflakePassword:
+    Type: String
+    NoEcho: true
+
+  SnowflakeWarehouse:
+    Type: String
+    Default: "WH_GDSO_CT_INGST"
+
+  SnowflakeDatabase:
+    Type: String
+    Default: "SSE_DM_GDSO_PRD"
+
+  SnowflakeSchema:
+    Type: String
+    Default: "AIO"
+
+  SnowflakeRole:
+    Type: String
+    Default: "DM_GDSO_CT_INGST_PRD"
+
+  LambdaSubnetId:
+    Type: String
+    Description: "Private subnet ID for Lambda (routes outbound via NAT Gateway)"
+
+  LambdaSecurityGroupId:
+    Type: String
+    Description: "Security group ID for Lambda"
+
+  McpAuthToken:
+    Type: String
+    NoEcho: true
+    Description: "Bearer token Slack sends with every MCP request. Generate: openssl rand -hex 32"
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures: [arm64]
+    Environment:
+      Variables:
+        SNOWFLAKE_ACCOUNT: !Ref SnowflakeAccount
+        SNOWFLAKE_USERNAME: !Ref SnowflakeUsername
+        SNOWFLAKE_PASSWORD: !Ref SnowflakePassword
+        SNOWFLAKE_WAREHOUSE: !Ref SnowflakeWarehouse
+        SNOWFLAKE_DATABASE: !Ref SnowflakeDatabase
+        SNOWFLAKE_SCHEMA: !Ref SnowflakeSchema
+        SNOWFLAKE_ROLE: !Ref SnowflakeRole
+        SPI_SNOWFLAKE_AUTH_MODE: password
+        MCP_AUTH_TOKEN: !Ref McpAuthToken
+        NODE_ENV: production
+
+Resources:
+
+  SpiMcpVibeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "spi-mcp-vibe-role-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+  SpiMcpVibeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "spi-mcp-vibe-${Environment}"
+      Description: "SPI MCP Vibe — Snowflake sales intelligence for Slack"
+      CodeUri: ../
+      Handler: dist/lambda.handler
+      Role: !GetAtt SpiMcpVibeRole.Arn
+      VpcConfig:
+        SubnetIds:
+          - !Ref LambdaSubnetId
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupId
+      Events:
+        HttpApiProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpVibeApi
+            Path: /{proxy+}
+            Method: ANY
+        HttpApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpVibeApi
+            Path: /
+            Method: ANY
+
+  SpiMcpVibeApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub "spi-mcp-vibe-api-${Environment}"
+      StageName: !Ref Environment
+      CorsConfiguration:
+        AllowOrigins:
+          - "*"
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - POST
+          - OPTIONS
+        MaxAge: 300
+
+  SpiMcpVibeLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/spi-mcp-vibe-${Environment}"
+      RetentionInDays: 90
+
+Outputs:
+  McpEndpointUrl:
+    Description: "Paste this URL into Slack Admin → Integrations → MCP Servers"
+    Value: !Sub "https://${SpiMcpVibeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Export:
+      Name: !Sub "spi-mcp-vibe-endpoint-${Environment}"
+
+  LambdaArn:
+    Value: !GetAtt SpiMcpVibeFunction.Arn
+    Export:
+      Name: !Sub "spi-mcp-vibe-lambda-arn-${Environment}"

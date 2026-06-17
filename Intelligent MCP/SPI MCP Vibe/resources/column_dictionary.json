@@ -1,0 +1,187 @@
+{
+  "_source": "Extracted from /business_logic/gsp_analytics/SPM_Planning md.json files",
+  "_note": "These are the exact column names as they appear in Snowflake (via CRMA md.json field names). CRMA labels shown as comments. {DB} = SSE_DM_GDSO_PRD (prod) or SSE_DM_GDSO_STG (staging) — resolved from SNOWFLAKE_DATABASE env var.",
+
+  "tables": {
+    "GSP_SPM_ACV_PERM": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_ACV_PERM",
+      "description": "Opportunity-level ACV influenced by Sales Programmes. One row per opportunity-programme relationship.",
+      "key_columns": {
+        "CAMPAIGN_ID":                  "Campaign ID (18) — Salesforce Campaign ID linking to the programme",
+        "PROGRAM_NAME":                 "Program Name",
+        "AUTO_PROGRAM_NAME":            "Automated Program Name",
+        "PROGRAM_ID":                   "Program ID (18)",
+        "PARENT_PROGRAM_ID":            "Parent Program ID (18)",
+        "PARENT_PROGRAM_NAME":          "Parent Program Name",
+        "PROGRAM_OWNER_NAME":           "Program Owner Name",
+        "PROGRAM_OWNER_OU":             "Program Owner OU",
+        "PROGRAM_TYPE":                 "Program Type",
+        "PROGRAM_STATUS":               "Program Status",
+        "REGION":                       "Region",
+        "BB_DRVD_SEG_MACRO_NM_DISPLAY": "Macro Segment (ENTR / CMRCL / ESMB)",
+        "CORE_OU":                      "Core OU",
+        "BUSINESS_FOCUS":               "Business Focus",
+        "BUSINESS_UNIT":                "Business Unit",
+        "SELLER_TYPE":                  "Seller Type",
+        "INDUSTRY":                     "Industry",
+        "FISCAL_FLIP_YEAR":             "Fiscal Flip Year (e.g. FY27)",
+        "FISCAL_FLIP_YR_QTR_NM":        "Fiscal Flip Year-Quarter Label (e.g. Q2FY27)",
+        "FISCAL_CLOSE_YEAR":            "Fiscal Close Year",
+        "FISCAL_CLOSE_YR_QTR_NM":       "Fiscal Close Year-Quarter Label",
+        "OPTY_ID":                      "Opportunity ID (15)",
+        "OPTY_NM":                      "Opportunity Name",
+        "ACCT_ID":                      "Account ID",
+        "ACCT_NAME":                    "Account Name",
+        "OPTY_STG_NM":                  "Opportunity Stage Name",
+        "OPTY_AMT":                     "Opty ACV Amount (numeric)",
+        "CLOUD_AMT":                    "Cloud ACV Amount (numeric)",
+        "SALES_CYCLE_DYS":              "Sales Cycle Days (numeric)",
+        "CC_FLAG":                      "Created & Closed Flag",
+        "CC_SEGMENTATION":              "C&C Segmentation",
+        "CORE_PRIME_OWNER":             "Core Prime Owner role classification"
+      }
+    },
+
+    "GSP_SPM_PIPEGEN_PERM": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_PIPEGEN_PERM",
+      "description": "Opportunity-level pipeline generation attributed to Sales Programmes.",
+      "key_columns": {
+        "PROGRAM_ID":                   "Program ID (18)",
+        "PROGRAM_NAME":                 "Program Name",
+        "PROGRAM_OWNER_NAME":           "Program Owner Name",
+        "PROGRAM_TYPE":                 "Program Type",
+        "PROGRAM_STATUS":               "Program Status",
+        "REGION":                       "Region",
+        "BB_DRVD_SEG_MACRO_NM_DISPLAY": "Macro Segment",
+        "CORE_OU":                      "Core OU",
+        "BUSINESS_FOCUS":               "Business Focus",
+        "FISCAL_FLIP_YEAR":             "Fiscal Flip Year",
+        "FISCAL_FLIP_YR_QTR_NM":        "Fiscal Flip Year-Quarter Label (e.g. Q2FY27)",
+        "FISCAL_CLOSE_YEAR":            "Fiscal Close Year",
+        "FISCAL_CLOSE_YR_QTR_NM":       "Fiscal Close Year-Quarter Label",
+        "OPTY_ID":                      "Opportunity ID",
+        "OPTY_NM":                      "Opportunity Name",
+        "ACCT_ID":                      "Account ID",
+        "ACCT_NAME":                    "Account Name",
+        "OPTY_AMT":                     "Opty Pipegen Amount (numeric)",
+        "CLOUD_AMT":                    "Cloud Pipegen Amount (numeric)",
+        "CC_FLAG":                      "Created & Closed Flag",
+        "CC_SEGMENTATION":              "C&C Segmentation"
+      }
+    },
+
+    "GSP_SPM_NNAOV_PERM": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_NNAOV_PERM",
+      "description": "NNAOV / AOV Protection metrics per programme. Tracks how programmes protect existing AOV from attrition.",
+      "key_columns": {
+        "PROGRAM_ID":                     "Program ID",
+        "PROGRAM_NAME":                   "Program Name",
+        "PROGRAM_OWNER_NAME":             "Program Owner Name",
+        "PROGRAM_TYPE":                   "Program Type",
+        "REGION":                         "Region",
+        "SPM_PROTECTED_AOV":              "SPM Protected AOV amount (numeric $)",
+        "SPM_AOV_PROTECTION_RATE":        "SPM AOV Protection Rate (numeric, 0–1)",
+        "AOV_GROWTH":                     "AOV Growth (numeric $)",
+        "REDUCTION_IN_AOV":               "Reduction in AOV (numeric $)",
+        "ATTRITION":                      "Attrition amount (numeric $)",
+        "AOV_PROTECTION_FORECAST":        "AOV Protection Forecast (numeric $)",
+        "PRIOR_ANNUAL_CONTRACT_VALUE":    "Prior Annual Contract Value (numeric $)",
+        "FORECASTED_ATTRITION":           "Forecasted Attrition (numeric $)",
+        "ACV":                            "Opportunity ACV Amount (numeric $)",
+        "ACV_SNAPPED":                    "Opportunity ACV Amount Snapped (numeric $)"
+      }
+    },
+
+    "GSP_SPM_PROGRAM": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_PROGRAM",
+      "description": "Programme-level rolled-up metrics. One row per programme. This is the main programme dimension table used in the CRMA dashboard programme cards.",
+      "key_columns": {
+        "PROGRAM_ID":             "Program ID (18)",
+        "PROGRAM_NAME":           "Program Name",
+        "AUTO_PROGRAM_NAME":      "Automated Program Name",
+        "PROGRAM_OWNER_NAME":     "Program Owner Name",
+        "PROGRAM_OWNER_ROLE":     "Program Owner Role",
+        "PROGRAM_OWNER_OU":       "Program Owner OU",
+        "PROGRAM_TYPE":           "Program Type",
+        "PROGRAM_STATUS":         "Program Status",
+        "REGION":                 "Region",
+        "BUSINESS_FOCUS":         "Business Focus",
+        "BUSINESS_UNIT":          "Business Unit",
+        "CORE_OU":                "Core OU",
+        "START_DT":               "Start Date",
+        "END_DT":                 "End Date",
+        "SPM_HIER_LVL_2":         "SPM Hierarchy Level 2",
+        "SPM_HIER_LVL_3":         "SPM Hierarchy Level 3",
+        "FORECAST_AMT":           "Forecast Amount ($)",
+        "ACV_FORECAST_AMT":       "ACV Forecast Amount ($)",
+        "AOV_FORECAST_AMT":       "AOV Forecast Amount ($)",
+        "NUM_COMPANIES_TRGT":     "Number of Companies Targeted",
+        "PERC_COMPANIES_PG":      "% Companies with Pipegen",
+        "PERC_COMPANIES_ACT":     "% Companies with Activities",
+        "TOT_PG_VAL":             "Total Pipegen Value ($)",
+        "TOT_PG_OPP":             "Total Pipegen Opps (#)",
+        "TOT_CC_PG_VAL":          "Total C&C Pipegen Value ($)",
+        "TOT_CC_VAL":             "Total C&C ACV ($)",
+        "TOT_CC_OPP":             "Total Opps C&C (#)",
+        "PERC_CC_PG_VAL":         "% C&C Won Opty Value",
+        "TOT_ACV_VAL":            "Total ACV ($)",
+        "CLOSE_RATE":             "Close Rate (numeric, 0–1)",
+        "TOT_DEAD_VAL":           "Total Dead Opty Value ($)"
+      }
+    },
+
+    "GSP_SPM_TARGET_ACCTS_PERM": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_TARGET_ACCTS_PERM",
+      "description": "Target accounts associated with each Sales Programme.",
+      "key_columns": {
+        "PROGRAM_ID":         "Program ID (18)",
+        "PROGRAM_NAME":       "Program Name",
+        "PROGRAM_OWNER_NAME": "Program Owner Name",
+        "PROGRAM_TYPE":       "Program Type",
+        "PROGRAM_STATUS":     "Program Status",
+        "REGION":             "Region",
+        "ACCT_ID":            "Account ID",
+        "ACCT_NAME":          "Account Name"
+      }
+    },
+
+    "GSP_SPM_PERFORMANCE_QA": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_PERFORMANCE_QA",
+      "description": "Programme quality assurance summary. Used in the Data Accuracy Hub dashboard. Includes product tagging, target account counts, and influenced opportunity counts.",
+      "key_columns": {
+        "PROGRAM_ID":         "Program ID (18)",
+        "PROGRAM_NAME":       "Program Name",
+        "PROGRAM_OWNER_NAME": "Program Owner Name",
+        "PROGRAM_TYPE":       "Program Type",
+        "PROGRAM_STATUS":     "Program Status",
+        "FORECAST_AMT":       "Forecast Amount ($)",
+        "ACV_FORECAST_AMT":   "ACV Forecast Amount ($)",
+        "PRODUCT_COUNT":      "Number of Tagged Products",
+        "TARGET_ACCOUNTS":    "Number of Targeted Accounts",
+        "CAMPAING_INF_OPPS":  "Campaign Influence Opps (note: typo in source — CAMPAING not CAMPAIGN)",
+        "SPM_PG_OPPS":        "SPM Pipegen Opps (#)",
+        "SPM_ACV_OPPS":       "SPM ACV Opps (#)"
+      }
+    },
+
+    "GSP_SPM_CR": {
+      "snowflake_path": "{DB}.AIO.GSP_SPM_CR",
+      "description": "Close rate analysis table. Same opportunity-level grain as ACV/Pipegen tables but focused on close rate metrics.",
+      "key_columns": {
+        "PROGRAM_ID":                   "Program ID (18)",
+        "PROGRAM_NAME":                 "Program Name",
+        "PROGRAM_OWNER_NAME":           "Program Owner Name",
+        "PROGRAM_TYPE":                 "Program Type",
+        "PROGRAM_STATUS":               "Program Status",
+        "REGION":                       "Region",
+        "BB_DRVD_SEG_MACRO_NM_DISPLAY": "Macro Segment",
+        "FISCAL_FLIP_YEAR":             "Fiscal Flip Year",
+        "FISCAL_FLIP_YR_QTR_NM":        "Fiscal Flip Year-Quarter",
+        "FISCAL_CLOSE_YEAR":            "Fiscal Close Year",
+        "FISCAL_CLOSE_YR_QTR_NM":       "Fiscal Close Year-Quarter",
+        "OPTY_AMT":                     "ACV Amount (numeric $)",
+        "CLOUD_AMT":                    "Cloud Amount (numeric $)"
+      }
+    }
+  }
+}

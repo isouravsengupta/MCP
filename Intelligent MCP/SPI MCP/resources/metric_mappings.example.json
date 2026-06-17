@@ -1,0 +1,15 @@
+{
+  "metrics": [
+    {
+      "id": "gsp_spm_pipegen_sample",
+      "name": "GSP SPM PIPEGEN Sample",
+      "description": "Sample metric to validate SPI MCP query execution against SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN.",
+      "sourceTable": "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "grain": "month",
+      "dimensions": [],
+      "sqlTemplate": "SELECT * FROM SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
+      "crmaFields": {},
+      "snowflakeColumns": {}
+    }
+  ]
+}
