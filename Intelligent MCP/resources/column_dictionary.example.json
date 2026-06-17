@@ -1,7 +1,0 @@
-{
-  "Region__c": "REGION",
-  "FiscalMonth__c": "FISCAL_MONTH",
-  "OpenPipeAmount__c": "OPEN_PIPE_AMT",
-  "ProgramName__c": "PROGRAM_NAME",
-  "OwnerName__c": "OWNER_NAME"
-}
