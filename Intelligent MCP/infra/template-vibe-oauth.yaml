@@ -1,0 +1,202 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SPI MCP Vibe — per-user Okta/Snowflake OAuth edition.
+  Slack users authenticate via browser before queries run against Snowflake under their own identity.
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+
+  SnowflakeAccount:
+    Type: String
+    Default: sfdc_dp_prd
+
+  SnowflakeWarehouse:
+    Type: String
+    Default: WH_GDSO_CT_INGST
+
+  SnowflakeDatabase:
+    Type: String
+    Default: SSE_DM_GDSO_PRD
+
+  SnowflakeSchema:
+    Type: String
+    Default: AIO
+
+  SnowflakeRole:
+    Type: String
+    Default: DM_GDSO_CT_INGST_PRD
+
+  OktaTenantUrl:
+    Type: String
+    Description: "Okta tenant base URL, e.g. https://salesforce.okta.com"
+
+  SnowflakeOAuthClientId:
+    Type: String
+    Description: "Client ID of the Snowflake OAuth security integration registered in Okta"
+
+  SnowflakeOAuthClientSecret:
+    Type: String
+    NoEcho: true
+    Description: "Client secret for the Snowflake OAuth integration"
+
+  SnowflakeOAuthScope:
+    Type: String
+    Default: "session:role:DM_GDSO_CT_INGST_PRD"
+    Description: "OAuth scope — must match the Snowflake security integration allowed scope"
+
+  SnowflakeOAuthRedirectUri:
+    Type: String
+    Default: ""
+    Description: "Full callback URL, e.g. https://<api-id>.execute-api.us-west-2.amazonaws.com/prod/auth/callback. Leave blank on first deploy, then update after stack is created."
+
+  McpAuthToken:
+    Type: String
+    NoEcho: true
+    Description: "Bearer token Slack sends with every MCP request. Generate: openssl rand -hex 32"
+
+  LambdaSubnetId:
+    Type: String
+    Description: "Private subnet ID for Lambda (routes outbound via NAT Gateway)"
+
+  LambdaSecurityGroupId:
+    Type: String
+    Description: "Security group ID for Lambda"
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures: [arm64]
+    Environment:
+      Variables:
+        SNOWFLAKE_ACCOUNT: !Ref SnowflakeAccount
+        SNOWFLAKE_WAREHOUSE: !Ref SnowflakeWarehouse
+        SNOWFLAKE_DATABASE: !Ref SnowflakeDatabase
+        SNOWFLAKE_SCHEMA: !Ref SnowflakeSchema
+        SNOWFLAKE_ROLE: !Ref SnowflakeRole
+        SPI_SNOWFLAKE_AUTH_MODE: "sso"
+        SNOWFLAKE_AUTHENTICATOR: "oauth"
+        OKTA_TENANT_URL: !Ref OktaTenantUrl
+        SNOWFLAKE_OAUTH_CLIENT_ID: !Ref SnowflakeOAuthClientId
+        SNOWFLAKE_OAUTH_CLIENT_SECRET: !Ref SnowflakeOAuthClientSecret
+        SNOWFLAKE_OAUTH_SCOPE: !Ref SnowflakeOAuthScope
+        SNOWFLAKE_OAUTH_REDIRECT_URI: !Ref SnowflakeOAuthRedirectUri
+        SPI_TOKEN_TABLE: !Ref SpiMcpTokenTable
+        MCP_AUTH_TOKEN: !Ref McpAuthToken
+        NODE_ENV: production
+
+Resources:
+
+  SpiMcpVibeOAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "spi-mcp-vibe-oauth-role-${Environment}"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: TokenTableAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                Resource: !GetAtt SpiMcpTokenTable.Arn
+
+  SpiMcpTokenTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "spi-mcp-vibe-tokens-${Environment}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: slackUserId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: slackUserId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttlEpoch
+        Enabled: true
+
+  SpiMcpVibeOAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "spi-mcp-vibe-oauth-${Environment}"
+      Description: "SPI MCP Vibe — per-user Okta/Snowflake OAuth"
+      CodeUri: ../
+      Handler: dist/lambda.handler
+      Role: !GetAtt SpiMcpVibeOAuthRole.Arn
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroupId
+        SubnetIds:
+          - !Ref LambdaSubnetId
+      Events:
+        ApiProxy:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpVibeOAuthApi
+            Path: /{proxy+}
+            Method: ANY
+        ApiRoot:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref SpiMcpVibeOAuthApi
+            Path: /
+            Method: ANY
+
+  SpiMcpVibeOAuthApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub "spi-mcp-vibe-oauth-api-${Environment}"
+      StageName: !Ref Environment
+      CorsConfiguration:
+        AllowOrigins:
+          - "https://slack.com"
+          - "https://app.slack.com"
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+          - X-Slack-User-Id
+        AllowMethods:
+          - POST
+          - GET
+          - OPTIONS
+        MaxAge: 300
+
+  SpiMcpVibeOAuthLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/spi-mcp-vibe-oauth-${Environment}"
+      RetentionInDays: 90
+
+Outputs:
+  McpEndpointUrl:
+    Description: "Paste this URL into Slack Admin → Integrations → MCP Servers"
+    Value: !Sub "https://${SpiMcpVibeOAuthApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"
+    Export:
+      Name: !Sub "spi-mcp-vibe-oauth-endpoint-${Environment}"
+
+  AuthStartUrl:
+    Description: "Auth start URL — Slack bot sends this to users who need to authenticate"
+    Value: !Sub "https://${SpiMcpVibeOAuthApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/auth/start?slack_user_id=<USER_ID>"
+
+  TokenTableName:
+    Value: !Ref SpiMcpTokenTable
+    Export:
+      Name: !Sub "spi-mcp-vibe-token-table-${Environment}"

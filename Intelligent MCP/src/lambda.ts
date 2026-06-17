@@ -1,8 +1,13 @@
 import type { APIGatewayProxyEventV2, APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 import { handleMcpRequest } from "./server.js";
+import { handleAuthRequest } from "./authHandler.js";
 
 export async function handler(event: APIGatewayProxyEventV2): Promise<APIGatewayProxyStructuredResultV2> {
   try {
+    // Auth routes — no bearer token required
+    const authResponse = await handleAuthRequest(event);
+    if (authResponse) return authResponse;
+
     const authError = authorize(event);
     if (authError) {
       return authError;
@@ -19,7 +24,15 @@ export async function handler(event: APIGatewayProxyEventV2): Promise<APIGateway
       params?: Record<string, unknown>;
     };
 
-    const result = await handleMcpRequest(payload);
+    // Extract slack_user_id from header or top-level payload field
+    const slackUserId =
+      event.headers["x-slack-user-id"] ??
+      event.headers["X-Slack-User-Id"] ??
+      (typeof (payload as Record<string, unknown>).slack_user_id === "string"
+        ? String((payload as Record<string, unknown>).slack_user_id)
+        : undefined);
+
+    const result = await handleMcpRequest(payload, slackUserId);
     return response(200, result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

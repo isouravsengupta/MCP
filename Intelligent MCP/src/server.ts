@@ -1,4 +1,6 @@
 import { loadSnowflakeConfig } from "./config.js";
+import { getToken } from "./tokenStore.js";
+import { buildAuthUrl, refreshAccessToken } from "./snowflakeOAuth.js";
 import {
   loadColumnDictionary,
   loadDashboardDatasetRegistry,
@@ -33,12 +35,72 @@ interface JsonRpcResponse {
   error?: { code: number; message: string; data?: unknown };
 }
 
-const snowflake = new SnowflakeClient(loadSnowflakeConfig());
 const IDENTIFIER = /^[A-Z_][A-Z0-9_]*$/;
+
+// OAuth mode is active when SNOWFLAKE_OAUTH_CLIENT_ID is set.
+const OAUTH_MODE = !!process.env.SNOWFLAKE_OAUTH_CLIENT_ID;
+
+// Fallback service-account client used when OAuth mode is off.
+const serviceAccountSnowflake = OAUTH_MODE ? null : new SnowflakeClient(loadSnowflakeConfig());
 const CONTROL_DATASETS = new Set(["FiscalYearFix", "FixMonth", "INTL_USRSET_SS"]);
 
-export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpcResponse> {
+export async function handleMcpRequest(request: JsonRpcRequest, slackUserId?: string): Promise<JsonRpcResponse> {
   try {
+    // Resolve the Snowflake client for this request
+    let snowflake: SnowflakeClient;
+
+    if (OAUTH_MODE) {
+      if (!slackUserId) {
+        return fail(request.id, -32001, "auth_required: No Slack user identity provided. Ensure X-Slack-User-Id header is set.");
+      }
+
+      let token = await getToken(slackUserId);
+
+      // Attempt refresh if token is stale but we have a refresh token
+      if (!token) {
+        const authUrl = buildAuthUrl(slackUserId);
+        return {
+          jsonrpc: "2.0",
+          id: request.id,
+          result: {
+            auth_required: true,
+            auth_url: authUrl,
+            message: `Please authorise your Snowflake access by clicking this link: ${authUrl} — then re-ask your question.`
+          }
+        };
+      }
+
+      // Proactively refresh if within 5 minutes of expiry
+      if (token.expiresAt - Date.now() < 5 * 60 * 1000 && token.refreshToken) {
+        try {
+          await refreshAccessToken(slackUserId, token.refreshToken);
+          token = await getToken(slackUserId);
+        } catch {
+          // If refresh fails, force re-auth
+          const authUrl = buildAuthUrl(slackUserId);
+          return {
+            jsonrpc: "2.0",
+            id: request.id,
+            result: {
+              auth_required: true,
+              auth_url: authUrl,
+              message: `Your Snowflake session has expired. Please re-authorise: ${authUrl}`
+            }
+          };
+        }
+      }
+
+      const config = loadSnowflakeConfig();
+      snowflake = new SnowflakeClient({
+        ...config,
+        authMode: "sso",
+        authenticator: "oauth",
+        accessToken: token!.accessToken
+      });
+    } else {
+      snowflake = serviceAccountSnowflake!;
+    }
+
     switch (request.method) {
       case "initialize":
         return ok(request.id, {
@@ -293,7 +355,7 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
           ]
         });
       case "tools/call":
-        return ok(request.id, await handleToolCall(request.params ?? {}));
+        return ok(request.id, await handleToolCall(request.params ?? {}, snowflake));
       case "resources/list":
         return ok(request.id, {
           resources: [
@@ -355,7 +417,7 @@ export async function handleMcpRequest(request: JsonRpcRequest): Promise<JsonRpc
   }
 }
 
-async function handleToolCall(params: Record<string, unknown>): Promise<unknown> {
+async function handleToolCall(params: Record<string, unknown>, snowflake: SnowflakeClient): Promise<unknown> {
   const toolName = String(params.name ?? "");
   const args = (params.arguments ?? {}) as Record<string, unknown>;
 
@@ -460,7 +522,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
         ...route.arguments,
         original_query: originalQuery
       }
-    });
+    }, snowflake);
     return {
       content: [
         {
@@ -632,7 +694,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     const datasets = [...new Set(lensCatalog.lenses.flatMap((l) => l.datasets))].sort();
     const rows: Array<Record<string, unknown>> = [];
     for (const dataset of datasets) {
-      const table = CONTROL_DATASETS.has(dataset) ? null : await resolveDatasetTable(dataset, registry);
+      const table = CONTROL_DATASETS.has(dataset) ? null : await resolveDatasetTable(dataset, registry, snowflake);
       rows.push({
         dataset,
         control_dataset: CONTROL_DATASETS.has(dataset),
@@ -667,7 +729,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       };
     }
     const def = registry.datasets.find((d) => d.dataset === dataset);
-    const table = await resolveDatasetTable(dataset, registry);
+    const table = await resolveDatasetTable(dataset, registry, snowflake);
     if (!table) {
       throw new Error(`Could not resolve table for dataset: ${dataset}`);
     }
@@ -720,7 +782,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       };
     }
     const def = registry.datasets.find((d) => d.dataset === dataset);
-    const table = await resolveDatasetTable(dataset, registry);
+    const table = await resolveDatasetTable(dataset, registry, snowflake);
     if (!table) {
       return {
         content: [
@@ -904,7 +966,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
         fiscal_quarter: args.fiscal_quarter,
         months: args.months
       }
-    });
+    }, snowflake);
   }
 
   if (toolName === "run_pg_contribution") {
@@ -935,7 +997,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
         fiscal_quarter: args.fiscal_quarter,
         months: args.months
       }
-    });
+    }, snowflake);
   }
 
   if (toolName === "lookup_opportunity_amount") {
@@ -954,11 +1016,11 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
     for (const table of tableCandidates) {
       let resolvedTable = "";
       try {
-        resolvedTable = await resolveWorkingTable([table]);
+        resolvedTable = await resolveWorkingTable([table], snowflake);
       } catch {
         continue;
       }
-      const idCol = await resolveWorkingColumnOptional(resolvedTable, ["OPTY_ID_18", "OPTY_ID", "OPPORTUNITY_ID", "ID"]);
+      const idCol = await resolveWorkingColumnOptional(resolvedTable, ["OPTY_ID_18", "OPTY_ID", "OPPORTUNITY_ID", "ID"], snowflake);
       if (!idCol) {
         continue;
       }
@@ -1071,30 +1133,30 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       const pipegenTable = await resolveWorkingTable([
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PG"
-      ]);
+      ], snowflake);
       const forecastTable = await resolveWorkingTable([
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FORECAST",
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_FRCST"
-      ]);
-      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
-      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      ], snowflake);
+      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"], snowflake);
+      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"], snowflake);
       const pgMonthCol = await resolveWorkingColumn(pipegenTable, [
         "FISCAL_FLIP_MON_NUM_LABEL",
         "STG_2_FLG_DT_MONTH",
         "STG_2_FLG_DT_MONTH_FISCAL",
         "STG_2_FLG_DT_MONTH_NUM",
         "FISCAL_FLIP_MONTH"
-      ]);
+      ], snowflake);
       const frcstYearCol = await resolveWorkingColumn(forecastTable, [
         "FISCAL_CMPGN_STRT_YEAR",
         "START_DT_YEAR_FISCAL",
         "FISCAL_YEAR"
-      ]);
+      ], snowflake);
       const frcstQuarterCol = await resolveWorkingColumn(forecastTable, [
         "FISCAL_CMPGN_STRT_QTR",
         "FISCAL_QUARTER_FORECAST",
         "FISCAL_QUARTER"
-      ]);
+      ], snowflake);
       const monthBindPlaceholders = months.map(() => "?").join(", ");
       const yearDigits = fiscalYear.replace(/[^0-9]/g, "");
       const year2 = yearDigits.length >= 2 ? yearDigits.slice(-2) : yearDigits;
@@ -1135,29 +1197,29 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       const pipegenTable = await resolveWorkingTable([
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN",
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PG"
-      ]);
+      ], snowflake);
       const totalPgTable = await resolveWorkingTable([
         "SSE_DM_GDSO_PRD.AIO.GDSO_CRT_PIPEGEN",
         "SSE_DM_GDSO_PRD.AIO.GSP_CRT_PIPEGEN",
         "SSE_DM_GDSO_PRD.AIO.GSP_SPM_PIPEGEN"
-      ]);
-      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
-      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      ], snowflake);
+      const pgYearCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"], snowflake);
+      const pgQuarterCol = await resolveWorkingColumn(pipegenTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"], snowflake);
       const pgMonthCol = await resolveWorkingColumnOptional(pipegenTable, [
         "FISCAL_FLIP_MON_NUM_LABEL",
         "STG_2_FLG_DT_MONTH",
         "STG_2_FLG_DT_MONTH_NUM",
         "FISCAL_FLIP_MONTH"
-      ]);
-      const totalYearCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"]);
-      const totalQuarterCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"]);
+      ], snowflake);
+      const totalYearCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_YEAR", "STG_2_FLG_DT_YEAR_FISCAL"], snowflake);
+      const totalQuarterCol = await resolveWorkingColumn(totalPgTable, ["FISCAL_FLIP_QTR", "STG_2_FLG_DT_QUARTER_FISCAL"], snowflake);
       const totalMonthCol = await resolveWorkingColumnOptional(totalPgTable, [
         "FISCAL_FLIP_MON_NUM_LABEL",
         "STG_2_FLG_DT_MONTH",
         "STG_2_FLG_DT_MONTH_NUM",
         "FISCAL_FLIP_MONTH"
-      ]);
-      const totalSnapCol = await resolveWorkingColumnOptional(totalPgTable, ["SNAP_YEAR_STATUS", "SNAP_STATUS"]);
+      ], snowflake);
+      const totalSnapCol = await resolveWorkingColumnOptional(totalPgTable, ["SNAP_YEAR_STATUS", "SNAP_STATUS"], snowflake);
 
       const yearDigits = fiscalYear.replace(/[^0-9]/g, "");
       const year2 = yearDigits.length >= 2 ? yearDigits.slice(-2) : yearDigits;
@@ -1253,15 +1315,18 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
 
     const resolvedHierarchyColumn = await resolveWorkingColumn(
       "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
-      hierarchyCandidates
+      hierarchyCandidates,
+      snowflake
     );
     const resolvedFiscalYearColumn = await resolveWorkingColumnOptional(
       "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
-      fiscalYearCandidates
+      fiscalYearCandidates,
+      snowflake
     );
     const resolvedSalesPlayColumn = await resolveWorkingColumn(
       "SSE_DM_GDSO_PRD.AIO.GSP_SPM_TARGET_ACCTS",
-      salesPlayCandidates
+      salesPlayCandidates,
+      snowflake
     );
 
     const nameMatches = await snowflake.execute(
@@ -1442,7 +1507,8 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
       sourceTable: metric.sourceTable,
       scenarioCatalog,
       metricId: metric.id,
-      filters
+      filters,
+      snowflake
     });
     if (requireDisambiguation && filterValidation.clarificationNeeded) {
       return {
@@ -1567,7 +1633,7 @@ async function handleToolCall(params: Record<string, unknown>): Promise<unknown>
   throw new Error(`Tool not found: ${toolName}`);
 }
 
-async function resolveDatasetTable(dataset: string, registry: DashboardDatasetRegistry): Promise<string | null> {
+async function resolveDatasetTable(dataset: string, registry: DashboardDatasetRegistry, snowflake: SnowflakeClient): Promise<string | null> {
   const entry = registry.datasets.find((d) => d.dataset === dataset);
   const candidates = new Set<string>(entry?.table_candidates ?? []);
   const normalized = dataset.replace(/^dev_/i, "");
@@ -1579,7 +1645,7 @@ async function resolveDatasetTable(dataset: string, registry: DashboardDatasetRe
     candidates.add(`SSE_DM_GDSO_PRD.AIO.GSP_${upper}`);
   }
   try {
-    return await resolveWorkingTable([...candidates]);
+    return await resolveWorkingTable([...candidates], snowflake);
   } catch {
     return null;
   }
@@ -1914,7 +1980,7 @@ function defaultClarifyingQuestions(availableFilterMap: Record<string, string>):
   ];
 }
 
-async function resolveWorkingColumn(tableName: string, candidates: string[]): Promise<string> {
+async function resolveWorkingColumn(tableName: string, candidates: string[], snowflake: SnowflakeClient): Promise<string> {
   for (const candidate of candidates) {
     try {
       await snowflake.execute(`SELECT ${candidate} FROM ${tableName} LIMIT 1`);
@@ -1926,7 +1992,7 @@ async function resolveWorkingColumn(tableName: string, candidates: string[]): Pr
   throw new Error(`Could not resolve a valid column in ${tableName} from candidates: ${candidates.join(", ")}`);
 }
 
-async function resolveWorkingColumnOptional(tableName: string, candidates: string[]): Promise<string | null> {
+async function resolveWorkingColumnOptional(tableName: string, candidates: string[], snowflake: SnowflakeClient): Promise<string | null> {
   for (const candidate of candidates) {
     try {
       await snowflake.execute(`SELECT ${candidate} FROM ${tableName} LIMIT 1`);
@@ -1938,7 +2004,7 @@ async function resolveWorkingColumnOptional(tableName: string, candidates: strin
   return null;
 }
 
-async function resolveWorkingTable(candidates: string[]): Promise<string> {
+async function resolveWorkingTable(candidates: string[], snowflake: SnowflakeClient): Promise<string> {
   for (const candidate of candidates) {
     try {
       await snowflake.execute(`SELECT 1 FROM ${candidate} LIMIT 1`);
@@ -1955,6 +2021,7 @@ async function validateFilters(input: {
   scenarioCatalog: MetricScenarioCatalog;
   metricId: string;
   filters: Record<string, string | number>;
+  snowflake: SnowflakeClient;
 }): Promise<{
   clarificationNeeded: boolean;
   issues: Array<{ filterKey: string; filterValue: string | number; column: string; suggestions: string[]; reason?: string }>;
@@ -1988,7 +2055,7 @@ async function validateFilters(input: {
       continue;
     }
     const column = safeIdentifier(mapped);
-    const exactRows = await snowflake.execute(
+    const exactRows = await input.snowflake.execute(
       `SELECT COUNT(1) AS CNT FROM ${input.sourceTable} WHERE ${column} = ?`,
       [filterValue]
     );
@@ -1996,12 +2063,12 @@ async function validateFilters(input: {
     if (exactCount > 0) {
       continue;
     }
-    const suggestionRows = await snowflake.execute(
+    const suggestionRows = await input.snowflake.execute(
       `SELECT DISTINCT ${column} AS VALUE FROM ${input.sourceTable} WHERE ${column} ILIKE ? ORDER BY 1 LIMIT 8`,
       [`%${filterValue}%`]
     );
-    const suggestions = suggestionRows
-      .map((row) => String((row as Record<string, unknown>).VALUE ?? ""))
+    const suggestions = (suggestionRows as Array<Record<string, unknown>>)
+      .map((row) => String(row.VALUE ?? ""))
       .filter((v) => v.length > 0);
     issues.push({ filterKey, filterValue, column, suggestions });
   }

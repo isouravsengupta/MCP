@@ -17,7 +17,9 @@
     "ops:refresh-all": "npm run ops:generate-context-index && npm run ops:generate-dashboard-catalog && npm run ops:refresh-metric-artifacts"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1064.0",
     "@aws-sdk/client-s3": "^3.1062.0",
+    "@aws-sdk/lib-dynamodb": "^3.1064.0",
     "@aws-sdk/s3-request-presigner": "^3.1062.0",
     "@modelcontextprotocol/sdk": "^1.13.1",
     "@napi-rs/canvas": "^1.0.0",
